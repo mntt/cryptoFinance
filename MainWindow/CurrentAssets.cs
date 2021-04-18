@@ -284,10 +284,10 @@ namespace cryptoFinance
         {
             if (pieChart.Visible == false)
             {
-                loadingBox.Visible = true;
+                ShowLoading();
                 await LoadChart();
                 pieChart.Visible = true;
-                loadingBox.Visible = false;
+                HideLoading();
             }
             else
             {
