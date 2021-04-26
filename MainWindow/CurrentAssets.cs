@@ -2,27 +2,33 @@
 using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace cryptoFinance
 {
     public partial class CurrentAssets : Form
-    { 
+    {
         private bool useRefreshButton = false;
         private List<string> cannotUpdatePriceList = new List<string>();
         private List<ConstructingLists> coinList = new List<ConstructingLists>();
         private List<ConstructingLists> temporaryList = new List<ConstructingLists>();
+        private Image[] refreshImages = new Image[4]
+        { Properties.Resources.refresh, Properties.Resources.refresh2, Properties.Resources.refresh3, Properties.Resources.refresh4 };
         private DateTime startDate { get; set; }
+        private Container container = new Container();
 
         public CurrentAssets()
         {
-            InitializeComponent(); 
+            InitializeComponent();
         }
-     
+
         public void CreateCoinList()
         {
             var coins = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Quantity > 0).ToList();
@@ -54,7 +60,18 @@ namespace cryptoFinance
 
         private void CurrentAssets_Load(object sender, EventArgs e)
         {
-            TogglePriceAlert();        
+            Design.SetFormDesign(this);
+            refreshTimer.Stop();
+            refreshPricesButton.BackgroundImage = refreshImages[0];
+            ConstructPieChart();
+            TogglePriceAlert();
+            dataGridCurrentAssets.Visible = true;
+
+            container.Add(dataGridCurrentAssets);
+            container.Add(pieChart);
+            //container.add -> bus sukurta operations panel, tai ja iadinti.
+            //container.add -> bus sukurta statistics panel, ja idainti.
+            //container.add -> bus sukurta wallet spanel, ja iadinti.
         }
 
         public void CountCurrentValue()
@@ -62,13 +79,20 @@ namespace cryptoFinance
             GetCultureInfo gci = new GetCultureInfo(".");
 
             double currentValue = Connection.db.GetTable<CurrentAssetsDB>()
-                .Select(x => double.Parse(x.CurrentValue.ToString())).ToList().Sum();
+                .Select(x => (double)x.CurrentValue).ToList().Sum();
 
             currentValueLabel.Text = currentValue.ToString("C2");
         }
 
         public void UpdateDataGrid()
         {
+            bool tableVisible = false;
+
+            if (dataGridCurrentAssets.Visible)
+            {
+                tableVisible = true;
+            }
+
             var data = coinList.Where(x => x.quantity > 0).OrderByDescending(x => x.totalSum).ToList();
 
             DataTable table = new DataTable();
@@ -90,8 +114,12 @@ namespace cryptoFinance
             dataGridCurrentAssets.Visible = false;
             dataGridCurrentAssets.DataSource = null;
             dataGridCurrentAssets.DataSource = table;
-            DataGridViewSettings.FormatCurrentAssets(dataGridCurrentAssets); 
-            dataGridCurrentAssets.Visible = true;
+            Design.CurrentAssetsDataGrid(dataGridCurrentAssets);
+
+            if (tableVisible)
+            {
+                dataGridCurrentAssets.Visible = true;
+            }
         }
 
         public void UpdatePricesAndCurrentValue()
@@ -151,7 +179,7 @@ namespace cryptoFinance
                 currentValue = price * item.quantity;
                 temporaryList.Add(CreateObject(item, today, price, currentValue));
             }
-                
+
             await Task.Delay(100);
         }
 
@@ -177,18 +205,18 @@ namespace cryptoFinance
                         Connection.iwdb.UpdateCurrentAssets(false, item.name, item.quantity, DateTime.Now, item.price, item.totalSum);
                         Connection.iwdb.UpdatePrice(DateTime.Today, item.name, 0, "UpdatePrice", 0, item.price, 0);
                     }
-                } 
+                }
             }
             else
             {
-                MessageBox.Show("Nepavyko pasiekti coingecko API per 1 minutę.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                MessageBox.Show("Nepavyko pasiekti coingecko API per 1 minutę.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         public void EnableAllButtons()
         {
             chartButton.Enabled = true;
-            investButton.Enabled = true;
+            operationButton.Enabled = true;
             walletsButton.Enabled = true;
             statisticsButton.Enabled = true;
             refreshPricesButton.Enabled = true;
@@ -217,7 +245,7 @@ namespace cryptoFinance
         {
             refreshPricesButton.Enabled = false;
             chartButton.Enabled = false;
-            investButton.Enabled = false;
+            operationButton.Enabled = false;
             walletsButton.Enabled = false;
             statisticsButton.Enabled = false;
         }
@@ -259,7 +287,10 @@ namespace cryptoFinance
             {
                 DisableAllButtons();
                 ShowLoading();
+                refreshTimer.Start();
+
                 await Task.Run(() => RefreshData());
+
                 if (pieChart.Visible)
                 {
                     await LoadChart();
@@ -271,7 +302,9 @@ namespace cryptoFinance
                     EnableAllButtons();
                 }
                 HideLoading();
-            }            
+                refreshTimer.Stop();
+                refreshPricesButton.BackgroundImage = refreshImages[0];
+            }
         }
 
         private async Task LoadChart()
@@ -280,19 +313,17 @@ namespace cryptoFinance
             await Task.Delay(100);
         }
 
-        private async void ChartButton_Click(object sender, EventArgs e)
+        private void ChartButton_Click(object sender, EventArgs e)
         {
             if (pieChart.Visible == false)
             {
-                ShowLoading();
-                await LoadChart();
+                ConstructPieChart();
                 pieChart.Visible = true;
-                HideLoading();
             }
             else
             {
                 pieChart.Visible = false;
-            } 
+            }
         }
 
         private void DataGridCurrentAssets_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -347,7 +378,7 @@ namespace cryptoFinance
         }
 
         private void RefreshDataGridTimer_Tick(object sender, EventArgs e)
-        {            
+        {
             refreshPricesButton.PerformClick();
             refreshDataGridTimer.Stop();
         }
@@ -395,6 +426,11 @@ namespace cryptoFinance
                     Values = new ChartValues<double> { double.Parse(coins[i].totalSum.ToString()) },
                     LabelPoint = labelPoint,
                     DataLabels = showLabel,
+                    Stroke = new SolidColorBrush(Colours.chartGrid),
+                    Foreground = new SolidColorBrush(Colours.chartLabels),
+                    StrokeThickness = 1,
+                    FontFamily = new System.Windows.Media.FontFamily("Arial Black"),
+                    FontSize = 9
                 });
             }
 
@@ -405,26 +441,23 @@ namespace cryptoFinance
         {
             GetCultureInfo gci = new GetCultureInfo(".");
 
-            try
-            {
-                pieChart.Series.Clear();
-                var coins = coinList.Where(x => x.quantity > 0).OrderByDescending(x => x.totalSum).ToList();
-                Func<ChartPoint, string> labelPoint = chartPoint => string.Format("{0:C2}", chartPoint.Y);
-                var total = coins.Select(x => x.totalSum).ToList().Sum();
+            pieChart.Series.Clear();
+            var coins = coinList.Where(x => x.quantity > 0).OrderByDescending(x => x.totalSum).ToList();
+            Func<ChartPoint, string> labelPoint = chartPoint => string.Format("{0:C2}", chartPoint.Y);
 
-                var tooltip = new DefaultTooltip
-                {
-                    SelectionMode = TooltipSelectionMode.OnlySender
-                };
+            var total = coins.Select(x => x.totalSum).ToList().Sum();
 
-                pieChart.Series = CreateSeries(coins, total, labelPoint);
-                pieChart.LegendLocation = LegendLocation.Right;
-                pieChart.DataTooltip = tooltip;
-            }
-            catch
+            var tooltip = new DefaultTooltip
             {
-                MessageBox.Show("Įvyko nenumatyta klaida. Bandykite dar kartą.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                SelectionMode = TooltipSelectionMode.OnlySender,
+                Foreground = new SolidColorBrush(Colours.tooltipLabels)
+            };
+
+            pieChart.Series = CreateSeries(coins, total, labelPoint);
+            pieChart.LegendLocation = LegendLocation.Right;
+            pieChart.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
+            pieChart.Font = new Font("Arial Black", 8);
+            pieChart.DataTooltip = tooltip;
         }
 
         public void RefreshData(ConstructingLists coinObject)
@@ -438,6 +471,46 @@ namespace cryptoFinance
             else
             {
                 coinList.Add(coinObject);
+            }
+        }
+
+        private void DataGridCurrentAssets_VisibleChanged(object sender, EventArgs e)
+        {
+            if (dataGridCurrentAssets.Visible)
+            {
+                dataGridCurrentAssets.ClearSelection();
+            }
+        }
+
+        private void refreshTimer_Tick(object sender, EventArgs e)
+        {
+            if (refreshPricesButton.BackgroundImage == refreshImages[0])
+            {
+                refreshPricesButton.BackgroundImage = refreshImages[1];
+            }
+            else if (refreshPricesButton.BackgroundImage == refreshImages[1])
+            {
+                refreshPricesButton.BackgroundImage = refreshImages[2];
+            }
+            else if (refreshPricesButton.BackgroundImage == refreshImages[2])
+            {
+                refreshPricesButton.BackgroundImage = refreshImages[3];
+            }
+            else if (refreshPricesButton.BackgroundImage == refreshImages[3])
+            {
+                refreshPricesButton.BackgroundImage = refreshImages[0];
+            }
+        }
+
+        private void currentAssetsButton_Click(object sender, EventArgs e)
+        {
+            if (!dataGridCurrentAssets.Visible)
+            {
+                dataGridCurrentAssets.Visible = true;
+            }
+            else
+            {
+                dataGridCurrentAssets.Visible = false;
             }
         }
 
