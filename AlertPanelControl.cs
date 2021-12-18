@@ -39,23 +39,29 @@ namespace cryptoFinance
             animationTimer.Interval = 10;
             disableAlertTimer.Elapsed += new ElapsedEventHandler(SecondaryTimer_Tick);
             disableAlertTimer.Interval = 1000;
+
+            mainPanel.BackColor = Colours.formBackground;
+            mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
+            mainPanel.BorderStyle = BorderStyle.None;
+            mainPanel.SetBounds(x, y, width, height);
+            mainLabel.SetBounds(30, 4, width - 30 - 2, height - 4 - 5);
+            mainLabel.TextAlign = ContentAlignment.MiddleLeft;
+
         }
 
         public void StartPanelAnimation(int chooseLabelText)
         {
-            mainPanel.BorderStyle = BorderStyle.None;
-            mainPanel.SetBounds(x, y, width, height);
-            mainLabel.SetBounds(4, 4, labelWidth, labelHeight);
-
             if(chooseLabelText <= 15)
             {
-                mainPanel.BackColor = Color.LightCoral;
+                //mainPanel.BackColor = Color.LightCoral;                
+                mainPanel.BackgroundImage = cryptoFinance.Properties.Resources.errorPanel; 
                 ErrorTexts(chooseLabelText);
             }
             
-            if(chooseLabelText > 20 && chooseLabelText < 25)
+            if(chooseLabelText > 20 && chooseLabelText < 30)
             {
-                mainPanel.BackColor = Color.LightGreen;
+                //mainPanel.BackColor = Color.LightGreen;
+                mainPanel.BackgroundImage = cryptoFinance.Properties.Resources.successPanel;
                 SuccessTexts(chooseLabelText);
             }
 
@@ -68,7 +74,7 @@ namespace cryptoFinance
             switch (chooseLabelText)
             {
                 case 0:
-                    mainLabel.Text = "Ryšio problemos.\nNepavyko atnaujinti visų kainų.";
+                    mainLabel.Text = "Nepavyko atnaujinti visų kainų,\ndėl ryšio arba API problemų.";
                     break;
                 case 1:
                     mainLabel.Text = "Sąrašo atnaujinimas atšauktas.";
@@ -86,7 +92,31 @@ namespace cryptoFinance
                     mainLabel.Text = "Piniginė nerasta,\npasirinkite piniginę iš sąrašo.";
                     break;
                 case 6:
-                    mainLabel.Text = "Nepavyko užkrauti kainos.\nĮveskite kainą rankiniu būdu.";
+                    mainLabel.Text = "Ryšio problemos. Nepavyko užkrauti kainos.\nĮveskite kainą rankiniu būdu.";
+                    break;
+                case 7:
+                    mainLabel.Text = "Įvyko nenumatyta klaida.\nDuomenys neišsaugoti.";
+                    break;
+                case 8:
+                    mainLabel.Text = "Įvyko nenumatyta klaida.\nNepavyko užkrauti kainos.";
+                    break;
+                case 9:
+                    mainLabel.Text = "Kainos siuntimas užtruko per ilgai.\nNepavyko užkrauti kainos.";
+                    break;
+                case 10:
+                    mainLabel.Text = "Įvyko klaida, nepavyko atnaujinti Current Assets\nduomenų bazės.";
+                    break;
+                case 11:
+                    mainLabel.Text = "Įvyko klaida, nepavyko įrašyti duomenų.";
+                    break;
+                case 12:
+                    mainLabel.Text = "Įvyko klaida, nepavyko ištrinti duomenų.";
+                    break;
+                case 13:
+                    mainLabel.Text = "Kriptovaliutų sąrašo nepavyko atsiųsti.";
+                    break;
+                case 14:
+                    mainLabel.Text = "Įvyko klaida. Failo iškelti nepavyko.";
                     break;
             }
         }
@@ -106,6 +136,9 @@ namespace cryptoFinance
                     break;
                 case 24:
                     mainLabel.Text = "Nėra ryšio. Duomenys išsaugoti\nnaudojant senas kainas.";
+                    break;
+                case 25:
+                    mainLabel.Text = "Failas sėkmingai iškeltas.";
                     break;
             }
         }
