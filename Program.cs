@@ -11,9 +11,10 @@ namespace cryptoFinance
         [STAThread]
         static void Main()
         {            
-            //Application.EnableVisualStyles();
+            Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new IntroForm());
+            CurrentAssets ca = new CurrentAssets();
+            Application.Run(new IntroForm(ca));
         }
     }
 }

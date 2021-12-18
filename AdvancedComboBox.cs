@@ -11,7 +11,7 @@ namespace cryptoFinance
         public AdvancedComboBox()
         {
             base.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.HighlightColor = Colours.SelectedItemColor();
+            this.HighlightColor = Colours.red; //neveikia??
             this.DrawItem += new DrawItemEventHandler(AdvancedComboBox_DrawItem);
         }
 

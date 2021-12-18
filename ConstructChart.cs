@@ -4,6 +4,7 @@ using LiveCharts;
 using System.Windows.Forms;
 using System.Linq;
 using LiveCharts.Wpf;
+using System.Windows.Media;
 
 namespace cryptoFinance
 {
@@ -14,36 +15,38 @@ namespace cryptoFinance
         private static List<double> currentValues = new List<double>();
         private static List<double> networth = new List<double>();
         private static List<ConstructingLists> chartData = new List<ConstructingLists>();
+        private static List<string> selectedItems = new List<string>();
 
-        public static void Build(string chart, LiveCharts.WinForms.CartesianChart chartView, DateTimePicker start, DateTimePicker finish, List<string> selectedCoins)
+        public static void Build(string chart, LiveCharts.WinForms.CartesianChart chartView, DateTimePicker start, DateTimePicker finish, List<string> _selectedItems)
         {
             ClearChart(chartView);
             uniqueDates = ReturnUniqueDates(start, finish);
+            selectedItems = _selectedItems;
 
-            if(chart == "investments")
+            if (chart == "investments")
             {
-                investments = ReturnInvestmentsList();
-                currentValues = ReturnCurrentValuesList();
+                investments = ReturnInvestmentsList(uniqueDates);
+                currentValues = ReturnCurrentValuesList(uniqueDates);
                 networth = ReturnNetWorthData();
                 AddChartDataPoints(chartView, chart);
             }
 
-            if(chart == "crypto_quantities")
+            if (chart == "crypto_quantities")
             {
-                chartData = ReturnChartData(uniqueDates, selectedCoins, true);
+                chartData = ReturnChartData(uniqueDates, selectedItems, true);
                 AddChartDataPoints(chartView, chart);
             }
 
-            if(chart == "crypto_currentvalues")
+            if (chart == "crypto_currentvalues")
             {
-                chartData = ReturnChartData(uniqueDates, selectedCoins, false);
+                chartData = ReturnChartData(uniqueDates, selectedItems, false);
                 AddChartDataPoints(chartView, chart);
             }
 
-            SetChartLabelsAndFormat(chartView, chart, selectedCoins);
+            SetChartLabelsAndFormat(chartView, chart);
         }
 
-        private static ConstructingLists ReturnObject(DateTime date, string coin, double decimalValue)
+        private static ConstructingLists ReturnObject(DateTime date, string coin, decimal decimalValue)
         {
             ConstructingLists dataObject = new ConstructingLists
                     (
@@ -55,12 +58,12 @@ namespace cryptoFinance
             return dataObject;
         }
 
-        private static double ReturnCV(DateTime date, string coin, double qTotal)
+        private static decimal ReturnCV(DateTime date, string coin, decimal qTotal)
         {
             GetCultureInfo info = new GetCultureInfo(".");
             var price = Connection.db.GetTable<CryptoTable>()
-                .Where(x => x.Date == date && x.CryptoName == coin && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => double.Parse(x.LastPrice.ToString())).ToList();
-            double cv = 0;
+                .Where(x => x.Date == date && x.CryptoName == coin && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => decimal.Parse(x.LastPrice.ToString())).ToList();
+            decimal cv = 0;
 
             if (price.Count > 0)
             {
@@ -68,7 +71,7 @@ namespace cryptoFinance
             }
             else
             {
-                var latestPrice = Connection.db.GetTable<CryptoTable>().Where(x => x.Date == date && x.CryptoName == coin && x.Operation == "UpdatePrice").Select(x => double.Parse(x.LastPrice.ToString())).ToList();
+                var latestPrice = Connection.db.GetTable<CryptoTable>().Where(x => x.Date == date && x.CryptoName == coin && x.Operation == "UpdatePrice").Select(x => decimal.Parse(x.LastPrice.ToString())).ToList();
 
                 if (latestPrice.Count > 0)
                 {
@@ -79,23 +82,30 @@ namespace cryptoFinance
             return cv;
         }
 
-        public static List<ConstructingLists> ReturnChartData(List<DateTime> uniqueDates, List<string> selectedCoins, bool quantityOrCurrentValue)
+        public static List<ConstructingLists> ReturnChartData(List<DateTime> uniqueDates, List<string> _selectedItems, bool quantityOrCurrentValue)
         {
             List<ConstructingLists> dataList = new List<ConstructingLists>();
 
             foreach (var date in uniqueDates)
             {
-                foreach (var coin in selectedCoins)
+                foreach (var coin in _selectedItems)
                 {
                     var qBought = Connection.db.GetTable<CryptoTable>()
-                        .Where(x => x.Date <= date && x.CryptoName == coin && x.Operation == "BUY").Select(x => x.CryptoQuantity).ToList().Sum();
+                        .Where(x => x.Date.Date <= date && x.CryptoName == coin && x.Operation == "BUY").Select(x => x.CryptoQuantity).ToList().Sum();
                     var qSold = Connection.db.GetTable<CryptoTable>()
-                        .Where(x => x.Date <= date && x.CryptoName == coin && x.Operation == "SELL").Select(x => x.CryptoQuantity).ToList().Sum();
+                        .Where(x => x.Date.Date <= date && x.CryptoName == coin && x.Operation == "SELL").Select(x => x.CryptoQuantity).ToList().Sum();
                     var qTotal = qBought - qSold;
 
                     if (quantityOrCurrentValue)
                     {
-                        dataList.Add(ReturnObject(date, coin, double.Parse(qTotal.ToString("0.00000000"))));
+                        string quantityValue = qTotal.ToString("N8").TrimEnd('0');
+                        char[] qchars = quantityValue.ToCharArray();
+                        if (qchars.Last() == ',')
+                        {
+                            quantityValue = quantityValue.Trim(',');
+                        }
+
+                        dataList.Add(ReturnObject(date, coin, decimal.Parse(quantityValue)));
                     }
                     else
                     {
@@ -111,25 +121,37 @@ namespace cryptoFinance
         {
             SeriesCollection series = new SeriesCollection();
 
-            if (chart == "investments")
+            if (chart == "investments" && selectedItems.Count > 0)
             {
-                series.Add(new LineSeries()
+                for (int i = 0; i < selectedItems.Count; i++)
                 {
-                    Title = "Investicijos",
-                    Values = new ChartValues<double>(investments)
-                });
+                    if(selectedItems[i] == "Investicijos")
+                    {
+                        series.Add(new LineSeries()
+                        {
+                            Title = "Investicijos",
+                            Values = new ChartValues<double>(investments),
+                        });
+                    }
 
-                series.Add(new LineSeries()
-                {
-                    Title = "Dabartinė vertė",
-                    Values = new ChartValues<double>(currentValues)
-                });
+                    if(selectedItems[i] == "Dabartinė vertė")
+                    {
+                        series.Add(new LineSeries()
+                        {
+                            Title = "Dabartinė vertė",
+                            Values = new ChartValues<double>(currentValues),
+                        });
+                    }
 
-                series.Add(new LineSeries()
-                {
-                    Title = "Grynasis pelnas",
-                    Values = new ChartValues<double>(networth)
-                });
+                    if(selectedItems[i] == "Grynasis pelnas")
+                    {
+                        series.Add(new LineSeries()
+                        {
+                            Title = "Grynasis pelnas",
+                            Values = new ChartValues<double>(networth),
+                        });
+                    }
+                }
             }
 
             if (chart == "crypto_quantities" || chart == "crypto_currentvalues")
@@ -138,17 +160,32 @@ namespace cryptoFinance
 
                 foreach (var coin in names)
                 {
-                    var data = chartData.Where(x => x.name == coin).Select(x => double.Parse(x.quantity.ToString("0.0000"))).ToList();
+                    var data = chartData.Where(x => x.name == coin).Select(x => double.Parse(FixDecimal(x.quantity))).ToList();
 
                     series.Add(new LineSeries()
                     {
                         Title = coin,
-                        Values = new ChartValues<double>(data)
+                        Values = new ChartValues<double>(data),
                     });
                 }
             }
 
-            chartView.Series = series;
+            if(series.Count > 0)
+            {
+                chartView.Series = series;
+            }
+        }
+
+        private static string FixDecimal(decimal quantity)
+        {
+            string quantityValue = quantity.ToString("N8").TrimEnd('0');
+            char[] qchars = quantityValue.ToCharArray();
+            if (qchars.Last() == ',')
+            {
+                quantityValue = quantityValue.Trim(',');
+            }
+
+            return quantityValue;
         }
 
         private static List<double> ReturnNetWorthData()
@@ -181,7 +218,7 @@ namespace cryptoFinance
             return networth;
         }
 
-        private static List<double> ReturnCurrentValuesList()
+        /*private static List<double> ReturnCurrentValuesList()
         {
             GetCultureInfo gci = new GetCultureInfo(".");
 
@@ -195,7 +232,7 @@ namespace cryptoFinance
             }
 
             return currentValues;
-        }
+        }*/
 
         public static List<double> ReturnCurrentValuesList(List<DateTime> dates)
         {
@@ -206,7 +243,9 @@ namespace cryptoFinance
 
             foreach (var date in dates)
             {
-                var value = cryptoTable.Where(x => x.Date == date && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => double.Parse(x.LastCurrentValue.ToString())).ToList();
+                //var fixedDate = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
+
+                var value = cryptoTable.Where(x => x.Date.Date == date && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => double.Parse(x.LastCurrentValue.ToString())).ToList();
                 currentValues.Add(value[value.Count - 1]);
             }
 
@@ -217,12 +256,17 @@ namespace cryptoFinance
         {
             GetCultureInfo gci = new GetCultureInfo(".");
 
+            var fixedDate = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
+
+            //taigi, 4 unique dates, tai reiskia reikia sumuoti visas vienos dienos investicijas ir returninti
+
             List<double> sumList = Connection.db.GetTable<CryptoTable>()
-                .Where(x => x.Date <= date && x.Operation == operation).Select(x => double.Parse(x.Sum.ToString())).ToList();
+                .Where(x => x.Date <= fixedDate && x.Operation == operation).Select(x => double.Parse(x.Sum.ToString())).ToList();
+
             return sumList;
         }
 
-        private static List<double> ReturnInvestmentsList()
+        /*private static List<double> ReturnInvestmentsList()
         {
             List<double> investments = new List<double>();
 
@@ -240,11 +284,12 @@ namespace cryptoFinance
                     sum += ReturnSumList(date, "SELL").Sum();
                 }
 
+                MessageBox.Show(sum.ToString());
                 investments.Add(sum);
             }
 
             return investments;
-        }
+        }*/
 
         public static List<double> ReturnInvestmentsList(List<DateTime> dates)
         {
@@ -285,8 +330,8 @@ namespace cryptoFinance
         private static List<DateTime> ReturnUniqueDates(DateTimePicker start, DateTimePicker finish)
         {
             var uniqueDates = Connection.db.GetTable<CryptoTable>()
-                .Where(x => x.Date >= start.Value && x.Date <= finish.Value && (x.Operation == "BUY" || x.Operation == "SELL"))
-                .Select(x => x.Date).Distinct().ToList();
+                .Where(x => x.Date.Date >= DateTime.Parse(start.Value.ToString("yyyy-MM-dd")) && x.Date.Date <= DateTime.Parse(finish.Value.ToString("yyyy-MM-dd")) && (x.Operation == "BUY" || x.Operation == "SELL"))
+                .Select(x => x.Date.Date).Distinct().ToList();
 
             return uniqueDates;
         }
@@ -303,16 +348,26 @@ namespace cryptoFinance
             chartView.AxisY.Clear();
         }
 
-        private static void SetChartLabelsAndFormat(LiveCharts.WinForms.CartesianChart chartView, string chart, List<string> selectedCoins)
+        private static void SetChartLabelsAndFormat(LiveCharts.WinForms.CartesianChart chartView, string chart)
         {
             chartView.LegendLocation = LegendLocation.Top;
 
             chartView.AxisX.Add(new LiveCharts.Wpf.Axis
             {
-                Labels = ReturnLabels(uniqueDates)
+                Labels = ReturnLabels(uniqueDates),
+                Foreground = new SolidColorBrush(Colours.chartLabels),
+                FontFamily = Design.mediaFont,
+                FontSize = 9
             });
 
-            chartView.AxisY.Add(ReturnYAxis(chart, selectedCoins));
+            chartView.AxisY.Add(ReturnYAxis(chart, selectedItems));
+
+            chartView.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
+            chartView.DefaultLegend.FontFamily = Design.mediaFont;
+            chartView.DefaultLegend.FontSize = 9;
+            chartView.DataTooltip.Foreground = new SolidColorBrush(Colours.tooltipLabels);
+            chartView.DataTooltip.FontFamily = Design.mediaFont;
+            chartView.DataTooltip.FontSize = 9;
         }
 
         private static LiveCharts.Wpf.Axis ReturnYAxis(string chart, List<string> selectedCoins)
@@ -326,7 +381,10 @@ namespace cryptoFinance
                     Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(64, 79, 86))
                 },
 
-                LabelFormatter = ReturnFormat(chart, selectedCoins)
+                LabelFormatter = ReturnFormat(chart, selectedCoins),
+                Foreground = new SolidColorBrush(Colours.chartLabels),
+                FontFamily = Design.mediaFont,
+                FontSize = 9
             };
 
             if(chart == "crypto_quantities" || chart == "crypto_currentvalues")
@@ -337,7 +395,7 @@ namespace cryptoFinance
             return yAxis;
         }
 
-        private static Func<double, string> ReturnFormat(string chart, List<string> selectedCoins)
+        private static Func<double, string> ReturnFormat(string chart, List<string> _selectedItems)
         {
             Func<double, string> formatFunc = null;
 
@@ -348,11 +406,11 @@ namespace cryptoFinance
 
             if (chart == "crypto_quantities")
             {
-                var list = ReturnChartData(uniqueDates, selectedCoins, true);
+                var list = ReturnChartData(uniqueDates, _selectedItems, true);
                 
                 if(list.Count > 0)
                 {
-                    formatFunc = (x) => x.ToString("0.0000");
+                    formatFunc = (x) => FixDecimal(decimal.Parse(x.ToString()));
                 }
             }
 

@@ -24,7 +24,7 @@ namespace cryptoFinance
 
                 for (int i = 0; i < listView.Items.Count; i++)
                 {
-                    if (listView.Items[i].BackColor == Colours.SelectedItemColor())
+                    if (listView.Items[i].BackColor == Colours.selectedItem)
                     {
                         selectedItemFound = true;
                         index = i;
@@ -34,13 +34,13 @@ namespace cryptoFinance
 
                 if (selectedItemFound && index >= 0 && index + 1 < listView.Items.Count)
                 {
-                    listView.Items[index].BackColor = Colours.Transparent();
-                    listView.Items[index + 1].BackColor = Colours.SelectedItemColor();
+                    listView.Items[index].BackColor = Colours.transparent;
+                    listView.Items[index + 1].BackColor = Colours.selectedItem;
                     listView.EnsureVisible(index + 1);
                 }
                 else if (!selectedItemFound)
                 {
-                    listView.Items[0].BackColor = Colours.SelectedItemColor();
+                    listView.Items[0].BackColor = Colours.selectedItem;
                 }
             }
         }
@@ -54,7 +54,7 @@ namespace cryptoFinance
 
                 for (int i = 0; i < listView.Items.Count; i++)
                 {
-                    if (listView.Items[i].BackColor == Colours.SelectedItemColor())
+                    if (listView.Items[i].BackColor == Colours.selectedItem)
                     {
                         selectedItemFound = true;
                         index = i;
@@ -64,14 +64,14 @@ namespace cryptoFinance
 
                 if (selectedItemFound && index - 1 >= 0 && index < listView.Items.Count)
                 {
-                    listView.Items[index].BackColor = Colours.Transparent();
-                    listView.Items[index - 1].BackColor = Colours.SelectedItemColor();
+                    listView.Items[index].BackColor = Colours.transparent;
+                    listView.Items[index - 1].BackColor = Colours.selectedItem;
                     listView.EnsureVisible(index - 1);
                 }
             }
         }
 
-        public static void OnEnterButtonPressedWhenInvesting(AddOperation form, ListView listView, KeyEventArgs e)
+        public static void OnEnterButtonPressedWhenInvesting(AddOperationForm form, ListView listView, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -80,9 +80,9 @@ namespace cryptoFinance
 
                 for (int i = 0; i < listView.Items.Count; i++)
                 {
-                    if (listView.Items[i].BackColor == Colours.SelectedItemColor())
+                    if (listView.Items[i].BackColor == Colours.selectedItem)
                     {
-                        listView.Items[i].BackColor = Colours.Transparent();
+                        listView.Items[i].BackColor = Colours.transparent;
                         selectedItemFound = true;
                         index = i;
                         break;
@@ -105,7 +105,7 @@ namespace cryptoFinance
 
                 for (int i = 0; i < listView.Items.Count; i++)
                 {
-                    if (listView.Items[i].BackColor == Colours.SelectedItemColor())
+                    if (listView.Items[i].BackColor == Colours.selectedItem)
                     {
                         selectedItemFound = true;
                         index = i;
@@ -136,7 +136,7 @@ namespace cryptoFinance
 
             if (lvi != null && _lastIndex == -1)
             {
-                _listView.Items[lvi.Index].BackColor = Colours.SelectedItemColor();
+                _listView.Items[lvi.Index].BackColor = Colours.selectedItem;
                 listViewLastIndex = lvi.Index;
             }
 
@@ -152,16 +152,15 @@ namespace cryptoFinance
         private static void SetTimerSettings()
         {
             listViewTimer.Tick += new EventHandler(ListViewTimer_Tick);
-            listViewTimer.Interval = 40;
+            listViewTimer.Interval = 90;
         }
 
         private static void ListViewTimer_Tick(object sender, EventArgs e)
         {
-            theListView.BeginUpdate();
             try
             {
-                theListView.Items[listViewLastIndex].BackColor = Colours.Transparent();
-                theListView.Items[listViewCurrentIndex].BackColor = Colours.SelectedItemColor();
+                theListView.Items[listViewLastIndex].BackColor = Colours.transparent;
+                theListView.Items[listViewCurrentIndex].BackColor = Colours.selectedItem;
                 listViewLastIndex = listViewCurrentIndex;
             }
             catch
@@ -172,7 +171,6 @@ namespace cryptoFinance
             {
                 listViewTimer.Stop();
             }
-            theListView.EndUpdate();
         }
 
         public static int ReturnLastIndex()
@@ -186,9 +184,9 @@ namespace cryptoFinance
             {
                 for (int i = 0; i < listView.Items.Count; i++)
                 {
-                    if (listView.Items[i].BackColor == Colours.SelectedItemColor())
+                    if (listView.Items[i].BackColor == Colours.selectedItem)
                     {
-                        listView.Items[i].BackColor = Colours.Transparent();
+                        listView.Items[i].BackColor = Colours.transparent;
                     }
                 }
             }
@@ -196,6 +194,8 @@ namespace cryptoFinance
 
         public static void Format(ListView listView)
         {
+            listView.Columns.Clear();
+
             ColumnHeader header = new ColumnHeader(); 
             header.Text = "";
             header.Name = "col1";
@@ -207,18 +207,39 @@ namespace cryptoFinance
             listView.View = View.Details;
         }
 
-        public static void SetColumnWidth(ListView listView, int correction, int listViewHeight, int items)
+        public static void SetListViewSizes(ListView listView)
         {
-            //i 108 heighto telpa 7 itemai su defaultiniu srifto dydziu
-            var maxItems = (listViewHeight * 7 / 108).ToString().Split('.');
-
-            if (items > int.Parse(maxItems[0]))
+            if (listView.Name == "investmentsListView" || listView.Name == "coinListView")
             {
-                listView.Columns[0].Width = listView.Width - correction - SystemInformation.VerticalScrollBarWidth;
+                //listView.Size = new System.Drawing.Size(209, 219);
+                listView.Columns[0].Width = 184;
             }
-            else if(items <= int.Parse(maxItems[0]))
+            else if (listView.Name == "exportList")
             {
-                listView.Columns[0].Width = listView.Width - correction;
+                listView.Size = new System.Drawing.Size(208, 67);
+                listView.Columns[0].Width = 184;
+            }
+            else if (listView.Name == "top100listview" || listView.Name == "suggestionsListView")
+            {
+                listView.Size = new System.Drawing.Size(208, 190);
+                listView.Columns[0].Width = 188;
+            }
+            else if (listView.Name == "walletListView")
+            {
+                int sizeForOneItem = 20;
+                listView.Size = new System.Drawing.Size(208, listView.Items.Count * sizeForOneItem);
+                listView.Columns[0].Width = 204;
+            }
+            else if(listView.Name == "walletInListView")
+            {
+                int sizeForOneItem = 20;
+                listView.Size = new System.Drawing.Size(178, listView.Items.Count * sizeForOneItem);
+                listView.Columns[0].Width = 174;
+            }
+            else if(listView.Name == "filterListView")
+            {
+                listView.Size = new System.Drawing.Size(193, 96);
+                listView.Columns[0].Width = 176;
             }
         }
 

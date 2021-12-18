@@ -5,18 +5,20 @@ namespace cryptoFinance
     public class CryptoTableData
     {
         public int id { get; set; }
+        public int operationID { get; set; }
         public DateTime date { get; set; }
         public string name { get; set; }
-        public double quantity { get; set; }
+        public decimal quantity { get; set; }
         public string operation { get; set; }
         public string wallet { get; set; }
-        public double price { get; set; }
-        public double fee { get; set; }
-        public double sum { get; set; }
+        public decimal price { get; set; }
+        public decimal fee { get; set; }
+        public decimal sum { get; set; }
 
-        public CryptoTableData(int _id, DateTime _date, string _operation, string _name, double _quantity, string _wallet, double _price, double _fee, double _sum)
+        public CryptoTableData(int _id, int _operationID, DateTime _date, string _operation, string _name, decimal _quantity, string _wallet, decimal _price, decimal _fee, decimal _sum)
         {
-            id = _id;   
+            id = _id;
+            operationID = _operationID;
             date = _date;
             operation = _operation;
             name = _name;

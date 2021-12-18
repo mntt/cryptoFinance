@@ -4,18 +4,18 @@ namespace cryptoFinance
 {
     public static class ReformatText
     {
-        public static double ReturnNumeric(string text)
+        public static decimal ReturnNumeric(string text)
         {
-            double numeric = 0;
+            decimal numeric = 0;
 
             try
             {
                 GetCultureInfo gci = new GetCultureInfo(",");
-                numeric = double.Parse(text.Trim('€'));
+                numeric = decimal.Parse(text.Trim('€'));
             }
             catch
             {
-                MessageBox.Show("Klaida konvertuojant " + text + " tekstą į skaičių.");
+                numeric = 0;
             }
             
             return numeric;

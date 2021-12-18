@@ -4,36 +4,39 @@ namespace cryptoFinance
 {
     public class ConstructingLists
     {
+        public int operationID { get; set; }
         public DateTime date { get; set; }
         public string name { get; set; }
         public bool customCoin { get; set; }
         public string id { get; set; }
-        public double quantity { get; set; }
+        public decimal quantity { get; set; }
         public string wallet { get; set; }
-        public double price { get; set; }
-        public double totalSum { get; set; }
+        public decimal price { get; set; }
+        public decimal totalSum { get; set; }
 
-        public ConstructingLists(string _name, double _quantity)
+        public ConstructingLists(string _name, decimal _quantity)
         {
             name = _name;
             quantity = _quantity;
         }
 
-        public ConstructingLists(DateTime _date, string _name, double _quantity)
+        public ConstructingLists(DateTime _date, string _name, decimal _quantity)
         {
             date = _date;
             name = _name;
             quantity = _quantity;
         }
 
-        public ConstructingLists(string _name, double _quantity, string _wallet)
+        public ConstructingLists(int _operationID, string _name, bool _customCoin, decimal _quantity, string _wallet)
         {
+            operationID = _operationID;
             name = _name;
+            customCoin = _customCoin;
             quantity = _quantity;
             wallet = _wallet;
         }
 
-        public ConstructingLists(string _name, double _quantity, string _wallet, double _price, double _totalSum)
+        public ConstructingLists(string _name, decimal _quantity, string _wallet, decimal _price, decimal _totalSum)
         {
             name = _name;
             quantity = _quantity;
@@ -42,7 +45,7 @@ namespace cryptoFinance
             totalSum = _totalSum;
         }
 
-        public ConstructingLists(DateTime _date, string _name, bool _customCoin, string _id, double _quantity, double _price, double _totalSum)
+        public ConstructingLists(DateTime _date, string _name, bool _customCoin, string _id, decimal _quantity, decimal _price, decimal _totalSum)
         {
             date = _date;
             name = _name;

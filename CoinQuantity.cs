@@ -6,15 +6,15 @@ namespace cryptoFinance
 {
     public class CoinQuantity
     {
-        public double GetCoinQuantityByWallet(string coinName, string wallet)
+        public decimal GetCoinQuantityByWallet(string coinName, string wallet)
         {
-            double q = 0;
+            decimal q = 0;
 
             try
             {
                 var bought = Connection.db.GetTable<CryptoTable>()
-                .Where(x => x.Operation == "BUY" && x.CryptoName == coinName && x.Wallet == wallet)
-                .Select(x => x.CryptoQuantity).ToList();
+                    .Where(x => x.Operation == "BUY" && x.CryptoName == coinName && x.Wallet == wallet)
+                    .Select(x => x.CryptoQuantity).ToList();
                 var sold = Connection.db.GetTable<CryptoTable>()
                     .Where(x => x.Operation == "SELL" && x.CryptoName == coinName && x.Wallet == wallet)
                     .Select(x => x.CryptoQuantity).ToList();
@@ -32,15 +32,15 @@ namespace cryptoFinance
             }
             catch
             {
-                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return q;
         }
 
-        public double GetCoinQuantityByWalletAndDate(string coinName, string wallet, DateTime maxDate)
+        public decimal GetCoinQuantityByWalletAndDate(string coinName, string wallet, DateTime maxDate)
         {
-            double q = 0;
+            decimal q = 0;
 
             try
             {
@@ -64,15 +64,15 @@ namespace cryptoFinance
             }
             catch
             {
-                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return q;
         }
 
-        public double GetCoinQuantityByName(string coinName)
+        public decimal GetCoinQuantityByName(string coinName)
         {
-            double q = 0;
+            decimal q = 0;
 
             try
             {
@@ -96,15 +96,15 @@ namespace cryptoFinance
             }
             catch
             {
-                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return q;
         }
 
-        public double GetCoinQuantityByNameAndDate(string coinName, DateTime maxDate)
+        public decimal GetCoinQuantityByNameAndDate(string coinName, DateTime maxDate)
         {
-            double q = 0;
+            decimal q = 0;
 
             try
             {
@@ -128,12 +128,11 @@ namespace cryptoFinance
             }
             catch
             {
-                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return q;
         }
-
 
     }
 }

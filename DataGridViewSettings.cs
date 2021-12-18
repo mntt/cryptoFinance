@@ -20,7 +20,7 @@ namespace cryptoFinance
             datagrid.Columns[1].Width = 100;
             datagrid.Columns[2].Width = 100;
             datagrid.Columns[3].Width = 100;
-            datagrid.Columns[1].DefaultCellStyle.Format = "0.00000";
+            datagrid.Columns[1].DefaultCellStyle.Format = "N8";
             datagrid.Columns[2].DefaultCellStyle.Format = "C2";
             datagrid.Columns[3].DefaultCellStyle.Format = "C2";
             datagrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;

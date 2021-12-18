@@ -37,6 +37,39 @@ namespace cryptoFinance
             }           
         }
 
+        public static string FormatLabel(string label)
+        {
+            string fixedstring = label;
+
+            if (fixedstring != "")
+            {
+                var comma = fixedstring.Where(x => x == ',').ToList();
+
+                if (comma.Count == 1)
+                {
+                    var afterComma = fixedstring.Split(',');
+
+                    if (afterComma[1].Length <= 4)
+                    {
+                        decimal q = decimal.Parse(fixedstring);
+                        fixedstring = string.Format("{0:F4}", q);
+                    }
+                    else if (afterComma[1].Length > 4)
+                    {
+                        decimal q = decimal.Parse(fixedstring);
+                        fixedstring = string.Format("{0:F8}", q);
+                    }
+                }
+                else
+                {
+                    decimal q = decimal.Parse(fixedstring);
+                    fixedstring = string.Format("{0:n}", q);
+                }
+            }
+
+            return fixedstring;
+        }
+
         public static void FormatQuantityBox(TextBox quantityBox)
         {
             if (quantityBox.Text != "")
@@ -49,14 +82,19 @@ namespace cryptoFinance
 
                     if (afterComma[1].Length <= 4)
                     {
-                        double q = double.Parse(quantityBox.Text);
+                        decimal q = decimal.Parse(quantityBox.Text);
+                        quantityBox.Text = string.Format("{0:F4}", q);
+                    }
+                    else if (afterComma[1].Length > 4)
+                    {
+                        decimal q = decimal.Parse(quantityBox.Text);
                         quantityBox.Text = string.Format("{0:F8}", q);
                     }
                 }
                 else
                 {
-                    double q = double.Parse(quantityBox.Text);
-                    quantityBox.Text = string.Format("{0:F8}", q);
+                    decimal q = decimal.Parse(quantityBox.Text);
+                    quantityBox.Text = string.Format("{0:n}", q);
                 }
             }
         }
@@ -95,14 +133,44 @@ namespace cryptoFinance
 
         public static void FormatCurrencyBox(TextBox currencyBox)
         {
-            double doubleValue;
+            decimal decimalValue;
             string text = currencyBox.Text.Trim('€').Trim(' ');
 
-            if (double.TryParse(text, out doubleValue))
+            if (currencyBox.Name == "priceBox")
             {
-                currencyBox.Text = string.Format("{0:C2}", doubleValue);
-            }
-        }
+                var comma = text.Where(x => x == ',').ToList();
 
+                if (comma.Count == 1)
+                {
+                    var afterComma = text.Split(',');
+
+                    if (afterComma[1].Length <= 4)
+                    {
+                        decimal c = decimal.Parse(text);
+                        currencyBox.Text = string.Format("{0:C4}", c);
+                    }
+                    else if (afterComma[1].Length > 4)
+                    {
+                        decimal c = decimal.Parse(text);
+                        currencyBox.Text = string.Format("{0:C8}", c);
+                    }
+                }
+                else
+                {
+                    if (decimal.TryParse(text, out decimalValue))
+                    {
+                        currencyBox.Text = string.Format("{0:C2}", decimalValue);
+                    }
+                }
+            }
+            else
+            {
+                if (decimal.TryParse(text, out decimalValue))
+                {
+                    currencyBox.Text = string.Format("{0:C2}", decimalValue);
+                }
+            }
+            
+        }
     }
 }
