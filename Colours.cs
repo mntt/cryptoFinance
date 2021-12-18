@@ -9,7 +9,6 @@ namespace cryptoFinance
         public static Color formBackground = Color.FromArgb(59, 68, 85); //šviesesnė pilka
         public static Color cellBack = Color.FromArgb(80, 91, 114);
         public static Color grid = Color.FromArgb(44, 218, 253); //žydra
-        //public static Color grid = Color.FromArgb(116, 201, 204); //žydra
         public static Color progressBar = Color.FromArgb(44, 218, 253); //šviesiai mėlyna
         public static Color alternateCellBack = Color.FromArgb(99, 114, 141);
         public static Color dataGridColumnHeaderBack = Color.FromArgb(29, 33, 41);

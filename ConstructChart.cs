@@ -218,22 +218,6 @@ namespace cryptoFinance
             return networth;
         }
 
-        /*private static List<double> ReturnCurrentValuesList()
-        {
-            GetCultureInfo gci = new GetCultureInfo(".");
-
-            var cryptoTable = Connection.db.GetTable<CryptoTable>().ToList();
-            List<double> currentValues = new List<double>();
-
-            foreach (var date in uniqueDates)
-            {
-                var value = cryptoTable.Where(x => x.Date == date && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => double.Parse(x.LastCurrentValue.ToString())).ToList();
-                currentValues.Add(value[value.Count - 1]);
-            }
-
-            return currentValues;
-        }*/
-
         public static List<double> ReturnCurrentValuesList(List<DateTime> dates)
         {
             GetCultureInfo gci = new GetCultureInfo(".");
@@ -243,8 +227,6 @@ namespace cryptoFinance
 
             foreach (var date in dates)
             {
-                //var fixedDate = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
-
                 var value = cryptoTable.Where(x => x.Date.Date == date && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => double.Parse(x.LastCurrentValue.ToString())).ToList();
                 currentValues.Add(value[value.Count - 1]);
             }
@@ -258,38 +240,11 @@ namespace cryptoFinance
 
             var fixedDate = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
 
-            //taigi, 4 unique dates, tai reiskia reikia sumuoti visas vienos dienos investicijas ir returninti
-
             List<double> sumList = Connection.db.GetTable<CryptoTable>()
                 .Where(x => x.Date <= fixedDate && x.Operation == operation).Select(x => double.Parse(x.Sum.ToString())).ToList();
 
             return sumList;
         }
-
-        /*private static List<double> ReturnInvestmentsList()
-        {
-            List<double> investments = new List<double>();
-
-            foreach (var date in uniqueDates)
-            {
-                double sum = 0;
-
-                if (ReturnSumList(date, "BUY").Count > 0)
-                {
-                    sum -= ReturnSumList(date, "BUY").Sum();
-                }
-
-                if (ReturnSumList(date, "SELL").Count > 0)
-                {
-                    sum += ReturnSumList(date, "SELL").Sum();
-                }
-
-                MessageBox.Show(sum.ToString());
-                investments.Add(sum);
-            }
-
-            return investments;
-        }*/
 
         public static List<double> ReturnInvestmentsList(List<DateTime> dates)
         {

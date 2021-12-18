@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
 namespace cryptoFinance
@@ -45,7 +44,6 @@ namespace cryptoFinance
             form.BackColor = Colours.formBackground;
 
             ListOfControls(form);
-            CenterLoadingBox(form);
             ByFormIndex(form);
             ButtonStyling();
             DataGridStyling();
@@ -56,9 +54,6 @@ namespace cryptoFinance
             DatePickerStyling();
             ComboBoxStyling();
             TextBoxStyling();
-            
-            
-            //form.Icon = new System.Drawing.Icon("Resources/icon.ico");
         }
 
         private static void ListOfControls(Form form)
@@ -94,22 +89,6 @@ namespace cryptoFinance
             }
         }
 
-        private static void CenterLoadingBox(Form form)
-        {
-            /*foreach (var item in form.Controls)
-            {
-                if (item.GetType() == typeof(PictureBox))
-                {
-                    PictureBox picture = (PictureBox)item;
-                    if (picture.Name == "loadingBox")
-                    {
-                        picture.Location = new System.Drawing.Point((form.ClientSize.Width - picture.Width) / 2, (form.ClientSize.Height - picture.Height) / 2);
-                        break;
-                    }
-                }
-            }*/
-        }
-
         private static void ButtonStyling()
         {
             foreach (var item in allcontrols)
@@ -125,7 +104,6 @@ namespace cryptoFinance
         {
             Button button = (Button)item;
             button.FlatStyle = FlatStyle.Flat;
-            //button.FlatAppearance.BorderColor = Colours.grid;
             button.FlatAppearance.MouseOverBackColor = Colours.transparent;
             button.Font = font7;
             button.ForeColor = Colours.labelColor;
@@ -160,7 +138,6 @@ namespace cryptoFinance
                 button.ForeColor = Colours.buttonFore;
                 button.FlatAppearance.BorderColor = Colours.buttonBack;
                 button.FlatAppearance.MouseOverBackColor = Colours.formBackground;
-                //button.Size = buttonSize;
                 button.Font = font7; 
             }
 
@@ -276,8 +253,6 @@ namespace cryptoFinance
             datagrid.RowHeadersVisible = false;
             datagrid.ScrollBars = ScrollBars.Vertical;
             datagrid.DefaultCellStyle.SelectionBackColor = Colours.selectedItem;
-            //datagrid.DefaultCellStyle.SelectionForeColor = Color.Transparent;
-            //datagrid.AlternatingRowsDefaultCellStyle.BackColor = Colours.cellBack;
         }
 
         private static void OperationsDataGrid(DataGridView dataGrid)
@@ -314,14 +289,6 @@ namespace cryptoFinance
             dataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Colours.labelColor;
             dataGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Colours.formBackground;
             dataGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
-            dataGrid.RowTemplate.Height = 40; //neveikia, reikejo paciame datagride nustatyti, kad veiktu
-
-            if (dataGrid.Columns[0].GetType() == typeof(DataGridViewImageColumn))
-            {
-                //dataGrid.Columns[0].DefaultCellStyle.NullValue = null;
-                //DataGridViewImageColumn col = (DataGridViewImageColumn)dataGrid.Columns[0];
-                //col.ImageLayout = DataGridViewImageCellLayout.Stretch;
-            }
 
             dataGrid.Columns[0].DefaultCellStyle.NullValue = null;
             dataGrid.Columns[0].Width = 40;            
@@ -338,7 +305,6 @@ namespace cryptoFinance
             dataGrid.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGrid.Columns[3].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGrid.Columns[4].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            
         }
 
         public static void WalletsDataGrid(DataGridView dataGrid)
@@ -394,7 +360,6 @@ namespace cryptoFinance
 
                     if (item.Tag == "options")
                     {
-                        //item.Size = optionsPanelSize;
                         item.BackColor = Colours.panelBackground;
                     }
                     
@@ -474,7 +439,6 @@ namespace cryptoFinance
                     if(label.Tag == "nodata")
                     {
                         label.Font = font15;
-                        //label.Location = new Point(300, 160);
                     }
                 }
             }
@@ -498,14 +462,12 @@ namespace cryptoFinance
                     else if (item.Tag == "filter")
                     {
                         listview.BackColor = Colours.labelColor;
-                        //listview.ForeColor = Colours.labelColor;
                         listview.Font = font7;
                         listview.BorderStyle = BorderStyle.None;
                     }
                     else
                     {
                         listview.BackColor = Colours.labelColor;
-                        //listview.ForeColor = Colours.formBackground;
                         listview.Font = font8;
                         listview.BorderStyle = BorderStyle.None;
                     }

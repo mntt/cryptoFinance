@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Timers;
-using System.IO;
-using System.Windows.Media.Imaging;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
@@ -23,32 +21,20 @@ namespace cryptoFinance
         private List<string> cannotUpdatePriceList = new List<string>();
         private System.Timers.Timer datagridTimer { get; set; }
         private bool ascendingSorting = true;
-        private int columnIndex { get; set; }
 
         private CurrentAssets ca { get; set; }
-
         public static Point sorting1 = new Point(350, 107);
         public static Point sorting2 = new Point(820, 107);
-
         private int repaintCells { get; set; }
         private bool finishRepainting { get; set; }
-
-
-        public DataGridForm()
-        {
-            
-        }
 
         public DataGridForm(CurrentAssets _ca)
         {
             ca = _ca;
             ca.dataGridCurrentAssets.VisibleChanged += new System.EventHandler(DataGridCurrentAssets_VisibleChanged);
-            ca.dataGridCurrentAssets.SelectionChanged += new System.EventHandler(DataGridCurrentAssets_SelectionChanged);
             ca.dataGridCurrentAssets.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(DataGridCurrentAssets_ColumnHeaderMouseClick);
             ca.dataGridCurrentAssets.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(DataGridCurrentAssets_CellMouseEnter);
-            ca.dataGridCurrentAssets.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(DataGridCurrentAssets_CellMouseLeave);
             ca.dataGridCurrentAssets.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(DataGridCurrentAssets_CellPainting);
-            ca.dataGridCurrentAssets.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(DataGridCurrentAssets_CellClick);
             ca.dataGridCurrentAssets.MouseLeave += new System.EventHandler(DataGridCurrentAssets_MouseLeave);
 
             datagridTimer = new System.Timers.Timer();
@@ -57,8 +43,6 @@ namespace cryptoFinance
             coinList = CreateCoinList();
 
             UpdateDataGrid(ca);
-
-            //gali buti kad cia reiks sukeist virsutini ir apatini metodus vietomis, kad datagrid atsinaujintu veliausiai
             UpdatePricesAndCurrentValue(ca);
 
             if (coinList.Count == 0)
@@ -86,19 +70,6 @@ namespace cryptoFinance
                     ca.dataGridCurrentAssets.Rows[i].Cells[j].Style.BackColor = Colours.formBackground;
                 }
             }
-        }
-
-        private void DataGridCurrentAssets_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            /*ClearSelection();
-
-            if(e.RowIndex >= 0)
-            {
-                for (int i = 0; i < ca.dataGridCurrentAssets.Columns.Count; i++)
-                {
-                    ca.dataGridCurrentAssets.Rows[e.RowIndex].Cells[i].Style.BackColor = Colours.selectedItem;
-                }
-            }*/
         }
 
         private void DataGridCurrentAssets_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
@@ -222,53 +193,7 @@ namespace cryptoFinance
                 }
 
                 finishRepainting = true;
-            }
-
-
-            /*if(e.ColumnIndex == 0 || e.ColumnIndex == 2 || e.ColumnIndex == 3)
-            {
-                if (!finishRepainting)
-                {
-                    repaintCells = e.ColumnIndex;
-                    ca.dataGridCurrentAssets.Refresh();
-                }
-
-                finishRepainting = true;
-            }
-            */
-
-            /*if (e.RowIndex < 0 && (e.ColumnIndex == 1 || e.ColumnIndex == 4))
-            {
-                ca.dataGridCurrentAssets.ClearSelection();
-                ClearSelection();
-                columnIndex = e.ColumnIndex;
-                ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.Style.BackColor = Colours.selectedItem;
-
-                if (ascendingSorting)
-                {
-                    ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.ToolTipText = "Rūšiuoti A-Z";
-                }
-                else
-                {
-                    ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.ToolTipText = "Rūšiuoti Z-A";
-                }
-            }*/
-        }
-
-        private void DataGridCurrentAssets_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            /*if (e.RowIndex < 0 && (e.ColumnIndex == 1 || e.ColumnIndex == 4))
-            {
-                ca.dataGridCurrentAssets.Refresh();
-            }*/
-
-            /*foreach (DataGridViewColumn col in ca.dataGridCurrentAssets.Columns)
-            {
-                if (e.ColumnIndex != columnIndex || e.RowIndex > -2)
-                {
-                    col.HeaderCell.Style.BackColor = Colours.labelColor;
-                }     
-            }*/
+            }           
         }
 
         private void DatagridTimer_Tick(object source, EventArgs e)
@@ -285,9 +210,6 @@ namespace cryptoFinance
         {
             if ((e.ColumnIndex == 1 || e.ColumnIndex == 4))
             {
-                //ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.Style.BackColor = Colours.selectedItem;
-                //datagridTimer.Start();
-
                 if (ascendingSorting)
                 {
                     ca.dataGridCurrentAssets.Sort(ca.dataGridCurrentAssets.Columns[e.ColumnIndex], ListSortDirection.Ascending);
@@ -314,11 +236,6 @@ namespace cryptoFinance
             {
                 return false;
             }
-        }
-
-        private void DataGridCurrentAssets_SelectionChanged(object sender, EventArgs e)
-        {
-            //ca.dataGridCurrentAssets.ClearSelection();
         }
 
         public List<ConstructingLists> ReturnCoinList()
@@ -497,9 +414,6 @@ namespace cryptoFinance
             }
 
             form.dataGridCurrentAssets.Visible = false;
-            //form.dataGridCurrentAssets.DataSource = null;
-            //form.dataGridCurrentAssets.DataSource = ReturnDataTable(coinList);
-
             GetCultureInfo gci = new GetCultureInfo(",");
 
             form.dataGridCurrentAssets.Rows.Clear();

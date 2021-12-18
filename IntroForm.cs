@@ -36,13 +36,10 @@ namespace cryptoFinance
 
                 if (logo == null)
                 {
-                    //check ar nenulus
                     bool customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == item).Select(x => x.CustomCoin).ToList().Last();
 
                     if (customCoin)
                     {
-                        //dar reikia patikrinti ar coingeckocryptoliste yra, nes po list update, visi custom coinai butu istrinti
-
                         var searchlist = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => x.CryptoName == namesplit[0] && x.CryptoSymbol == namesplit[1].Trim(')')).ToList();
 
                         if(searchlist.Count == 0)
@@ -99,25 +96,17 @@ namespace cryptoFinance
 
                 try
                 {
-                    //int z = int.Parse("bybis");
                     string url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + id + "&order=market_cap_desc&per_page=100&page=1&sparkline=false";
                     var response = await client.GetAsync(url);
                     message = await response.Content.ReadAsStringAsync();
                     var split = message.Split('"');
                     var logoUrl = split[15];
                     Image image = DownloadImageFromUrl(logoUrl);
-
-                    //Bitmap target = new Bitmap(image.Size.Width, image.Size.Height);
-                    //Graphics g = Graphics.FromImage(target);
-                    //g.DrawRectangle(new Pen(new SolidBrush(Color.White)), 0, 0, target.Width, target.Height);
-                    //g.DrawImage(image, 0, 0);
-
                     Connection.iwdb.InsertCryptoLogo(id, image);
                 }
                 catch
                 {
                     Connection.iwdb.InsertCryptoLogo(id, null);
-                    //nepavyko atsiusti image, priskiriama null reiksme
                 }
 
                 client.Dispose();
@@ -197,8 +186,6 @@ namespace cryptoFinance
                 this.Hide();
                 ca.Show();
                 ca.Focus();
-
-                //worker.RunWorkerAsync();
             }
         }
     }

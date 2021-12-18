@@ -88,7 +88,7 @@ namespace cryptoFinance
                 var transferedOut = Connection.db.GetTable<CryptoTable>()
                     .Where(x => x.Operation == "TRANSFER_OUT" && x.CryptoName == coinName)
                     .Select(x => x.CryptoQuantity).ToList();
-                var fees = Connection.db.GetTable<CryptoTable>() //nebera operation FEES, fees skaiciuojama su BUY , SELL operacijomis
+                var fees = Connection.db.GetTable<CryptoTable>()
                     .Where(x => x.Operation == "FEES" && x.CryptoName == coinName)
                     .Select(x => x.CryptoQuantity).ToList();
 
@@ -120,7 +120,7 @@ namespace cryptoFinance
                 var transferedOut = Connection.db.GetTable<CryptoTable>()
                     .Where(x => x.Operation == "TRANSFER_OUT" && x.CryptoName == coinName && x.Date <= maxDate)
                     .Select(x => x.CryptoQuantity).ToList();
-                var fees = Connection.db.GetTable<CryptoTable>() //nebera operation FEES, fees skaiciuojama su BUY , SELL operacijomis
+                var fees = Connection.db.GetTable<CryptoTable>()
                     .Where(x => x.Operation == "FEES" && x.CryptoName == coinName && x.Date <= maxDate)
                     .Select(x => x.CryptoQuantity).ToList();
 

@@ -92,7 +92,7 @@ namespace cryptoFinance
 
             if (isConnected)
             {
-                int timeout = 2000; //galima prailginti laika
+                int timeout = 2000;
                 timeoutcancel = new CancellationTokenSource();
                 var delayTask = Task.Delay(timeout, timeoutcancel.Token);
                 var task = DownloadPrice(id);

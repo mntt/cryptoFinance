@@ -16,11 +16,9 @@ namespace cryptoFinance
         private int y { get; set; }
         private int width { get; set; }
         private int height { get; set; }
-        private int labelWidth { get; set; }
-        private int labelHeight { get; set; }
 
         public AlertPanelControl(Panel _mainPanel, Label _mainLabel, 
-            int _x, int _y, int _width, int _height, int _labelWidth, int _labelHeight)
+            int _x, int _y, int _width, int _height)
         {
             mainPanel = _mainPanel;
             mainLabel = _mainLabel;
@@ -28,8 +26,6 @@ namespace cryptoFinance
             y = _y;
             width = _width;
             height = _height;
-            labelWidth = _labelWidth;
-            labelHeight = _labelHeight;
             SetTimersParameters();
         }
 
@@ -52,15 +48,13 @@ namespace cryptoFinance
         public void StartPanelAnimation(int chooseLabelText)
         {
             if(chooseLabelText <= 15)
-            {
-                //mainPanel.BackColor = Color.LightCoral;                
+            {             
                 mainPanel.BackgroundImage = cryptoFinance.Properties.Resources.errorPanel; 
                 ErrorTexts(chooseLabelText);
             }
             
             if(chooseLabelText > 20 && chooseLabelText < 30)
             {
-                //mainPanel.BackColor = Color.LightGreen;
                 mainPanel.BackgroundImage = cryptoFinance.Properties.Resources.successPanel;
                 SuccessTexts(chooseLabelText);
             }

@@ -14,7 +14,6 @@ namespace cryptoFinance
     {
         private CurrentAssets ca { get; set; }
         private int errorExporting = 0;
-        private bool openTimeBox = false;
         private bool clicked = false;
         private string listname = "";
         private List<string> list = new List<string>();
@@ -36,13 +35,8 @@ namespace cryptoFinance
             ca.dropdownInvestments.MouseEnter += new System.EventHandler(DropdownInvestments_MouseEnter);
             ca.dropdownInvestments.MouseLeave += new System.EventHandler(DropdownInvestments_MouseLeave);
             ca.dropdownInvestments.Click += new System.EventHandler(DropdownInvestments_Click);
-            ca.variablesPanel.VisibleChanged += new System.EventHandler(VariablesPanel_VisibleChanged);
 
             ca.investmentsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.investmentsListView_ItemSelectionChanged);
-
-
-
-
 
             ListViewSettings.Format(ca.investmentsListView);
             ListViewSettings.Format(ca.coinListView);
@@ -52,7 +46,6 @@ namespace cryptoFinance
             ListViewSettings.SetListViewSizes(ca.exportList);
             SetStartDate(ca);
 
-            //worker 
             RefreshCoinQuantitiesList(ca.coinListView);
             ca.investmentsListView.Items.Add("Investicijos");
             ca.investmentsListView.Items.Add("Dabartinė vertė");
@@ -60,14 +53,6 @@ namespace cryptoFinance
             ca.investmentsListView.Items[0].Checked = true;
             ca.investmentsListView.Items[1].Checked = true;
             ca.investmentsListView.Items[2].Checked = true;
-        }
-
-        private void VariablesPanel_VisibleChanged(object sender, EventArgs e)
-        {
-            /*if (ca.variablesPanel.Visible)
-            {
-                ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbutton;
-            }*/
         }
 
         private void SearchListBox_TextChanged(object sender, EventArgs e)
@@ -157,9 +142,6 @@ namespace cryptoFinance
             if (ca.variablesPanel.Visible)
             {
                 ca.variablesPanel.Visible = false;
-                //ca.investmentsListView.Visible = false;
-                //ca.coinListView.Visible = false;
-                //ca.searchListBox.Visible = false;
             }
             else
             {
@@ -168,7 +150,6 @@ namespace cryptoFinance
                     ca.variablesPanel.Visible = true;
                     ca.coinListView.Visible = false;
                     ca.investmentsListView.Visible = true;
-                    //ca.searchListBox.Visible = true;
                 }
 
                 if (listname == "coins" && !ca.variablesPanel.Visible)
@@ -329,17 +310,10 @@ namespace cryptoFinance
                 form.statisticsPanel.Location = new Point(117, 102);
 
                 form.chartView.Visible = false;
-                //form.exportList.Visible = false;
-                //form.coinListView.Visible = false;
                 form.backToStats.Visible = false;
                 form.dropdownInvestments.Visible = false;
-                //form.exportButton.Visible = false;
                 form.exportdataPanel.Visible = false;
-                //form.variablesPanel.Visible = false;
                 form.variablesPanel.Visible = false;
-                //form.investmentsListView.Visible = false;
-                //form.searchListBox.Visible = false;
-                //form.exportBorder.Visible = false;
                 form.dashLabel.Visible = false;
                 form.datePickerStart.Visible = false;
                 form.datePickerFinish.Visible = false;
@@ -358,10 +332,6 @@ namespace cryptoFinance
         private void SwitchButtonVisibility(CurrentAssets form, bool switchVisibility)
         {
             form.statsmenuPanel.Visible = switchVisibility;
-            //form.investmentsChartButton.Visible = switchVisibility;
-            //form.cryptoQuantities.Visible = switchVisibility;
-            //form.cryptoNetValues.Visible = switchVisibility;
-            //form.exportData.Visible = switchVisibility;
         }
 
         public async void OpenInvestments(CurrentAssets form, string chart, Action showLoading)
@@ -398,19 +368,6 @@ namespace cryptoFinance
             ca.datePickerFinish.ValueChanged += new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
             ca.investmentsListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.investmentsListView_ItemChecked);
-            /*if (form.chartView.Visible)
-            {
-                form.chartView.Visible = false;
-            }
-
-            if (!form.chartView.Visible)
-            {
-                form.chartView.Select();
-                
-                
-                
-                
-            }*/
         }
 
         private async void LoadCryptoQuantities(CurrentAssets form, string chart)
@@ -428,7 +385,6 @@ namespace cryptoFinance
                 form.coinListView.Items[i].BackColor = Colours.formBackground;
             }
 
-            //form.variablesPanel.Visible = false;
             form.backToStats.Visible = true;
             form.dropdownInvestments.Visible = true;
             form.dashLabel.Visible = true;
@@ -470,7 +426,6 @@ namespace cryptoFinance
 
             form.chartView.Select();
             SwitchButtonVisibility(form, false);
-            //form.variablesPanel.Visible = false;
             form.backToStats.Visible = true;
             form.dropdownInvestments.Visible = true;
             form.dashLabel.Visible = true;
@@ -513,12 +468,7 @@ namespace cryptoFinance
             }
 
             form.exportdataPanel.Visible = true;
-            //form.exportList.BringToFront();
-            //form.exportList.Select();
             SwitchButtonVisibility(form, false);
-            //form.exportList.Visible = true;
-            //form.exportBorder.Visible = true;
-            //form.exportButton.Visible = true;
             form.exportData.Visible = true;
             form.backToStats.Visible = true;
             form.dropdownInvestments.Visible = false;
@@ -600,7 +550,6 @@ namespace cryptoFinance
             var coins = Connection.db.GetTable<CryptoTable>().Select(x => x.CryptoName).Distinct().ToList();
             var dates = Connection.db.GetTable<CryptoTable>().Where(x => x.Operation == "BUY" || x.Operation == "SELL")
                 .Select(x => x.Date).ToList();
-            //sita vieta suziureti, ar gerai surenkami duomenys
             var quantities = ConstructChart.ReturnChartData(dates, coins, true);
 
             coinListView.Items.Clear();
@@ -788,7 +737,7 @@ namespace cryptoFinance
 
         private void AlertPanelControlInstance(int chooseLabelText)
         {
-            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38, 29, 13);
+            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38);
             apc.StartPanelAnimation(chooseLabelText);
         }
 
@@ -865,19 +814,13 @@ namespace cryptoFinance
         {
             form.nodataLabel.Visible = false;
             form.chartView.Visible = false;
-            //form.exportList.Visible = false;
-            //form.coinListView.Visible = false;
             form.backToStats.Visible = false;
             form.dropdownInvestments.Visible = false;
-            //form.exportButton.Visible = false;
             form.exportdataPanel.Visible = false;
             form.variablesPanel.Visible = false;
-            //form.searchListBox.Visible = false;
-            //form.exportBorder.Visible = false;
             form.dashLabel.Visible = false;
             form.datePickerStart.Visible = false;
             form.datePickerFinish.Visible = false;
-            //form.investmentsListView.Visible = false;
             form.dashLabel.Select();
 
             SwitchButtonVisibility(form, true);

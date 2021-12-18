@@ -36,7 +36,6 @@ namespace cryptoFinance
             optionsPanelTimer.Interval = 175;
             ca.operationDataGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OperationDataGrid_CellContentClick);
             ca.operationDataGrid.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OperationDataGrid_Scroll);
-            ca.operationDataGrid.Leave += new System.EventHandler(this.OperationDataGrid_Leave);
             ca.loadMoreLabel.Click += new System.EventHandler(this.LoadMoreLabel_Click);
             ca.editButton.Click += new System.EventHandler(this.EditButton_Click);
             ca.Click += new System.EventHandler(this.CurrentAssets_Click);
@@ -53,7 +52,6 @@ namespace cryptoFinance
             ca.filterOperationsBox.TextChanged += new System.EventHandler(FilterOperationsBox_TextChanged);
 
             LoadOperationsForm();
-            //LoadOperationsDataGrid(ca, 10);
         }
 
         private void FilterOperationsBox_TextChanged(object sender, EventArgs e) 
@@ -74,8 +72,6 @@ namespace cryptoFinance
 
         private void OperationDataGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-
-
             //kodas sutvarko spalvu persiliejima
             using (Brush gridBrush = new SolidBrush(ca.operationDataGrid.GridColor))
             {
@@ -88,44 +84,7 @@ namespace cryptoFinance
                         e.Handled = true;
                     }
                 }
-            }
-
-           /* if (e.RowIndex == 0)
-            {
-                Pen gridLinePen = new Pen(Colours.selectedItem, 1);
-                int width = e.ClipBounds.Width - 21;
-
-                e.Graphics.DrawLine(gridLinePen, 0, 0, width - 1, 0);
-                e.Graphics.DrawLine(gridLinePen, 0, 0, 0, 65);
-                e.Graphics.DrawLine(gridLinePen, width - 1, 0, width - 1, 65);
-            }
-
-            e.Handled = true;
-
-            if (e.RowIndex == 1)
-            {
-                Pen gridLinePen = new Pen(Colours.selectedItem, 1);
-                int width = e.ClipBounds.Width - 21;
-
-                e.Graphics.DrawLine(gridLinePen, 0, 0, 0, 65);
-                e.Graphics.DrawLine(gridLinePen, width - 1, 0, width - 1, 65);
-                //e.Graphics.DrawLine(gridLinePen, 0, 30, width - 1,30);
-            }
-
-            e.Handled = true;
-
-            if (e.RowIndex == 2)
-            {
-                Pen gridLinePen = new Pen(Colours.selectedItem, 1);
-                int width = e.ClipBounds.Width - 21;
-
-                e.Graphics.DrawLine(gridLinePen, 0, 0, 0, 65);
-                e.Graphics.DrawLine(gridLinePen, width - 1, 0, width - 1, 65);
-                //e.Graphics.DrawLine(gridLinePen, 0, 65, width - 1, 65);
-            }
-
-            e.Handled = true;
-           */
+            } 
         }
 
         private void OperationDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -212,16 +171,8 @@ namespace cryptoFinance
             OnCellContentClick(ca, e);
         }
 
-        private void OperationDataGrid_Leave(object sender, EventArgs e)
-        {
-            //neveikia
-            ca.operationDataGrid.ClearSelection();
-        }
-
         private void OperationDataGrid_Scroll(object sender, ScrollEventArgs e)
         {
-            //ca.operationDataGrid.CellPainting -= OperationDataGrid_CellPainting;
-            
             OnScroll(ca);
         }
 
@@ -259,11 +210,6 @@ namespace cryptoFinance
             foreach (Control item in ca.Controls)
             {
                 item.Enabled = false;
-                //loading forma yra atskiroje formoje, o nebe current assets formoje
-                /*if (item.Name != "loadingBox" && item.Name != "loadingFiller")
-                {
-                    item.Enabled = false;
-                }*/
             }
             await Task.Run(() => ExecuteDelete(ca, ca.rowIndex));
 
@@ -305,7 +251,6 @@ namespace cryptoFinance
             if (!form.investmentsPanel.Visible)
             {
                 form.operationDataGrid.ClearSelection();
-                //form.investmentsPanel.Location = new Point(117, 102);
                 form.investmentsPanel.Visible = true;
                 form.filterOperationsBox.Text = "";
                 form.filterOperationsBox.Visible = true;
@@ -550,10 +495,6 @@ namespace cryptoFinance
             form.operationDataGrid.Columns[0].DefaultCellStyle.SelectionBackColor = Colours.formBackground;
             form.operationDataGrid.Columns[6].DefaultCellStyle.NullValue = null;
             form.operationDataGrid.Columns[6].DefaultCellStyle.SelectionBackColor = Colours.formBackground;
-            
-            //form.operationDataGrid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            //form.operationDataGrid.CellBorderStyle = DataGridViewCellBorderStyle.None;
-            //form.operationDataGrid.GridColor = Colours.grid;
         }
 
         private void AssignFilteredValues(CurrentAssets form, List<CryptoTable> list, int counter, int firstLine, int secondLine, int thirdLine, int fourthLine)
@@ -868,7 +809,7 @@ namespace cryptoFinance
 
             if (operation == "BUY")
             {
-                Connection.iwdb.DeleteByOperationID(operationid); //istrinamos visos wallet related operacijos
+                Connection.iwdb.DeleteByOperationID(operationid);
             }
 
             updatedItem = null;
@@ -879,8 +820,6 @@ namespace cryptoFinance
             RefreshCurrentCoins(coin);
             list.RemoveAt(operationIndex);
             LoadOperationsDataGrid(ca, 10);
-
-            //await Task.Run(() => RefreshCurrentCoins(coin));
 
             await Task.Delay(100);
         }
@@ -965,15 +904,13 @@ namespace cryptoFinance
             var coin = ReturnObject(name, customCoin, cryptoid, q, date, (decimal)price, cv);
             RefreshCurrentCoins(coin);
             LoadOperationsForm();
-            
-            //await Task.Run(() => RefreshCurrentCoins(coin));
 
             await Task.Delay(100);
         }
 
         private void AlertPanelControlInstance(int chooseLabelText)
         {
-            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38, 29, 13);
+            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38);
             apc.StartPanelAnimation(chooseLabelText);
         }
 

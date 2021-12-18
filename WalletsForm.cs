@@ -24,9 +24,7 @@ namespace cryptoFinance
         private int lastViewItemIndex { get; set; }
 
         private bool errorConfirming = false;
-        private System.Timers.Timer datagridTimer { get; set; }
-        //private bool ascendingSorting = false;
-        private int columnIndex { get; set; }
+
         private int repaintCells { get; set; }
         private bool finishRepainting { get; set; }
 
@@ -40,7 +38,6 @@ namespace cryptoFinance
             ca.walletDataGrid.SelectionChanged += new System.EventHandler(this.WalletDataGrid_SelectionChanged);
             ca.backToWallets.Click += new System.EventHandler(this.BackToWallets_Click);
             ca.walletDataGrid.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.WalletDataGrid_CellMouseEnter);
-            ca.walletDataGrid.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.WalletDataGrid_CellMouseLeave);
             ca.walletDataGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.WalletDataGrid_ColumnHeaderMouseClick);
             ca.walletDataGrid.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(WalletDataGrid_CellPainting);
             ca.walletDataGrid.MouseLeave += new System.EventHandler(WalletDataGrid_MouseLeave);
@@ -52,10 +49,6 @@ namespace cryptoFinance
             ca.walletsPanel.VisibleChanged += new System.EventHandler(WalletsPanel_VisibleChanged);
             ca.qLabel.MouseEnter += new System.EventHandler(MaxLabel_MouseEnter);
             ca.qLabel.MouseLeave += new System.EventHandler(MaxLabel_MouseLeave);
-
-            datagridTimer = new System.Timers.Timer();
-            datagridTimer.Elapsed += new ElapsedEventHandler(DatagridTimer_Tick);
-            datagridTimer.Interval = 175;
 
             ListViewSettings.Format(ca.walletInListView);
             ListViewSettings.Format(ca.filterListView);
@@ -192,18 +185,6 @@ namespace cryptoFinance
             }
         }
 
-        private void DatagridTimer_Tick(object source, EventArgs e)
-        {
-            
-            
-            /*foreach (DataGridViewColumn col in ca.walletDataGrid.Columns)
-            {
-                col.HeaderCell.Style.BackColor = Colours.labelColor;
-            }*/
-
-            //datagridTimer.Stop();
-        }
-
         private void WalletDataGrid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             ca.filterBox.Text = "";
@@ -292,40 +273,6 @@ namespace cryptoFinance
 
                 finishRepainting = true;
             }
-                
-
-            /*if (e.RowIndex < 0 && (e.ColumnIndex == 1 || e.ColumnIndex == 2))
-            {
-                ca.walletDataGrid.ClearSelection();
-                columnIndex = e.ColumnIndex;
-                ca.walletDataGrid.Columns[e.ColumnIndex].HeaderCell.Style.BackColor = Colours.selectedItem;
-
-                if (ascendingSorting)
-                {
-                    ca.walletDataGrid.Columns[e.ColumnIndex].HeaderCell.ToolTipText = "Rūšiuoti A-Z";
-                }
-                else
-                {
-                    ca.walletDataGrid.Columns[e.ColumnIndex].HeaderCell.ToolTipText = "Rūšiuoti Z-A";
-                }
-            }*/
-        }
-
-        private void WalletDataGrid_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            /*if (e.RowIndex < 0 && (e.ColumnIndex == 1 || e.ColumnIndex == 2))
-            {
-                ca.walletDataGrid.Refresh();
-            }*/
-
-
-            /*foreach (DataGridViewColumn col in ca.walletDataGrid.Columns)
-            {
-                if (e.ColumnIndex != columnIndex || e.RowIndex > -2)
-                {
-                    col.HeaderCell.Style.BackColor = Colours.labelColor;
-                }
-            }*/
         }
         
         private void BackToWallets_Click(object sender, EventArgs e)
@@ -343,7 +290,6 @@ namespace cryptoFinance
         public void WalletDataGrid_SelectionChanged(object sender, EventArgs e)
         {
             ca.filterPanel.Visible = false;
-            //ca.walletDataGrid.ClearSelection();
         }
 
         public List<ConstructingLists> ReturnDataList()
@@ -364,7 +310,6 @@ namespace cryptoFinance
                     form.backToWallets.Visible = false;
                     form.transferButton.Visible = true;
                     form.walletsPanel.Visible = true;
-                    //form.walletsPanel.Location = new Point(117, 102);
                     AddDataToDataGrid(form);
                     
                     newDataGridList.Clear();
@@ -374,7 +319,6 @@ namespace cryptoFinance
 
                     form.walletDataGrid.Visible = true;
                     form.walletDataGrid.ClearSelection();
-
                 }
             }
             else
@@ -490,7 +434,6 @@ namespace cryptoFinance
 
         private void TransferButton_Click(object sender, EventArgs e)
         {
-            ca.nameComboBox.TextChanged += new System.EventHandler(this.NameComboBox_TextChanged);
             ca.walletOutComboBox.TextChanged += new System.EventHandler(this.WalletOutComboBox_TextChanged);
             ca.qLabel.Click += new System.EventHandler(Maxq_Click);
             ca.execTransferButton.Click += new System.EventHandler(this.ExecTransferButton_Click);
@@ -505,7 +448,6 @@ namespace cryptoFinance
             ca.nameComboBox.Leave += new System.EventHandler(this.NameComboBox_Leave);
             ca.walletOutComboBox.Leave += new System.EventHandler(this.WalletOutComboBox_Leave);
             ca.walletInBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WalletInBox_KeyDown);
-            ca.walletInListView.MouseEnter += new System.EventHandler(this.WalletInListView_MouseEnter);
             ca.walletInListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WalletInListView_KeyDown);
             ca.nameComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NameComboBox_KeyDown);
             ca.walletOutComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WalletOutComboBox_KeyDown);
@@ -666,10 +608,7 @@ namespace cryptoFinance
 
         private void RemoveEvents()
         {
-            //ca.transferButton.Click -= new System.EventHandler(this.TransferButton_Click);
             ca.walletDataGrid.SelectionChanged -= new System.EventHandler(this.WalletDataGrid_SelectionChanged);
-            //ca.backToWallets.Click -= new System.EventHandler(this.BackToWallets_Click);
-            ca.nameComboBox.TextChanged -= new System.EventHandler(this.NameComboBox_TextChanged);
             ca.walletOutComboBox.TextChanged -= new System.EventHandler(this.WalletOutComboBox_TextChanged);
             ca.qLabel.Click -= new System.EventHandler(Maxq_Click);
             ca.execTransferButton.Click -= new System.EventHandler(this.ExecTransferButton_Click);
@@ -684,7 +623,6 @@ namespace cryptoFinance
             ca.nameComboBox.Leave -= new System.EventHandler(this.NameComboBox_Leave);
             ca.walletOutComboBox.Leave -= new System.EventHandler(this.WalletOutComboBox_Leave);
             ca.walletInBox.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.WalletInBox_KeyDown);
-            ca.walletInListView.MouseEnter -= new System.EventHandler(this.WalletInListView_MouseEnter);
             ca.walletInListView.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.WalletInListView_KeyDown);
             ca.nameComboBox.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.NameComboBox_KeyDown);
             ca.walletOutComboBox.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.WalletOutComboBox_KeyDown);
@@ -756,26 +694,6 @@ namespace cryptoFinance
             ca.maxqPanel.Visible = false;
         }
 
-        private void NameComboBox_TextChanged(object sender, EventArgs e)
-        {
-            /*bool nameIsFound = false;
-
-            var search = ca.nameComboBox.FindStringExact(ca.nameComboBox.Text);
-            if (search > 0)
-            {
-                nameIsFound = true;
-            }
-
-            if (nameIsFound)
-            {
-                ExecuteIfWalletIsFound();
-            }
-            else
-            {
-                ExecuteIfWalletIsNotFound();
-            }*/
-        }
-
         private void WalletOutComboBox_TextChanged(object sender, EventArgs e)
         {
             var quantity = dataGridList
@@ -792,7 +710,7 @@ namespace cryptoFinance
                     quantityValue = quantityValue.Trim(',');
                 }
 
-                ca.qLabel.Text = quantityValue; //DecimalBoxRules.FormatLabel(maxQ.ToString()); //string.Format("{0:F8}", maxQ);
+                ca.qLabel.Text = quantityValue;
                 ca.maxqPanel.Visible = true;
             }
 
@@ -820,7 +738,7 @@ namespace cryptoFinance
 
         private void AlertPanelControlInstance(int chooseLabelText)
         {
-            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38, 29, 13);
+            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38);
             apc.StartPanelAnimation(chooseLabelText);
         }
 
@@ -835,7 +753,6 @@ namespace cryptoFinance
             }
             catch
             {
-                //MessageBox.Show("Įvyko klaida. Perkėlimas nepavyko.", "Pranešimas", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 errorConfirming = true;
                 ca.transferPanel.Visible = false;
                 ca.backToWallets.Visible = false;
@@ -849,21 +766,6 @@ namespace cryptoFinance
             ca.backToWallets.Visible = false;
             ca.transferButton.Visible = true;
             ca.walletDataGrid.Visible = true;
-
-
-            /*if (!ca.alertPanel.Visible)
-            {
-                if (!Validation() && !ca.alertPanel.Visible)
-                {
-                    AlertPanelControlInstance(3);
-                }
-                else
-                {
-                    ca.execTransferButton.Enabled = false;
-                    DisableControls();
-                    ExecuteTransfer();
-                }
-            }*/
         }
 
         private void ExecuteAlertPanel()
@@ -1006,7 +908,6 @@ namespace cryptoFinance
         private void WalletOutComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ca.walletInBox.Select();
-            //ca.quantityTransferBox.Select();
         }
 
         private void WalletInListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -1087,11 +988,6 @@ namespace cryptoFinance
             ListViewSettings.WhenDownButtonPressed(ca.walletInListView, e);
             ListViewSettings.WhenUpButtonPressed(ca.walletInListView, e);
             ListViewSettings.WhenEnterButtonPressed(ca.walletInListView, e, ca.walletInBox, ca.transferToLabel);
-        }
-
-        private void WalletInListView_MouseEnter(object sender, EventArgs e)
-        {
-            //ca.walletInListView.Focus();
         }
 
         private void WalletInListView_KeyDown(object sender, KeyEventArgs e)

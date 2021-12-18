@@ -37,7 +37,7 @@ namespace cryptoFinance
         private Image[] refreshImages = new Image[4]
         { Properties.Resources.refresh, Properties.Resources.refresh2, Properties.Resources.refresh3, Properties.Resources.refresh4 };
         private bool openTimeBox = false;
-        private decimal apyPrice { get; set; }
+        private decimal apiPrice { get; set; }
 
         public AddOperationForm(CurrentAssets _ca, OperationsForm _of, WalletsForm _wf, DataGridForm _dgf, bool _showAssetAlert)
         {
@@ -151,7 +151,6 @@ namespace cryptoFinance
             ca.walletListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.WalletListView_ItemSelectionChanged);
             ca.walletListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WalletListView_KeyDown);
             ca.walletListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.WalletListView_MouseClick);
-            ca.walletListView.MouseEnter += new System.EventHandler(this.WalletListView_MouseEnter);
             ca.walletListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.WalletListView_MouseMove);
             ca.quantityBox.TextChanged += new System.EventHandler(this.QuantityBox_TextChanged);
             ca.quantityBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.QuantityBox_KeyPress);
@@ -179,12 +178,10 @@ namespace cryptoFinance
             ca.suggestionsListView.SelectedIndexChanged += new System.EventHandler(this.SuggestionsListView_SelectedIndexChanged);
             ca.suggestionsListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SuggestionsListView_KeyDown);
             ca.suggestionsListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SuggestionsListView_MouseClick);
-            ca.suggestionsListView.MouseEnter += new System.EventHandler(this.SuggestionsListView_MouseEnter);
             ca.suggestionsListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SuggestionsListView_MouseMove);
             ca.top100listview.SelectedIndexChanged += new System.EventHandler(this.Top100ListView_SelectedIndexChanged);
             ca.top100listview.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Top100ListView_KeyDown);
             ca.top100listview.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Top100ListView_MouseClick);
-            ca.top100listview.MouseEnter += new System.EventHandler(this.Top100ListView_MouseEnter);
             ca.top100listview.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Top100ListView_MouseMove);
             ca.maxqLabel.Click += new System.EventHandler(this.MaxQuantityLabel_Click);
             ca.cryptoComboBox.DropDownClosed += new System.EventHandler(this.CryptoComboBox_DropDownClosed);
@@ -267,17 +264,8 @@ namespace cryptoFinance
                 
                 ctd = default(CryptoTableData);
                 editMode = default(bool);
-                //ca = default(CurrentAssets);
-                //closePending = false;
-                //lastViewItemIndex = default(int);
-                //lviIndex = default(int);
-                //showAlert = default(double);
-                //errorConfirming = false;
                 operation = default(string);
                 operationForm = default(string);
-                //of = default(OperationsForm);
-                //wf = default(WalletsForm);
-                //dgf = default(DataGridForm);
             }
         }
 
@@ -296,7 +284,6 @@ namespace cryptoFinance
             ca.walletListView.ItemSelectionChanged -= new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.WalletListView_ItemSelectionChanged);
             ca.walletListView.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.WalletListView_KeyDown);
             ca.walletListView.MouseClick -= new System.Windows.Forms.MouseEventHandler(this.WalletListView_MouseClick);
-            ca.walletListView.MouseEnter -= new System.EventHandler(this.WalletListView_MouseEnter);
             ca.walletListView.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.WalletListView_MouseMove);
             ca.quantityBox.TextChanged -= new System.EventHandler(this.QuantityBox_TextChanged);
             ca.quantityBox.KeyPress -= new System.Windows.Forms.KeyPressEventHandler(this.QuantityBox_KeyPress);
@@ -324,12 +311,10 @@ namespace cryptoFinance
             ca.suggestionsListView.SelectedIndexChanged -= new System.EventHandler(this.SuggestionsListView_SelectedIndexChanged);
             ca.suggestionsListView.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.SuggestionsListView_KeyDown);
             ca.suggestionsListView.MouseClick -= new System.Windows.Forms.MouseEventHandler(this.SuggestionsListView_MouseClick);
-            ca.suggestionsListView.MouseEnter -= new System.EventHandler(this.SuggestionsListView_MouseEnter);
             ca.suggestionsListView.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.SuggestionsListView_MouseMove);
             ca.top100listview.SelectedIndexChanged -= new System.EventHandler(this.Top100ListView_SelectedIndexChanged);
             ca.top100listview.KeyDown -= new System.Windows.Forms.KeyEventHandler(this.Top100ListView_KeyDown);
             ca.top100listview.MouseClick -= new System.Windows.Forms.MouseEventHandler(this.Top100ListView_MouseClick);
-            ca.top100listview.MouseEnter -= new System.EventHandler(this.Top100ListView_MouseEnter);
             ca.top100listview.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.Top100ListView_MouseMove);
             ca.maxqLabel.Click -= new System.EventHandler(this.MaxQuantityLabel_Click);
             ca.cryptoComboBox.DropDownClosed -= new System.EventHandler(this.CryptoComboBox_DropDownClosed);
@@ -349,7 +334,6 @@ namespace cryptoFinance
             RemoveEvents();
             ca.addOperationPanel.Visible = false;
             ca.contentPanel.Visible = false;
-            //ca.investmentsPanel.Location = new Point(117, 102);
             ca.investmentsPanel.Visible = true;
 
             if (showAssetAlert)
@@ -377,20 +361,10 @@ namespace cryptoFinance
             form.progressBarPanel.Visible = true;
             cd = new CoingeckoListDownloader();
             cd.StartCA(form, this, form.progressBar, form.progressLabel);
-            //CoingeckoListDownloader.Start(form, this, form.progressBar, form.progressLabel);
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
-        {
-            /*if (CoingeckoListDownloader.worker.IsBusy)
-            {
-                ca.progressLabel.Text = "Atšaukiama...";
-                ca.progressBar.ForeColor = Colours.canceledProgress;
-                CoingeckoListDownloader.worker.CancelAsync();
-                CoingeckoListDownloader.workerCancelButtonPressed = true;
-            }*/
-
-
+        { 
             if (cd.worker.IsBusy)
             {
                 ca.progressLabel.Text = "Atšaukiama...";
@@ -526,7 +500,7 @@ namespace cryptoFinance
 
             var date = DateTime.Parse(ca.dateBox.Text);
             var quantity = ReformatText.ReturnNumeric(ca.quantityBox.Text);
-            var price = apyPrice; //ReformatText.ReturnNumeric(ca.priceBox.Text);
+            var price = apiPrice; //ReformatText.ReturnNumeric(ca.priceBox.Text);
             var fee = ReformatText.ReturnNumeric(ca.feeBox.Text);
             var sum = ReformatText.ReturnNumeric(ca.sumBox.Text);
 
@@ -591,18 +565,11 @@ namespace cryptoFinance
                 var split = message.Split('"');
                 var logoUrl = split[15];
                 Image image = DownloadImageFromUrl(logoUrl);
-
-                //Bitmap target = new Bitmap(image.Size.Width, image.Size.Height);
-                //Graphics g = Graphics.FromImage(target);
-                //g.DrawRectangle(new Pen(new SolidBrush(Color.White)), 0, 0, target.Width, target.Height);
-                //g.DrawImage(image, 0, 0);
-
                 Connection.iwdb.InsertCryptoLogo(id, image);
             }
             catch
             {
                 Connection.iwdb.InsertCryptoLogo(id, null);
-                //nepavyko atsiusti image, priskiriama null reiksme
             }
             
             client.Dispose();
@@ -654,7 +621,7 @@ namespace cryptoFinance
 
             var date = DateTime.Parse(ca.dateBox.Text);
             var quantity = ReformatText.ReturnNumeric(ca.quantityBox.Text);
-            var price = apyPrice; //ReformatText.ReturnNumeric(ca.priceBox.Text);
+            var price = apiPrice;
             var fee = ReformatText.ReturnNumeric(ca.feeBox.Text);
             var sum = ReformatText.ReturnNumeric(ca.sumBox.Text);
 
@@ -772,7 +739,6 @@ namespace cryptoFinance
                 }
             }
         
-            //ExecuteAlertPanel();
             ca.addOperationPanel.Visible = false;
             ca.contentPanel.Visible = false;
             ca.investmentsPanel.Visible = true;
@@ -854,7 +820,7 @@ namespace cryptoFinance
 
         private void AlertPanelControlInstance(int chooseLabelText)
         {
-            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38, 29, 13);
+            AlertPanelControl apc = new AlertPanelControl(ca.alertPanel, ca.alertLabel, 645, -38, 276, 38);
             apc.StartPanelAnimation(chooseLabelText);
         }
 
@@ -937,8 +903,8 @@ namespace cryptoFinance
                     showAlert = -3;
                     break;
                 default:
-                    apyPrice = price;
-                    ca.priceBox.Text = apyPrice.ToString();
+                    apiPrice = price;
+                    ca.priceBox.Text = apiPrice.ToString();
                     DecimalBoxRules.FormatCurrencyBox(ca.priceBox);
                     break;
             }
@@ -1065,10 +1031,9 @@ namespace cryptoFinance
             if (ca.quantityBox.Text != "" && ca.priceBox.Text != "" && ca.feeBox.Text != "")
             {
                 decimal q = ReformatText.ReturnNumeric(ca.quantityBox.Text);
-                //decimal price = ReformatText.ReturnNumeric(ca.priceBox.Text);
                 decimal fee = ReformatText.ReturnNumeric(ca.feeBox.Text);
 
-                ca.sumBox.Text = ((q * apyPrice) + fee).ToString("C2");
+                ca.sumBox.Text = ((q * apiPrice) + fee).ToString("C2");
             }
             else
             {
@@ -1108,11 +1073,6 @@ namespace cryptoFinance
             }
         }
 
-        private void WalletListView_MouseEnter(object sender, EventArgs e)
-        {
-            //ca.walletListView.Focus();
-        }
-
         private void WalletListView_KeyDown(object sender, KeyEventArgs e)
         {
             if (ca.walletListView.Focused)
@@ -1149,7 +1109,7 @@ namespace cryptoFinance
         private void PriceBox_Leave(object sender, EventArgs e)
         {
             DecimalBoxRules.FormatCurrencyBox(ca.priceBox);
-            apyPrice = ReformatText.ReturnNumeric(ca.priceBox.Text);
+            apiPrice = ReformatText.ReturnNumeric(ca.priceBox.Text);
             RecalculateTotalSum();
         }
 
@@ -1228,7 +1188,6 @@ namespace cryptoFinance
             ca.buyButton.FlatAppearance.MouseOverBackColor = Colours.green;
             ca.cryptoComboBox.Visible = false;
             ca.walletComboBox.Visible = false;
-            //ca.maxQuantityLabel.Visible = false;
             ca.coinsPanel.Visible = false;
             ca.top100listview.Visible = false;
             ca.suggestionsListView.Visible = false;
@@ -1236,7 +1195,7 @@ namespace cryptoFinance
             ca.cryptoBox.Visible = true;
             ca.walletTextBox.Visible = true;
             ca.searchPicture.Visible = true;
-            ca.quantityBox.Enabled = true; //nes kartais disabled buna pereinant is sell formos
+            ca.quantityBox.Enabled = true;
 
             if (!editMode)
             {
@@ -1264,7 +1223,6 @@ namespace cryptoFinance
             ca.buyButton.FlatAppearance.MouseOverBackColor = Colours.transparent;
             ca.cryptoComboBox.Visible = true;
             ca.walletComboBox.Visible = true;
-            //ca.maxQuantityLabel.Visible = true;
             ca.coinsPanel.Visible = false;
             ca.top100listview.Visible = false;
             ca.suggestionsListView.Visible = false;
@@ -1275,7 +1233,7 @@ namespace cryptoFinance
             
             if(ca.walletComboBox.Text == "")
             {
-                ca.quantityBox.Enabled = false; //pereinant is buy formos, disablinti boxa jeigu wallet neivestas
+                ca.quantityBox.Enabled = false;
             }
 
             if (ca.walletComboBox.Text != "" && ca.cryptoComboBox.Text != "")
@@ -1426,7 +1384,6 @@ namespace cryptoFinance
         {
             if (ca.top100listview.Visible || ca.suggestionsListView.Visible || ca.coinsPanel.Visible)
             {
-                //ca.coinsPanel.Visible = false;   jeigu bus on, neveiks update list button
                 ca.top100listview.Visible = false;
                 ca.suggestionsListView.Visible = false;
             }
@@ -1475,11 +1432,6 @@ namespace cryptoFinance
             ListViewSettings.WhenItIsNotFocused(ca.suggestionsListView, e);
         }
 
-        private void SuggestionsListView_MouseEnter(object sender, EventArgs e)
-        {
-            //ca.suggestionsListView.Focus();
-        }
-
         private void SuggestionsListView_MouseMove(object sender, MouseEventArgs e)
         {
             ListViewSettings.WhenMouseMoves(ca.suggestionsListView, lastViewItemIndex, e);
@@ -1510,11 +1462,6 @@ namespace cryptoFinance
             }
 
             ListViewSettings.WhenItIsNotFocused(ca.top100listview, e);
-        }
-
-        private void Top100ListView_MouseEnter(object sender, EventArgs e)
-        {
-            //ca.top100listview.Focus();
         }
 
         private void Top100ListView_MouseMove(object sender, MouseEventArgs e)
