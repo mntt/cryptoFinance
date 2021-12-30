@@ -160,7 +160,7 @@ namespace cryptoFinance
 
                 foreach (var coin in names)
                 {
-                    var data = chartData.Where(x => x.name == coin).Select(x => double.Parse(FixDecimal(x.quantity))).ToList();
+                    var data = chartData.Where(x => x.name == coin).Select(x => (double)x.quantity).ToList();
 
                     series.Add(new LineSeries()
                     {
@@ -174,18 +174,6 @@ namespace cryptoFinance
             {
                 chartView.Series = series;
             }
-        }
-
-        private static string FixDecimal(decimal quantity)
-        {
-            string quantityValue = quantity.ToString("N8").TrimEnd('0');
-            char[] qchars = quantityValue.ToCharArray();
-            if (qchars.Last() == ',')
-            {
-                quantityValue = quantityValue.Trim(',');
-            }
-
-            return quantityValue;
         }
 
         private static List<double> ReturnNetWorthData()
@@ -365,7 +353,7 @@ namespace cryptoFinance
                 
                 if(list.Count > 0)
                 {
-                    formatFunc = (x) => FixDecimal(decimal.Parse(x.ToString()));
+                    formatFunc = (x) => x.ToString();
                 }
             }
 
