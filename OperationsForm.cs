@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
@@ -405,6 +402,8 @@ namespace cryptoFinance
 
         private void AssignNormalValues(CurrentAssets form, int counter, int firstLine, int secondLine, int thirdLine, int fourthLine)
         {
+            GetCultureInfo gci = new GetCultureInfo(",");
+
             if (operations[counter].Operation == "SELL")
             {
                 var buylogo = cryptoFinance.Properties.Resources.sellLogo;
@@ -451,7 +450,6 @@ namespace cryptoFinance
                 priceValue = priceValue.Trim(',');
             }
             form.operationDataGrid.Rows[thirdLine].Cells[4].Value = priceValue + " €";
-            
             
             form.operationDataGrid.Rows[thirdLine].Cells[5].Value = operations[counter].Sum.ToString("C2") + " + " + operations[counter].Fee.ToString("C2");
             form.operationDataGrid.Rows.Add();
