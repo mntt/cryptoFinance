@@ -41,10 +41,10 @@ namespace cryptoFinance
 
         public AddOperationForm(CurrentAssets _ca, OperationsForm _of, WalletsForm _wf, DataGridForm _dgf, bool _showAssetAlert)
         {
+            editMode = false;
             of = _of;
             wf = _wf;
             dgf = _dgf;
-            editMode = false;
             ca = _ca;
             showAssetAlert = _showAssetAlert;
             AddEvents();
@@ -981,7 +981,7 @@ namespace cryptoFinance
             {
                 priceValue = priceValue.Trim(',');
             }
-            ca.priceBox.Text = priceValue;
+            ca.priceBox.Text = priceValue + " €";
 
             ca.feeBox.Text = ctd.fee.ToString("C2");
 
@@ -991,7 +991,7 @@ namespace cryptoFinance
             {
                 sumValue = sumValue.Trim(',');
             }
-            ca.sumBox.Text = sumValue;     
+            ca.sumBox.Text = sumValue + " €";     
         }
 
         private void LoadEditModeForm()

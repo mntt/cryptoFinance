@@ -404,6 +404,8 @@ namespace cryptoFinance
         {
             GetCultureInfo gci = new GetCultureInfo(",");
 
+            operations.OrderByDescending(x => x.Date);
+
             if (operations[counter].Operation == "SELL")
             {
                 var buylogo = cryptoFinance.Properties.Resources.sellLogo;
