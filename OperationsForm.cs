@@ -272,7 +272,7 @@ namespace cryptoFinance
         {            
             reload = true;
             operations = Connection.db.GetTable<CryptoTable>()
-                    .Where(x => x.Operation == "BUY" || x.Operation == "SELL").OrderByDescending(x => x.Id).ToList();
+                    .Where(x => x.Operation == "BUY" || x.Operation == "SELL").OrderByDescending(x => x.Date).ToList();
             LoadOperationsDataGrid(ca, 10);            
         }
 
@@ -403,8 +403,6 @@ namespace cryptoFinance
         private void AssignNormalValues(CurrentAssets form, int counter, int firstLine, int secondLine, int thirdLine, int fourthLine)
         {
             GetCultureInfo gci = new GetCultureInfo(",");
-
-            operations.OrderByDescending(x => x.Date);
 
             if (operations[counter].Operation == "SELL")
             {

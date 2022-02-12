@@ -36,7 +36,7 @@ namespace cryptoFinance
 
         private Image[] refreshImages = new Image[4]
         { Properties.Resources.refresh, Properties.Resources.refresh2, Properties.Resources.refresh3, Properties.Resources.refresh4 };
-        private bool openTimeBox = false;
+
         private decimal apiPrice { get; set; }
 
         public AddOperationForm(CurrentAssets _ca, OperationsForm _of, WalletsForm _wf, DataGridForm _dgf, bool _showAssetAlert)
@@ -192,8 +192,7 @@ namespace cryptoFinance
             ca.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             ca.investmentsPanel.Click += new System.EventHandler(this.InvestmentsPanel_Click);
             ca.confirmTime.Click += new System.EventHandler(this.ConfirmTime_Click);
-            ca.dateBox.DropDown += new System.EventHandler(this.DateBox_DropDown);
-            ca.dateBox.ValueChanged += new System.EventHandler(this.DateBox_ValueChanged);
+            ca.dateBox.CloseUp += new System.EventHandler(this.DateBox_CloseUp);
             ca.dateBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DateBox_MouseDown);
             ca.maxqLabel.MouseEnter += new System.EventHandler(MaxLabel_MouseEnter);
             ca.maxqLabel.MouseLeave += new System.EventHandler(MaxLabel_MouseLeave);
@@ -223,9 +222,15 @@ namespace cryptoFinance
             ca.dateBox.Select();
         }
 
-        private void DateBox_DropDown(object sender, EventArgs e)
+        private void DateBox_CloseUp(object sender, EventArgs e)
         {
-            openTimeBox = true;
+            ca.timeBox.Select();
+            var time = DateTime.Now;
+            string time2 = time.ToString("HH:mm");
+            ca.timeBox.Text = time2;
+            ca.timePanel.Location = new Point(509, 192);
+            ca.timePanel.BringToFront();
+            ca.timePanel.Visible = true;
         }
 
         private void ConfirmTime_Click(object sender, EventArgs e)
@@ -233,22 +238,7 @@ namespace cryptoFinance
             string time = ca.timeBox.Text;
             string[] date = ca.dateBox.Text.Split(' ');
             ca.timePanel.Visible = false;
-            openTimeBox = false;
             ca.dateBox.Text = date[0] + " " + time; 
-        }
-
-        private void DateBox_ValueChanged(object sender, EventArgs e)
-        {
-            if (openTimeBox)
-            {
-                ca.timeBox.Select();
-                var time = DateTime.Now;
-                string time2 = time.ToString("HH:mm");
-                ca.timeBox.Text = time2;
-                ca.timePanel.Location = new Point(508, 205);
-                ca.timePanel.BringToFront();
-                ca.timePanel.Visible = true;
-            }
         }
 
         private void InvestmentsPanel_Click(object sender, EventArgs e)
@@ -324,8 +314,7 @@ namespace cryptoFinance
             ca.cancelButton.Click -= new System.EventHandler(this.CancelButton_Click);
             ca.investmentsPanel.Click -= new System.EventHandler(this.InvestmentsPanel_Click);
             ca.confirmTime.Click -= new System.EventHandler(this.ConfirmTime_Click);
-            ca.dateBox.DropDown -= new System.EventHandler(this.DateBox_DropDown);
-            ca.dateBox.ValueChanged -= new System.EventHandler(this.DateBox_ValueChanged);
+            ca.dateBox.CloseUp -= new System.EventHandler(this.DateBox_CloseUp);
             ca.dateBox.MouseDown -= new System.Windows.Forms.MouseEventHandler(this.DateBox_MouseDown);
         }
 

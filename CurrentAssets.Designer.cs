@@ -30,10 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CurrentAssets));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Investicijos ir grąža");
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Kriptovaliutų kiekiai");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Kriptovaliutų grynosios vertės");
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Investicijos ir grąža");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Kriptovaliutų kiekiai");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Kriptovaliutų grynosios vertės");
             this.dataGridCurrentAssets = new System.Windows.Forms.DataGridView();
             this.Column7 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -155,13 +155,13 @@
             this.applyFilterButton = new System.Windows.Forms.Button();
             this.filterListView = new System.Windows.Forms.ListView();
             this.filterBox = new System.Windows.Forms.TextBox();
+            this.cryptoComboBox = new cryptoFinance.AdvancedComboBox();
+            this.walletComboBox = new cryptoFinance.AdvancedComboBox();
+            this.dateBox = new cryptoFinance.CustomDateTimePicker();
             this.datePickerFinish = new cryptoFinance.CustomDateTimePicker();
             this.datePickerStart = new cryptoFinance.CustomDateTimePicker();
             this.walletOutComboBox = new cryptoFinance.AdvancedComboBox();
             this.nameComboBox = new cryptoFinance.AdvancedComboBox();
-            this.cryptoComboBox = new cryptoFinance.AdvancedComboBox();
-            this.walletComboBox = new cryptoFinance.AdvancedComboBox();
-            this.dateBox = new cryptoFinance.CustomDateTimePicker();
             this.timeBox = new cryptoFinance.CustomDateTimePicker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridCurrentAssets)).BeginInit();
             this.alertPanel.SuspendLayout();
@@ -576,9 +576,9 @@
             // 
             // EditColumn
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.NullValue = "System.Drawing.Bitmap";
-            this.EditColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.NullValue = "System.Drawing.Bitmap";
+            this.EditColumn.DefaultCellStyle = dataGridViewCellStyle1;
             this.EditColumn.HeaderText = "EditColumn";
             this.EditColumn.Name = "EditColumn";
             this.EditColumn.ReadOnly = true;
@@ -948,13 +948,13 @@
             this.exportList.CheckBoxes = true;
             this.exportList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.exportList.HideSelection = false;
-            listViewItem10.StateImageIndex = 0;
-            listViewItem11.StateImageIndex = 0;
-            listViewItem12.StateImageIndex = 0;
+            listViewItem1.StateImageIndex = 0;
+            listViewItem2.StateImageIndex = 0;
+            listViewItem3.StateImageIndex = 0;
             this.exportList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem10,
-            listViewItem11,
-            listViewItem12});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3});
             this.exportList.Location = new System.Drawing.Point(4, 16);
             this.exportList.Name = "exportList";
             this.exportList.Size = new System.Drawing.Size(208, 67);
@@ -1088,9 +1088,9 @@
             this.addOperationPanel.Controls.Add(this.contentPanel);
             this.addOperationPanel.Controls.Add(this.buyButton);
             this.addOperationPanel.Controls.Add(this.sellButton);
-            this.addOperationPanel.Location = new System.Drawing.Point(223, 276);
+            this.addOperationPanel.Location = new System.Drawing.Point(170, 237);
             this.addOperationPanel.Name = "addOperationPanel";
-            this.addOperationPanel.Size = new System.Drawing.Size(199, 85);
+            this.addOperationPanel.Size = new System.Drawing.Size(209, 131);
             this.addOperationPanel.TabIndex = 24;
             this.addOperationPanel.Tag = "main";
             this.addOperationPanel.Visible = false;
@@ -1143,7 +1143,7 @@
             this.coinsPanel.Controls.Add(this.suggestionsListView);
             this.coinsPanel.Controls.Add(this.updateCryptoList);
             this.coinsPanel.Controls.Add(this.lastTimeUpdated);
-            this.coinsPanel.Location = new System.Drawing.Point(202, 18);
+            this.coinsPanel.Location = new System.Drawing.Point(202, 21);
             this.coinsPanel.Name = "coinsPanel";
             this.coinsPanel.Size = new System.Drawing.Size(214, 238);
             this.coinsPanel.TabIndex = 129;
@@ -1430,14 +1430,14 @@
             this.timePanel.Controls.Add(this.confirmTime);
             this.timePanel.Location = new System.Drawing.Point(349, 90);
             this.timePanel.Name = "timePanel";
-            this.timePanel.Size = new System.Drawing.Size(174, 74);
+            this.timePanel.Size = new System.Drawing.Size(192, 74);
             this.timePanel.TabIndex = 128;
             this.timePanel.Tag = "time";
             this.timePanel.Visible = false;
             // 
             // confirmTime
             // 
-            this.confirmTime.Location = new System.Drawing.Point(48, 38);
+            this.confirmTime.Location = new System.Drawing.Point(58, 38);
             this.confirmTime.Name = "confirmTime";
             this.confirmTime.Size = new System.Drawing.Size(81, 23);
             this.confirmTime.TabIndex = 110;
@@ -1508,6 +1508,42 @@
             this.filterBox.Size = new System.Drawing.Size(193, 20);
             this.filterBox.TabIndex = 0;
             // 
+            // cryptoComboBox
+            // 
+            this.cryptoComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.cryptoComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cryptoComboBox.FormattingEnabled = true;
+            this.cryptoComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
+            this.cryptoComboBox.Location = new System.Drawing.Point(212, 3);
+            this.cryptoComboBox.MaxDropDownItems = 10;
+            this.cryptoComboBox.Name = "cryptoComboBox";
+            this.cryptoComboBox.Size = new System.Drawing.Size(192, 21);
+            this.cryptoComboBox.TabIndex = 29;
+            this.cryptoComboBox.Tag = "sell";
+            // 
+            // walletComboBox
+            // 
+            this.walletComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.walletComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.walletComboBox.FormattingEnabled = true;
+            this.walletComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
+            this.walletComboBox.Location = new System.Drawing.Point(212, 58);
+            this.walletComboBox.Name = "walletComboBox";
+            this.walletComboBox.Size = new System.Drawing.Size(192, 21);
+            this.walletComboBox.TabIndex = 31;
+            this.walletComboBox.Tag = "sell";
+            // 
+            // dateBox
+            // 
+            this.dateBox.BorderColor = System.Drawing.Color.Empty;
+            this.dateBox.CustomFormat = "yyyy-MM-dd HH:mm";
+            this.dateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateBox.Location = new System.Drawing.Point(212, 32);
+            this.dateBox.Name = "dateBox";
+            this.dateBox.Size = new System.Drawing.Size(192, 20);
+            this.dateBox.TabIndex = 30;
+            this.dateBox.Tag = "box";
+            // 
             // datePickerFinish
             // 
             this.datePickerFinish.BorderColor = System.Drawing.Color.Empty;
@@ -1555,48 +1591,12 @@
             this.nameComboBox.Size = new System.Drawing.Size(166, 21);
             this.nameComboBox.TabIndex = 69;
             // 
-            // cryptoComboBox
-            // 
-            this.cryptoComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
-            this.cryptoComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.cryptoComboBox.FormattingEnabled = true;
-            this.cryptoComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
-            this.cryptoComboBox.Location = new System.Drawing.Point(212, 3);
-            this.cryptoComboBox.MaxDropDownItems = 10;
-            this.cryptoComboBox.Name = "cryptoComboBox";
-            this.cryptoComboBox.Size = new System.Drawing.Size(192, 21);
-            this.cryptoComboBox.TabIndex = 29;
-            this.cryptoComboBox.Tag = "sell";
-            // 
-            // walletComboBox
-            // 
-            this.walletComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
-            this.walletComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.walletComboBox.FormattingEnabled = true;
-            this.walletComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
-            this.walletComboBox.Location = new System.Drawing.Point(212, 58);
-            this.walletComboBox.Name = "walletComboBox";
-            this.walletComboBox.Size = new System.Drawing.Size(192, 21);
-            this.walletComboBox.TabIndex = 31;
-            this.walletComboBox.Tag = "sell";
-            // 
-            // dateBox
-            // 
-            this.dateBox.BorderColor = System.Drawing.Color.Empty;
-            this.dateBox.CustomFormat = "yyyy-MM-dd HH:mm";
-            this.dateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateBox.Location = new System.Drawing.Point(212, 32);
-            this.dateBox.Name = "dateBox";
-            this.dateBox.Size = new System.Drawing.Size(192, 20);
-            this.dateBox.TabIndex = 30;
-            this.dateBox.Tag = "box";
-            // 
             // timeBox
             // 
             this.timeBox.BorderColor = System.Drawing.Color.Empty;
             this.timeBox.CustomFormat = "HH:mm";
             this.timeBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.timeBox.Location = new System.Drawing.Point(14, 8);
+            this.timeBox.Location = new System.Drawing.Point(26, 8);
             this.timeBox.Name = "timeBox";
             this.timeBox.ShowUpDown = true;
             this.timeBox.Size = new System.Drawing.Size(143, 20);

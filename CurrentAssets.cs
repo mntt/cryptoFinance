@@ -487,6 +487,5 @@ namespace cryptoFinance
                 return cp;
             }
         }
-
     }
 }
