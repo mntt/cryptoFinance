@@ -45,7 +45,7 @@ namespace cryptoFinance
             ListViewSettings.SetListViewSizes(ca.exportList);
             SetStartDate(ca);
 
-            RefreshCoinQuantitiesList(ca.coinListView);
+            //RefreshCoinQuantitiesList(ca.coinListView);
             ca.investmentsListView.Items.Add("Investicijos");
             ca.investmentsListView.Items.Add("Dabartinė vertė");
             ca.investmentsListView.Items.Add("Grynasis pelnas");
@@ -352,7 +352,6 @@ namespace cryptoFinance
             form.dropdownInvestments.Visible = true;
             form.variablesPanel.Visible = false;
 
-
             if (form.investmentsListView.CheckedItems.Count > 0)
             {
                 await LoadStatsChart(form, chart);
@@ -390,7 +389,6 @@ namespace cryptoFinance
             form.datePickerStart.Visible = true;
             form.datePickerFinish.Visible = true;
 
-
             if (form.coinListView.CheckedItems.Count > 0)
             {
                 await LoadStatsChart(form, chart);
@@ -404,7 +402,6 @@ namespace cryptoFinance
             ca.datePickerFinish.ValueChanged += new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
             ca.investmentsListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.investmentsListView_ItemChecked);
-
         }
 
         public void OpenCryptoQuantities(CurrentAssets form, string chart, Action showLoading)
@@ -412,6 +409,7 @@ namespace cryptoFinance
             clicked = false;
             ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbutton;
             listname = "coins";
+            RefreshCoinQuantitiesList(form.coinListView);
             LoadCryptoQuantities(form, chart);
         }
 
@@ -422,7 +420,6 @@ namespace cryptoFinance
             ca.coinListView.ItemChecked -= new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
             ca.investmentsListView.ItemChecked -= new System.Windows.Forms.ItemCheckedEventHandler(this.investmentsListView_ItemChecked);
 
-
             form.chartView.Select();
             SwitchButtonVisibility(form, false);
             form.backToStats.Visible = true;
@@ -430,7 +427,6 @@ namespace cryptoFinance
             form.dashLabel.Visible = true;
             form.datePickerStart.Visible = true;
             form.datePickerFinish.Visible = true;
-
 
             if (form.coinListView.CheckedItems.Count > 0)
             {
@@ -446,7 +442,6 @@ namespace cryptoFinance
             ca.datePickerFinish.ValueChanged += new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
             ca.investmentsListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.investmentsListView_ItemChecked);
-
         }
 
         public void OpenNetValues(CurrentAssets form, string chart, Action showLoading)
@@ -454,13 +449,12 @@ namespace cryptoFinance
             clicked = false;
             ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbutton;
             listname = "coins";
+            RefreshCoinQuantitiesList(form.coinListView);
             LoadNetValues(form, chart);
         }
 
         private void OpenExport(CurrentAssets form)
         {
-
-
             foreach (ListViewItem item in form.exportList.CheckedItems)
             {
                 item.Checked = false;
@@ -546,7 +540,8 @@ namespace cryptoFinance
 
         private void RefreshCoinQuantitiesList(ListView coinListView)
         {
-            var coins = Connection.db.GetTable<CryptoTable>().Select(x => x.CryptoName).Distinct().ToList();
+            var coins = Connection.db.GetTable<CryptoTable>().Where(x => x.Operation == "BUY" || x.Operation == "SELL")
+                .Select(x => x.CryptoName).Distinct().ToList();
             var dates = Connection.db.GetTable<CryptoTable>().Where(x => x.Operation == "BUY" || x.Operation == "SELL")
                 .Select(x => x.Date).ToList();
             var quantities = ConstructChart.ReturnChartData(dates, coins, true);

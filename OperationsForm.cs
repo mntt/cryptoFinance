@@ -750,9 +750,26 @@ namespace cryptoFinance
             var wallet = list[operationIndex].Wallet;
             var fee = (decimal)list[operationIndex].Fee;
             var sum = (decimal)list[operationIndex].Sum;
-            var cv = quantity * (decimal)price;
             var customCoin = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.CustomCoin).ToList().Last();
-            var cryptoid = ReturnId(customCoin, name);
+            var cryptoId = ReturnId(customCoin, name);
+
+            decimal oldPrice = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.Price).First();
+            var namesplit = name.Split('(');
+            string cryptoName = namesplit[0];
+            string cryptoSymbol = namesplit[1].Trim(')');
+            decimal realPrice = 0;
+            decimal testPrice = GetPrices.ById(cryptoId);
+
+            if (testPrice > 0)
+            {
+                realPrice = testPrice;
+            }
+            else
+            {
+                realPrice = oldPrice;
+            }
+
+            var cv = quantity * realPrice;
 
             List<CryptoTable> ids = new List<CryptoTable>();
             ids.Add(list[operationIndex]);
@@ -813,12 +830,13 @@ namespace cryptoFinance
             updatedItem = null;
             CoinQuantity cq = new CoinQuantity();
             decimal q = cq.GetCoinQuantityByName(name);
-            InteractWithCurrentAssetsDB(name, customCoin, date, q, (decimal)price, cv);
-            var coin = ReturnObject(name, customCoin, cryptoid, q, date, (decimal)price, cv);
+            InteractWithCurrentAssetsDB(name, customCoin, date, q, realPrice, cv);
+            var coin = ReturnObject(name, customCoin, cryptoId, q, date, realPrice, cv);
             RefreshCurrentCoins(coin);
             list.RemoveAt(operationIndex);
             LoadOperationsDataGrid(ca, 10);
 
+            form.CountCurrentValue();
             await Task.Delay(100);
         }
 
@@ -835,9 +853,26 @@ namespace cryptoFinance
             var wallet = operations[operationIndex].Wallet;
             var fee = (decimal)operations[operationIndex].Fee;
             var sum = (decimal)operations[operationIndex].Sum;
-            var cv = quantity * (decimal)price;
             var customCoin = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.CustomCoin).ToList().Last();
-            var cryptoid = ReturnId(customCoin, name);
+            var cryptoId = ReturnId(customCoin, name);
+
+            decimal oldPrice = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.Price).First();
+            var namesplit = name.Split('(');
+            string cryptoName = namesplit[0];
+            string cryptoSymbol = namesplit[1].Trim(')');
+            decimal realPrice = 0;
+            decimal testPrice = GetPrices.ById(cryptoId);
+
+            if (testPrice > 0)
+            {
+                realPrice = testPrice;
+            }
+            else
+            {
+                realPrice = oldPrice;
+            }
+
+            var cv = quantity * realPrice;
 
             List<CryptoTable> ids = new List<CryptoTable>();
             ids.Add(operations[operationIndex]);
@@ -899,10 +934,11 @@ namespace cryptoFinance
             CoinQuantity cq = new CoinQuantity();
             decimal q = cq.GetCoinQuantityByName(name);
             InteractWithCurrentAssetsDB(name, customCoin, date, q, (decimal)price, cv);
-            var coin = ReturnObject(name, customCoin, cryptoid, q, date, (decimal)price, cv);
+            var coin = ReturnObject(name, customCoin, cryptoId, q, date, (decimal)price, cv);
             RefreshCurrentCoins(coin);
             LoadOperationsForm();
 
+            form.CountCurrentValue();
             await Task.Delay(100);
         }
 

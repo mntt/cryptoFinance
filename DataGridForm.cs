@@ -144,8 +144,6 @@ namespace cryptoFinance
                 }
             }
 
-
-
             //kodas sutvarko spalvu persiliejima
             /*using (Brush gridBrush = new SolidBrush(ca.dataGridCurrentAssets.GridColor))
             {
@@ -250,7 +248,14 @@ namespace cryptoFinance
 
         public void UpdateDataInCoinList(ConstructingLists coinObject)
         {
-            coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.quantity = coinObject.quantity);
+            if(coinObject.quantity == 0)
+            {
+                coinList.RemoveAll(x => x.name == coinObject.name);
+            }
+            else
+            {
+                coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.quantity = coinObject.quantity);
+            }
         }
 
         private void DataGridCurrentAssets_VisibleChanged(object sender, EventArgs e)
@@ -425,7 +430,7 @@ namespace cryptoFinance
                 form.dataGridCurrentAssets.Rows.Add();
 
                 var namesplit = coinList[i].name.Split('(');
-                var image = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
+                var image = Connection.iwdb.GetLogo(namesplit[0].Trim(' '), namesplit[1].Trim(')'));
 
                 form.dataGridCurrentAssets.Rows[i].Cells[0].Value = ResizeImage(image, 20, 20);
                 form.dataGridCurrentAssets.Rows[i].Cells[1].Value = coinList[i].name;

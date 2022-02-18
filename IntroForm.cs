@@ -32,7 +32,7 @@ namespace cryptoFinance
             {
                 ChangeProgressLabel("Tvarkomi logotipai...");
                 var namesplit = item.Split('(');
-                Image logo = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
+                Image logo = Connection.iwdb.GetLogo(namesplit[0].Trim(' '), namesplit[1].Trim(')'));
 
                 if (logo == null)
                 {
@@ -40,14 +40,14 @@ namespace cryptoFinance
 
                     if (customCoin)
                     {
-                        var searchlist = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => x.CryptoName == namesplit[0] && x.CryptoSymbol == namesplit[1].Trim(')')).ToList();
-
-                        if(searchlist.Count == 0)
+                        var searchlist = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => x.CryptoName == namesplit[0].Trim(' ') && x.CryptoSymbol == namesplit[1].Trim(')')).ToList();
+                                                
+                        if (searchlist.Count == 0)
                         {
-                            Connection.iwdb.InsertCoinGeckoCryptoList(logo, namesplit[0], namesplit[1].Trim(')'), namesplit[0], 0);
+                            Connection.iwdb.InsertCoinGeckoCryptoList(logo, namesplit[0].Trim(' '), namesplit[1].Trim(')'), namesplit[0].Trim(' '), 0);
                         }
 
-                        Connection.iwdb.InsertCryptoLogo(namesplit[0], cryptoFinance.Properties.Resources.defaultLogo);
+                        Connection.iwdb.InsertCryptoLogo(namesplit[0].Trim(' '), cryptoFinance.Properties.Resources.defaultLogo);
                     }
                     else
                     {

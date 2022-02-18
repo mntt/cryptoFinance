@@ -818,9 +818,9 @@
             this.statisticsPanel.Controls.Add(this.backToStats);
             this.statisticsPanel.Controls.Add(this.dashLabel);
             this.statisticsPanel.Controls.Add(this.nodataLabel);
-            this.statisticsPanel.Location = new System.Drawing.Point(154, 144);
+            this.statisticsPanel.Location = new System.Drawing.Point(213, 155);
             this.statisticsPanel.Name = "statisticsPanel";
-            this.statisticsPanel.Size = new System.Drawing.Size(162, 71);
+            this.statisticsPanel.Size = new System.Drawing.Size(130, 111);
             this.statisticsPanel.TabIndex = 49;
             this.statisticsPanel.Tag = "main";
             this.statisticsPanel.Visible = false;
@@ -1088,9 +1088,9 @@
             this.addOperationPanel.Controls.Add(this.contentPanel);
             this.addOperationPanel.Controls.Add(this.buyButton);
             this.addOperationPanel.Controls.Add(this.sellButton);
-            this.addOperationPanel.Location = new System.Drawing.Point(170, 237);
+            this.addOperationPanel.Location = new System.Drawing.Point(642, 90);
             this.addOperationPanel.Name = "addOperationPanel";
-            this.addOperationPanel.Size = new System.Drawing.Size(209, 131);
+            this.addOperationPanel.Size = new System.Drawing.Size(78, 70);
             this.addOperationPanel.TabIndex = 24;
             this.addOperationPanel.Tag = "main";
             this.addOperationPanel.Visible = false;

@@ -5,11 +5,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media.Imaging;
+using System.Windows.Forms;
 
 namespace cryptoFinance
 {
@@ -68,12 +64,12 @@ namespace cryptoFinance
             string querry = "SELECT Logo FROM CoingeckoCryptoList WHERE CryptoName = '"+cryptoName+"' AND CryptoSymbol = '"+cryptoSymbol+"'";
             SqlCommand command = new SqlCommand(querry, sql);
             byte[] image = (byte[])command.ExecuteScalar();
+
             sql.Close();
 
             try
             {
-                //if coin is not custom do this
-                stream.Write(image, 0, image.Length);
+                //if coin logo is found
 
                 if (image.Length == 1)
                 {
@@ -81,13 +77,14 @@ namespace cryptoFinance
                 }
                 else
                 {
+                    stream.Write(image, 0, image.Length);
                     Bitmap bitmap = new Bitmap(stream);
                     return bitmap;
                 }
             }
             catch
             {
-                //coin is custom, do this
+                //logo not found
                 return null;
             }
         }

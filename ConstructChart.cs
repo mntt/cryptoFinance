@@ -21,6 +21,7 @@ namespace cryptoFinance
         {
             ClearChart(chartView);
             uniqueDates = ReturnUniqueDates(start, finish);
+
             selectedItems = _selectedItems;
 
             if (chart == "investments")
@@ -62,7 +63,7 @@ namespace cryptoFinance
         {
             GetCultureInfo info = new GetCultureInfo(".");
             var price = Connection.db.GetTable<CryptoTable>()
-                .Where(x => x.Date == date && x.CryptoName == coin && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => decimal.Parse(x.LastPrice.ToString())).ToList();
+                .Where(x => x.Date >= date && x.CryptoName == coin && (x.Operation == "BUY" || x.Operation == "SELL")).Select(x => decimal.Parse(x.LastPrice.ToString())).ToList();
             decimal cv = 0;
 
             if (price.Count > 0)
