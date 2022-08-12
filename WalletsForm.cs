@@ -55,7 +55,6 @@ namespace cryptoFinance
             ListViewSettings.SetListViewSizes(ca.filterListView);
 
             RefreshDataGrid();
-            
         }
 
         private void MaxLabel_MouseEnter(object sender, EventArgs e)
@@ -80,6 +79,7 @@ namespace cryptoFinance
         {
             ca.filterPanel.Visible = false;
             Array.Clear(filters, 0, 2);
+            newDataGridList.Clear();
             newDataGridList.AddRange(dataGridList);
             RefreshDataGrid();
         }
@@ -107,7 +107,7 @@ namespace cryptoFinance
 
                 filters[1] = 2;
             }
-            
+           
             GetCultureInfo gci = new GetCultureInfo(",");
 
             ca.walletDataGrid.Rows.Clear();
@@ -167,20 +167,22 @@ namespace cryptoFinance
             if (ca.filterPanel.Location.X == 253)
             {
                 filterList = newDataGridList.Where(x => x.name.ToLower().Contains(ca.filterBox.Text.ToLower())).ToList();
-                
-                for (int i = 0; i < filterList.Select(x => x.name).Distinct().ToList().Count; i++)
+                var templist = filterList.Select(x => x.name).Distinct().OrderBy(x => x).ToList();
+
+                for (int i = 0; i < templist.Count; i++)
                 {
-                    ca.filterListView.Items.Add(filterList[i].name);
+                    ca.filterListView.Items.Add(templist[i]);
                 }
             }
             
             if(ca.filterPanel.Location.X == 453)
             {
                 filterList = newDataGridList.Where(x => x.wallet.ToLower().Contains(ca.filterBox.Text.ToLower())).ToList();
+                var templist = filterList.Select(x => x.wallet).Distinct().OrderBy(x => x).ToList();
 
-                for (int i = 0; i < filterList.Select(x => x.wallet).Distinct().ToList().Count; i++)
+                for (int i = 0; i < templist.Count; i++)
                 {
-                    ca.filterListView.Items.Add(filterList[i].wallet);
+                    ca.filterListView.Items.Add(templist[i]);
                 }
             }
         }
@@ -192,7 +194,7 @@ namespace cryptoFinance
             if (e.ColumnIndex == 1)
             {
                 ca.filterListView.Items.Clear();
-                var coins = newDataGridList.Select(x => x.name).Distinct().ToList();
+                var coins = newDataGridList.Select(x => x.name).Distinct().OrderBy(x => x).ToList();
                 for (int i = 0; i < coins.Count; i++)
                 {
                     ca.filterListView.Items.Add(coins[i]);
@@ -220,7 +222,7 @@ namespace cryptoFinance
             if(e.ColumnIndex == 2)
             {
                 ca.filterListView.Items.Clear();
-                var wallets = newDataGridList.Select(x => x.wallet).Distinct().ToList();
+                var wallets = newDataGridList.Select(x => x.wallet).Distinct().OrderBy(x => x).ToList();
                 for (int i = 0; i < wallets.Count; i++)
                 {
                     ca.filterListView.Items.Add(wallets[i]);
@@ -428,6 +430,8 @@ namespace cryptoFinance
             ca.walletDataGrid.Rows.Clear();
             dataGridList.Clear();
             FetchAllData();
+            newDataGridList.Clear();
+            newDataGridList.AddRange(dataGridList);
             AddDataToDataGrid(ca);
             ca.walletDataGrid.ClearSelection();
         }
@@ -453,8 +457,6 @@ namespace cryptoFinance
             ca.walletOutComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WalletOutComboBox_KeyDown);
             ca.walletsPanel.Click += new System.EventHandler(this.WalletsPanel_Click);
             
-            
-
             ca.quantityTransferBox.TextChanged += new System.EventHandler(this.QuantityTransferBox_TextChanged);
             ca.quantityTransferBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.QuantityTransferBox_KeyPress);
             ca.quantityTransferBox.Leave += new System.EventHandler(this.QuantityTransferBox_Leave);

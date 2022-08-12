@@ -188,7 +188,25 @@ namespace cryptoFinance
             {
                 Edit(ca, ca.rowIndex, list);
             }
-            
+        }
+
+        private void Edit(CurrentAssets form, int rowIndex, List<CryptoTable> operations)
+        {
+            int operationIndex = rowIndex / 4;
+            var id = operations[operationIndex].Id;
+            var operationID = operations[operationIndex].OperationID;
+            var date = operations[operationIndex].Date;
+            var operation = operations[operationIndex].Operation;
+            var name = operations[operationIndex].CryptoName;
+            var wallet = operations[operationIndex].Wallet;
+            var quantity = operations[operationIndex].CryptoQuantity;
+            var price = decimal.Parse(operations[operationIndex].LastPrice.ToString());
+            var fee = decimal.Parse(operations[operationIndex].Fee.ToString());
+            var sum = decimal.Parse(operations[operationIndex].Sum.ToString());
+
+            var operationObject = CreateCryptoTableObject(id, operationID, date, operation, name, wallet, quantity, price, fee, sum);
+            OpenAddOperationEditMode(form, operationObject);
+            form.optionsPanel.Visible = false;
         }
 
         private void CurrentAssets_Click(object sender, EventArgs e)
@@ -293,25 +311,6 @@ namespace cryptoFinance
                     );
 
             return ctd;
-        }
-
-        private void Edit(CurrentAssets form, int rowIndex, List<CryptoTable> operations)
-        {
-            int operationIndex = rowIndex / 4;
-            var id = operations[operationIndex].Id;
-            var operationID = operations[operationIndex].OperationID;
-            var date = operations[operationIndex].Date;
-            var operation = operations[operationIndex].Operation;
-            var name = operations[operationIndex].CryptoName;
-            var wallet = operations[operationIndex].Wallet;
-            var quantity = operations[operationIndex].CryptoQuantity;
-            var price = decimal.Parse(operations[operationIndex].LastPrice.ToString());
-            var fee = decimal.Parse(operations[operationIndex].Fee.ToString());
-            var sum = decimal.Parse(operations[operationIndex].Sum.ToString());
-
-            var operationObject = CreateCryptoTableObject(id, operationID, date, operation, name, wallet, quantity, price, fee, sum);
-            OpenAddOperationEditMode(form, operationObject);
-            form.optionsPanel.Visible = false;
         }
 
         public void LoadMoreLabel(CurrentAssets form)
@@ -734,7 +733,6 @@ namespace cryptoFinance
 
             ca.addOperationPanel.Location = new Point(117, 102);
             ca.addOperationPanel.Visible = true;
-
         }
 
         private async Task DeletionFilter(CurrentAssets form, int rowIndex)
@@ -895,11 +893,12 @@ namespace cryptoFinance
                         {
                             decimal updatedvalue = counter - quantity;
 
-                            Connection.iwdb.UpdateCryptoTable(z[j].Id, operationid, "SELL", name, date, updatedvalue, wallet, price, fee, sum);
+                            Connection.iwdb.UpdateCryptoTable(z[j].Id, operationid, "SELL", name, date, updatedvalue, wallet, realPrice, fee, sum);
                             CryptoTable obj = new CryptoTable();
                             obj.Id = z[j].Id;
                             obj.CryptoQuantity = updatedvalue;
-                            obj.Sum = z[j].LastPrice * (decimal)updatedvalue;
+                            obj.Sum = realPrice * updatedvalue;
+                            cv = realPrice * updatedvalue;
                             obj.Fee = z[j].Fee;
                             updatedItem = obj;
                             ids.Remove(ids.Last());
@@ -930,11 +929,14 @@ namespace cryptoFinance
                 Connection.iwdb.DeleteByOperationID(operationid); //istrinamos visos wallet related operacijos
             }
 
+            var totalCv = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.CurrentValue).First();
+            var newTotalCv = totalCv - cv;
+
             updatedItem = null;
             CoinQuantity cq = new CoinQuantity();
             decimal q = cq.GetCoinQuantityByName(name);
-            InteractWithCurrentAssetsDB(name, customCoin, date, q, (decimal)price, cv);
-            var coin = ReturnObject(name, customCoin, cryptoId, q, date, (decimal)price, cv);
+            InteractWithCurrentAssetsDB(name, customCoin, date, q, realPrice, newTotalCv);
+            var coin = ReturnObject(name, customCoin, cryptoId, q, date, realPrice, newTotalCv);
             RefreshCurrentCoins(coin);
             LoadOperationsForm();
 

@@ -42,9 +42,9 @@ namespace cryptoFinance
             datagridTimer.Interval = 100;
             coinList = CreateCoinList();
 
-            UpdateDataGrid(ca);
             UpdatePricesAndCurrentValue(ca);
-
+            UpdateDataGrid(ca);
+            
             if (coinList.Count == 0)
             {
                 ca.ShowAssetAlertLabel("Jūs neturite įsigiję kriptovaliutų. Atlikite savo pirmą investiciją.");
@@ -255,6 +255,8 @@ namespace cryptoFinance
             else
             {
                 coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.quantity = coinObject.quantity);
+                coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.price = coinObject.price);
+                coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.totalSum = coinObject.totalSum);
             }
         }
 

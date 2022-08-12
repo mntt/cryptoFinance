@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -51,6 +50,7 @@ namespace cryptoFinance
                     }
                     else
                     {
+                        MessageBox.Show(namesplit[0] + " (" + namesplit[1]);
                         string id = Connection.db.GetTable<CoingeckoCryptoList>()
                             .Where(x => x.CryptoName == namesplit[0] && x.CryptoSymbol == namesplit[1].Trim(')')).Select(x => x.CryptoId).First();
                         await DownloadLogo(id);

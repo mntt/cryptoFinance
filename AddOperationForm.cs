@@ -367,7 +367,6 @@ namespace cryptoFinance
         {
             var date = Connection.db.GetTable<LastTimeUpdatedList>().ToList().Last();
             ca.lastTimeUpdated.Text = "Paskutinis atnaujinimas: " + date.Date.ToString();
-            
         }
 
         private bool Validation()
@@ -401,46 +400,48 @@ namespace cryptoFinance
                 validation = FormValidation.ReturnValidation(controlList);
             }
 
-            
             controlList.Clear();           
             return validation;
         }
 
         private bool IsCustomCoin()
         {
-            string name = "";
             bool customCoin = false;
-           
-            if (!editMode && operation == "BUY")
+            
+            if (editMode)
             {
-                name = ca.cryptoBox.Text;
-            }
-            else if (!editMode && operation == "SELL")
-            {
-                name = ca.cryptoComboBox.Text;
-            }
-            else if (editMode)
-            {
-                name = ctd.name;
-            }
-
-            var checkCryptoTable = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == name).Select(x => x.CustomCoin).ToList();
-
-            if(checkCryptoTable.Count > 0)
-            {
-                customCoin = checkCryptoTable[0];
+                //kai yra editMode, operacija jau irasyta duomenu bazeje, todel tures ir savo CustomCoin reiksme
+                customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == ctd.name).Select(x => x.CustomCoin).First();
             }
             else
             {
-                var checkCoingeckoList = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => (x.CryptoName + " (" + x.CryptoSymbol + ")") == name).ToList();
+                string name = "";
 
-                if (checkCoingeckoList.Count > 0)
+                if (operation == "BUY")
                 {
-                    customCoin = false;
+                    name = ca.cryptoBox.Text;
                 }
-                else
+                else if (operation == "SELL")
                 {
-                    customCoin = true;
+                    name = ca.cryptoComboBox.Text;
+                }
+
+                try
+                {
+                    customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == name).Select(x => x.CustomCoin).Last();
+                }
+                catch
+                {
+                    var checkCoingeckoList = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => (x.CryptoName + " (" + x.CryptoSymbol + ")") == name).First();
+
+                    if (checkCoingeckoList != null)
+                    {
+                        customCoin = false;
+                    }
+                    else
+                    {
+                        customCoin = true;
+                    }
                 }
             }
 
@@ -489,7 +490,7 @@ namespace cryptoFinance
 
             var date = DateTime.Parse(ca.dateBox.Text);
             var quantity = ReformatText.ReturnNumeric(ca.quantityBox.Text);
-            var price = apiPrice; //ReformatText.ReturnNumeric(ca.priceBox.Text);
+            var price = apiPrice;
             var fee = ReformatText.ReturnNumeric(ca.feeBox.Text);
             var sum = ReformatText.ReturnNumeric(ca.sumBox.Text);
 
@@ -499,17 +500,27 @@ namespace cryptoFinance
         private async Task ExecuteConfirm(CurrentAssets form, int operationID, DateTime date, string _name, bool customCoin, decimal quantity, string operation, string wallet, decimal sum, decimal price, decimal fee)
         {
             string name = _name;
-            decimal oldPrice = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.Price).First();
             var namesplit = name.Split('(');
             string cryptoName = namesplit[0];
             string cryptoSymbol = namesplit[1].Trim(')');
             string cryptoId = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => x.CryptoName == cryptoName && x.CryptoSymbol == cryptoSymbol).Select(x => x.CryptoId).First();
-            decimal realPrice = 0;
-            decimal testPrice = GetPrices.ById(cryptoId);
+            decimal oldPrice = 0;
 
-            if (testPrice > 0)
+            try
             {
-                realPrice = testPrice;
+                Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.Cryptocurrency == name).Select(x => x.Price).First();
+            }
+            catch
+            {
+                //price found successfully;
+            }
+
+            decimal realPrice = 0;
+            decimal downloadPrice = GetPrices.ById(cryptoId);
+
+            if (downloadPrice > 0)
+            {
+                realPrice = downloadPrice;
             }
             else
             {
@@ -640,11 +651,11 @@ namespace cryptoFinance
             string cryptoSymbol = namesplit[1].Trim(')');
             string cryptoId = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => x.CryptoName == cryptoName && x.CryptoSymbol == cryptoSymbol).Select(x => x.CryptoId).First();
             decimal realPrice = 0;
-            decimal testPrice = GetPrices.ById(cryptoId);
+            decimal downloadPrice = GetPrices.ById(cryptoId);
 
-            if (testPrice > 0)
+            if (downloadPrice > 0)
             {
-                realPrice = testPrice;
+                realPrice = downloadPrice;
             }
             else
             {
@@ -777,6 +788,7 @@ namespace cryptoFinance
                 if (!Validation() && !ca.alertPanel.Visible)
                 {
                     errorValidating = true;
+                    MessageBox.Show("error validating");
                 }
                 else
                 {
@@ -867,7 +879,7 @@ namespace cryptoFinance
 
                 if (ca.walletListView.Items.Count > 0)
                 {
-                    ListViewSettings.SetListViewSizes(ca.walletListView); 
+                    ListViewSettings.SetListViewSizes(ca.walletListView);
                     ca.walletListView.Visible = true;
                 }
             }
@@ -894,7 +906,7 @@ namespace cryptoFinance
                 ca.coinsPanel.Visible = false;
             }
 
-            if (ca.walletListView.Visible == true)
+            if (ca.walletListView.Visible)
             {
                 ca.walletListView.Visible = false;
             }
@@ -941,6 +953,7 @@ namespace cryptoFinance
                 nameSplit = ca.cryptoComboBox.Text.Split('(');
             }
 
+            
             var id = Connection.db.GetTable<CoingeckoCryptoList>()
                 .Where(x => x.CryptoName == nameSplit[0] && x.CryptoSymbol == nameSplit[1].Trim(')'))
                 .Select(x => x.CryptoId).ToList();
