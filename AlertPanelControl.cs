@@ -112,6 +112,9 @@ namespace cryptoFinance
                 case 14:
                     mainLabel.Text = "Įvyko klaida. Failo iškelti nepavyko.";
                     break;
+                case 15:
+                    mainLabel.Text = "Įvyko klaida. Kriptovaliutų sąrašo atsiųsti nepavyko.";
+                    break;
             }
         }
 

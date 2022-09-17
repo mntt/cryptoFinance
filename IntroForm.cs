@@ -170,11 +170,10 @@ namespace cryptoFinance
 
         private async void IntroForm_Load(object sender, EventArgs e)
         {
-            CoingeckoListDownloader cd = new CoingeckoListDownloader();
             var list = Connection.db.GetTable<CoingeckoCryptoList>().ToList();
             if (list.Count == 0)
             {
-                cd.StartIntro(this, ca, progressBar, true);
+                CoingeckoListDownloader cd = new CoingeckoListDownloader(this, ca, progressBar, true);
             }
             else
             {

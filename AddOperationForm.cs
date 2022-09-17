@@ -348,11 +348,10 @@ namespace cryptoFinance
 
             Design.ProgressBarStyling(form.progressBar);
             form.progressBarPanel.Visible = true;
-            cd = new CoingeckoListDownloader();
-            cd.StartCA(form, this, form.progressBar, form.progressLabel);
+            CoingeckoListDownloader cd = new CoingeckoListDownloader(form, this, form.progressBar, form.progressLabel);
         }
 
-        private void CancelButton_Click(object sender, EventArgs e)
+        private async void CancelButton_Click(object sender, EventArgs e)
         { 
             if (cd.worker.IsBusy)
             {
@@ -360,6 +359,12 @@ namespace cryptoFinance
                 ca.progressBar.ForeColor = Colours.canceledProgress;
                 cd.worker.CancelAsync();
                 cd.workerCancelButtonPressed = true;
+                await Task.Delay(1000);
+                Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.ClientAndNonClientAreasEnabled;
+                ca.Invalidate(true);
+                ca.AlertPanelControlInstance(1);
+                ca.progressBarPanel.Visible = false;
+                ca.progressLabel.Text = "";
             }
         }
 
@@ -788,7 +793,6 @@ namespace cryptoFinance
                 if (!Validation() && !ca.alertPanel.Visible)
                 {
                     errorValidating = true;
-                    MessageBox.Show("error validating");
                 }
                 else
                 {

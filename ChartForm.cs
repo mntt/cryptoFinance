@@ -78,7 +78,7 @@ namespace cryptoFinance
             form.pieChart.Series = CreateSeries(coins, total, labelPoint);
             form.pieChart.LegendLocation = LegendLocation.Right;
             form.pieChart.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
-            form.pieChart.Font = Design.font8;
+            form.pieChart.Font = Design.font6;
             form.pieChart.DataTooltip = tooltip;
         }
 

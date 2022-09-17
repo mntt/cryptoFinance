@@ -494,8 +494,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Kriptovaliutos", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Kriptovaliutos", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
 
                     if(filters[0] == 1)
                     {
@@ -514,8 +514,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.selectedItem);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Kriptovaliutos", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Kriptovaliutos", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
                     e.Graphics.DrawImage(cryptoFinance.Properties.Resources.filterIcon, e.CellBounds.X + 275, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
@@ -525,8 +525,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Kriptovaliutos", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Kriptovaliutos", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
 
                     if (filters[0] == 1)
                     {
@@ -548,8 +548,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Piniginės", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Piniginės", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
 
                     if(filters[1] == 2)
                     {
@@ -567,8 +567,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.selectedItem);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Piniginės", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Piniginės", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
                     e.Graphics.DrawImage(cryptoFinance.Properties.Resources.filterIcon, e.CellBounds.X + 165, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
@@ -578,8 +578,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Piniginės", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Piniginės", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
 
                     if (filters[1] == 2)
                     {
@@ -592,9 +592,7 @@ namespace cryptoFinance
 
                     e.Handled = true;
                 }
-            }
-
-            
+            }     
         }
 
         private void CurrentAssets_Click(object sender, EventArgs e)

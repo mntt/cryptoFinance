@@ -55,11 +55,11 @@ namespace cryptoFinance
                         var finalprice = tempList[2].Split('e').ToList();
                         var powerchars = finalprice[1].Trim('}').ToCharArray();
 
-                        string text = "";
+                        /*string text = "";
                         foreach(var item in powerchars)
                         {
                             text += item + " ";
-                        }
+                        }*/
 
                         double secondnumber = 1;
                         if(powerchars[0] == '-')

@@ -6,6 +6,7 @@ namespace cryptoFinance
 {
     public static class Design
     {
+        public static Font font5 = new Font("Arial Black", 5);
         public static Font font6 = new Font("Arial Black", 6);
         public static Font font7 = new Font("Arial Black", 7);
         public static Font font8 = new Font("Arial Black", 8);
@@ -119,7 +120,7 @@ namespace cryptoFinance
                 button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
                 button.FlatAppearance.BorderColor = Colours.buttonBack;
                 button.Size = buttonSize;
-                button.Font = font9;
+                button.Font = font7;
                 button.ForeColor = Colours.buttonFore;
             }
 
@@ -128,7 +129,7 @@ namespace cryptoFinance
                 button.BackColor = Colours.buttonBack;
                 button.ForeColor = Colours.buttonFore;
                 button.Size = buttonSize;
-                button.Font = font9;
+                button.Font = font7;
                 button.FlatAppearance.BorderColor = Colours.buttonBack;
             }
 
@@ -138,7 +139,7 @@ namespace cryptoFinance
                 button.ForeColor = Colours.buttonFore;
                 button.FlatAppearance.BorderColor = Colours.buttonBack;
                 button.FlatAppearance.MouseOverBackColor = Colours.formBackground;
-                button.Font = font7; 
+                button.Font = font6; 
             }
 
             if(button.Tag == "small")
@@ -156,7 +157,7 @@ namespace cryptoFinance
                 button.BackColor = Colours.buttonBack;
                 button.ForeColor = Colours.buttonFore;
                 button.FlatAppearance.BorderColor = Colours.buttonBack;
-                button.Font = font9;
+                button.Font = font7;
                 button.Size = statsButtonSize;
             }
 
@@ -407,7 +408,7 @@ namespace cryptoFinance
 
                     label.ForeColor = Colours.labelColor;
                     label.BackColor = Colours.transparent;
-                    label.Font = font8;
+                    label.Font = font7;
 
                     if (label.Tag == "title")
                     { 
@@ -427,7 +428,7 @@ namespace cryptoFinance
                     if(label.Tag == "alert")
                     {
                         label.ForeColor = Colours.panelBackground;
-                        label.Font = font7;
+                        label.Font = font6;
                     }
 
                     if(label.Tag == "dash")
@@ -509,7 +510,7 @@ namespace cryptoFinance
                 if (item.GetType() == typeof(TextBox))
                 {
                     TextBox textbox = (TextBox)item;
-                    textbox.Font = font8;
+                    textbox.Font = font9;
                 }
             }
         }

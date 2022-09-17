@@ -81,8 +81,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Kriptovaliutos", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Kriptovaliutos", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
                     e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 275, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
@@ -91,8 +91,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.selectedItem);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Kriptovaliutos", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Kriptovaliutos", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
                     e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 275, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
@@ -102,8 +102,8 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Kriptovaliutos", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Kriptovaliutos", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
                     e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 275, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
@@ -116,9 +116,9 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Grynoji vertė", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
-                    e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 105, e.CellBounds.Y + 2, 20, 20);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Grynoji vertė", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 117, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
                 else if (repaintCells == 4)
@@ -126,9 +126,9 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.selectedItem);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Grynoji vertė", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
-                    e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 105, e.CellBounds.Y + 2, 20, 20);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Grynoji vertė", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 117, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
 
@@ -137,9 +137,9 @@ namespace cryptoFinance
                     System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Colours.labelColor);
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                     System.Drawing.SolidBrush brush2 = new System.Drawing.SolidBrush(Colours.alternateCellBack);
-                    Font font9 = new Font("Arial Black", 9);
-                    e.Graphics.DrawString("Grynoji vertė", font9, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
-                    e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 105, e.CellBounds.Y + 2, 20, 20);
+                    Font font11 = new Font("Arial Black", 11);
+                    e.Graphics.DrawString("Grynoji vertė", font11, brush2, e.CellBounds.X + 6, e.CellBounds.Y + 4);
+                    e.Graphics.DrawImage(cryptoFinance.Properties.Resources.sortingIcon, e.CellBounds.X + 117, e.CellBounds.Y + 2, 20, 20);
                     e.Handled = true;
                 }
             }

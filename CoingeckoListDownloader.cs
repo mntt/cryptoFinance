@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,7 +18,8 @@ namespace cryptoFinance
         private ProgressBar progressBar { get; set; }
         private CurrentAssets caform { get; set; }
         private IntroForm introform { get; set; }
-        private List<CoingeckoListInfo> coingeckoList { get; set; }
+        private List<CoingeckoTokenData> coingeckoList { get; set; }
+        private List<CoingeckoListInfo> tokenListWithFullData { get; set; }
         private Label progressLabel { get; set; }
         public BackgroundWorker worker { get; set; }
         public bool workerCancelButtonPressed { get; set; }
@@ -25,44 +27,40 @@ namespace cryptoFinance
         private AddOperationForm aof { get; set; }
         private bool loadForms { get; set; }
 
-        public CoingeckoListDownloader()
+        public CoingeckoListDownloader(CurrentAssets _form, AddOperationForm _aof, ProgressBar _progressBar, Label _progressLabel)
         {
-            
-        }
-
-        public void StartCA(CurrentAssets _form, AddOperationForm _aof, ProgressBar _progressBar, Label _progressLabel)
-        {
+            //add operation form download instance
             caform = _form;
             aof = _aof;
             progressBar = _progressBar;
             progressLabel = _progressLabel;
             workerCancelButtonPressed = false;
+            tokenListWithFullData = new List<CoingeckoListInfo>();
             worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += new DoWorkEventHandler(BackgroundWorker_DoWork);
-            worker.ProgressChanged += new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
             worker.RunWorkerAsync();
         }
 
-        public void StartIntro(IntroForm _form, CurrentAssets _caForm, ProgressBar _progressBar, bool _loadForms)
+        public CoingeckoListDownloader(IntroForm _form, CurrentAssets _caForm, ProgressBar _progressBar, bool _loadForms)
         {
+            //intro form download instance
             introform = _form;
             caform = _caForm;
             progressBar = _progressBar;
             loadForms = _loadForms;
+            tokenListWithFullData = new List<CoingeckoListInfo>();
             worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += new DoWorkEventHandler(BackgroundWorker_DoWork);
-            worker.ProgressChanged += new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
             introform.ChangeProgressLabel("Siunčiamas coingecko sąrašas...");
-
             worker.RunWorkerAsync();
         }
-
+ 
         private bool IsInternetConnected()
         {
             string host = "coingecko.com";
@@ -81,68 +79,62 @@ namespace cryptoFinance
             }
         }
 
+        private void NoInternetError()
+        {
+            if (introform != null)
+            {
+                MessageBox.Show("Nėra interneto ryšio. Bandykite vėliau.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+
+            if (caform != null)
+            {
+                MessageBox.Show("Nėra interneto ryšio. Bandykite vėliau.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                TerminateDownloading();
+            }
+        }
+
         private void BackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             bool isConnected = IsInternetConnected();
 
-            if (isConnected) 
+            if (isConnected)
             {
-                CancelOrProgress(e, 0);
+                //20%
                 var task1 = Task.Run(() => UpdateListTask(e));
                 task1.Wait();
-                CancelOrProgress(e, 0);
+                //70%
                 var task2 = Task.Run(() => UpdateMarketCapsTask(e));
                 task2.Wait();
-                CancelOrProgress(e, 0);
-
-                if (introform != null)
-                {
-                    introform.ChangeProgressLabel("Siuntimas baigtas. Programa paleidžiama iš naujo...");
-                }
+                //10%
+                var task3 = Task.Run(() => DownloadLogos(e));
+                task3.Wait();
             }
             else
             {
-                if(introform != null)
-                {
-                    MessageBox.Show("Nėra interneto ryšio. Bandykite vėliau.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Application.Exit();
-                }
-                
-                if(caform != null)
-                {
-                    MessageBox.Show("Nėra interneto ryšio. Bandykite vėliau.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    TerminateDownloading();
-                }
+                NoInternetError();   
             }
         }
 
-        private void TerminateDownloading()
+        private async Task UpdateListTask(System.ComponentModel.DoWorkEventArgs e)
         {
-            worker.CancelAsync();
-            workerCancelButtonPressed = true;
-            progressLabel.Text = "Atšaukiama...";
-            progressBar.ForeColor = Control.DefaultBackColor;
-            ProgressBarLabels.ReturnLabel(progressLabel, 0);
-
-            if (loadForms)
+            if (caform != null)
             {
-                Application.Exit();
+                caform.progressLabel.Text = "Laukiama kol bus pasiekiamas coingecko API...";
             }
+
+            await Task.Delay(120000); //to avoid "too many requests" error - using a free API plan
+            DownloadListData();
+            Progress(20);
+            await Task.Delay(100);
         }
 
-        private async Task<MatchCollection> DownloadListData()
+        private void DownloadListData()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            HttpClient client = new HttpClient();
-            string message = "";
-            var reg = new Regex("\".*?\"");
-            
             try
             {
-                string url = "https://api.coingecko.com/api/v3/coins/list";
-                var response = await client.GetAsync(url);
-                message = await response.Content.ReadAsStringAsync();
+                string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/list");
+                coingeckoList = (List<CoingeckoTokenData>)JsonConvert.DeserializeObject(jsonURL, typeof(List<CoingeckoTokenData>));
             }
             catch
             {
@@ -158,181 +150,74 @@ namespace cryptoFinance
                     TerminateDownloading();
                 }
             }
-
-            client.Dispose();
-            return reg.Matches(message);
         }
 
-        private async Task UpdateListTask(System.ComponentModel.DoWorkEventArgs e)
+        private async Task UpdateMarketCapsTask(System.ComponentModel.DoWorkEventArgs e)
         {
-             int timeout = 30000;
-             var timeoutcancel = new CancellationTokenSource();
-             var delayTask = Task.Delay(timeout, timeoutcancel.Token);
-             var task = DownloadListData();
-
-            if (await Task.WhenAny(task, delayTask) == task)
-            {
-                timeoutcancel.Cancel();
-                var matches = await DownloadListData();
-                var coinList = FixListInfo(AddStringsToList(matches));
-                AddDataToList(coinList);
-                CancelOrProgress(e, 26);
-            }
-            else
-            {
-                if (introform != null)
-                {
-                    MessageBox.Show("Nepavyko pasiekti coingecko API per 30 sekundžių.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Application.Exit();
-                }
-
-                if (caform != null)
-                {
-                    MessageBox.Show("Nepavyko pasiekti coingecko API per 30 sekundžių.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    TerminateDownloading();
-                }
-            }
-            
-        }
-
-        private List<string> FixListInfo(List<string> _data)
-        {
-            List<string> listOfIndexes = new List<string>();
-            var data = _data;
-            int indexSaved = 0;
-
-            for (int i = 0; i < data.Count; i++)
-            {
-                int testnr = i - 1;
-                if(i == 1 || testnr % 6 == 0)
-                {
-                    listOfIndexes.Add(data[i]);
-                    indexSaved = i;
-                }
-
-                if(i == indexSaved + 2 || i == indexSaved + 4)
-                {
-                    listOfIndexes.Add(data[i]);
-                }
-            }
-
-            return listOfIndexes;
-        }
-
-        private List<string> AddStringsToList(MatchCollection matches)
-        {
-            List<string> data = new List<string>();
-
-            int counter = 0;
-            foreach (var item in matches)
-            {
-                data.Add(item.ToString().Trim('"'));
-                counter++;
-            }
-
-            return data;
-        }
-
-        private void AddDataToList(List<string> coinList)
-        {
-            coingeckoList = new List<CoingeckoListInfo>();
-            int multiplier = 0;
-
-            for (int i = 0; i < (coinList.Count / 3); i++)
-            {
-                CoingeckoListInfo info = new CoingeckoListInfo
-                    (
-                        null,
-                        coinList[multiplier],
-                        coinList[1 + multiplier],
-                        coinList[2 + multiplier],
-                        0
-                    );
-
-                coingeckoList.Add(info);
-                multiplier += 3;
-            }
-
+            Task task = DownloadMarketCaps(e);
+            await Task.WhenAll(task);
+            InsertMcaps(e);
         }
 
         private async Task DownloadMarketCaps(System.ComponentModel.DoWorkEventArgs e)
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            HttpClient client = new HttpClient();
-            var ids = coingeckoList.Select(x => x.cryptoId).ToList();
-            var idList = ReturnFixedIdList(ids, e);
-
+            var ids = ReturnFixedIdList(coingeckoList.Select(x => x.id).ToList(), e);
             marketCaps = new List<CoingeckoListInfo>();
+            JObject data = null;
+            string jsonURL = "";
 
-            var reg = new Regex("\".*?\"");
-            List<string> unfixedMarketCapData = new List<string>();
-
-            for (int i = 0; i < idList.Count; i++)
+            for (int i = 0; i < ids.Count; i++)
             {
-                if (i % (idList.Count / 3) == 0)
-                {
-                    CancelOrProgress(e, 6);
-                    if (worker.CancellationPending)
-                    {
-                        break;
-                    }
-                }
-
                 try
                 {
-                    string url = "https://api.coingecko.com/api/v3/simple/price?ids=" + idList[i] + "&vs_currencies=eur&include_market_cap=true&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false";
-                    var response = await client.GetAsync(url);
-                    var message = await response.Content.ReadAsStringAsync();
-                    unfixedMarketCapData = message.Split('}').ToList();
+                    if (ids.Count / 2 == i)
+                    {
+                        Progress(25);
+                        await Task.Delay(60000);
+                    }
+
+                    jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/simple/price?ids=" + ids[i] + "&vs_currencies=eur&include_market_cap=true&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
+                    data = (JObject)JsonConvert.DeserializeObject(jsonURL);
+
+                    for (int j = 0; j < coingeckoList.Count; j++)
+                    {
+                        string id = coingeckoList[j].id;
+                        string mcaplink = $"{id}.eur_market_cap";
+                        double mcap = 0;
+
+                        try
+                        {
+                            mcap = data.SelectToken(mcaplink).Value<double>();
+                            CoingeckoListInfo info = new CoingeckoListInfo(id, mcap);
+                            marketCaps.Add(info);
+                        }
+                        catch
+                        {
+                            //coin not found in this bundle or there is no market cap for selected coin
+                        }
+                    }
                 }
                 catch
                 {
+
                     if (introform != null)
                     {
-                        MessageBox.Show("Klaida apdorojant duomenis.\nNepavyksta atsiųsti kriptovaliutų sąrašo.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"{i}/{ids.Count - 1} Per daug užklausų. Kriptovaliutų sąrašo nepavyko atsiųsti.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Application.Exit();
                     }
 
                     if (caform != null)
                     {
-                        MessageBox.Show("Klaida apdorojant duomenis.\nNepavyksta atsiųsti kriptovaliutų sąrašo.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"{i}/{ids.Count - 1} Per daug užklausų.\nKriptovaliutų sąrašo nepavyko atnaujinti.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         TerminateDownloading();
                     }
-                }
 
-                marketCaps.AddRange(ReturnMarketCapsList(unfixedMarketCapData, reg));
-            }
-
-            client.Dispose();
-        }
-
-        private async Task UpdateMarketCapsTask(System.ComponentModel.DoWorkEventArgs e)
-        {
-            int timeout = 30000;
-            var timeoutcancel = new CancellationTokenSource();
-            var delayTask = Task.Delay(timeout, timeoutcancel.Token);
-            var task = DownloadMarketCaps(e);
-
-            if (await Task.WhenAny(task, delayTask) == task)
-            {
-                timeoutcancel.Cancel();
-                InsertMcaps(marketCaps, e); 
-            }
-            else
-            {
-                if (introform != null)
-                {
-                    MessageBox.Show("Nepavyko pasiekti coingecko API per 30 sekundžių.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Application.Exit();
-                }
-
-                if (caform != null)
-                {
-                    MessageBox.Show("Nepavyko pasiekti coingecko API per 30 sekundžių.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    TerminateDownloading();
+                    break;
                 }
             }
+
+            Progress(25);
+            await Task.Delay(100);
         }
 
         private List<string> ReturnFixedIdList(List<string> ids, System.ComponentModel.DoWorkEventArgs e)
@@ -343,121 +228,132 @@ namespace cryptoFinance
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (i == 0)
+                if (i >= 0 && allids == "")
                 {
                     allids += list[i];
                 }
 
-                if (i > 0)
+                if (i > 0 && allids != "")
                 {
                     allids += "%2C" + list[i];
                 }
 
-                if (i % 437 == 0 || i == (list.Count - 1)) //437 - toki max skaiciu id priima coingecko
+                if ((i % 437 == 0 && i != 0) || i == (list.Count - 1)) //437 - toki max skaiciu id priima coingecko
                 {
                     idList.Add(allids);
                     allids = "";
                 }
-
-                if (i % (list.Count / 11) == 0)
-                {
-                    CancelOrProgress(e, 4);
-                    if (worker.CancellationPending)
-                    {
-                        break;
-                    }
-                }
             }
+
+            Progress(10);
 
             return idList;
         }
-    
-        private List<CoingeckoListInfo> ReturnMarketCapsList(List<string> unfixedMarketCapData, Regex reg)
-        {
-            GetCultureInfo info = new GetCultureInfo(".");
-            List<CoingeckoListInfo> mcaps = new List<CoingeckoListInfo>();
 
-            for (int i = 0; i < unfixedMarketCapData.Count; i++)
+        private void InsertMcaps(System.ComponentModel.DoWorkEventArgs e)
+        {
+            for (int i = 0; i < coingeckoList.Count; i++)
             {
-                List<string> tempList = new List<string>();
-                string sum = "";
-                string id = "";
+                double marketcap = 0;
 
                 try
                 {
-                    tempList = unfixedMarketCapData[i].Split(':').ToList();
-                    sum = tempList[tempList.Count - 1].Trim(' ').Trim('{');
-                    var matches = reg.Matches(tempList[0]);
-                    id = matches[0].ToString().Trim('"');
+                    marketcap = marketCaps.Where(x => x.cryptoId == coingeckoList[i].id).Select(x => x.marketCap).First();
                 }
                 catch
                 {
-                    //"i" coin doesn't have market cap;
+                    //marketcap remains zero
                 }
 
-                double n;
-                bool isNumeric = double.TryParse(sum, out n);
+                CoingeckoListInfo info = new CoingeckoListInfo
+                    (
+                        null,
+                        coingeckoList[i].id,
+                        coingeckoList[i].symbol,
+                        coingeckoList[i].name,
+                        marketcap
+                    );
 
-                if (isNumeric)
+                tokenListWithFullData.Add(info);
+            }
+
+            Progress(10);
+        }
+
+        private async Task DownloadLogos(System.ComponentModel.DoWorkEventArgs e)
+        {
+            if (introform == null)
+            {
+                var coins = Connection.db.GetTable<CryptoTable>().Select(x => x.CryptoName).Distinct().ToList();
+                var oldlist = Connection.db.GetTable<CoingeckoCryptoList>().ToList();
+
+                await Task.Delay(60000);
+                for (int i = 0; i < coins.Count; i++)
                 {
-                    if (double.Parse(sum) > 0)
+                    if (i % 12 == 0 && i != 0)
                     {
-                        CoingeckoListInfo coin = new CoingeckoListInfo(id, double.Parse(sum));
-                        mcaps.Add(coin);
+                        await Task.Delay(60000);
                     }
+
+                    var split = coins[i].Split('(');
+                    var name = split[0].TrimEnd(' ');
+                    var symbol = split[1].Trim(')');
+                    var id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
+                    string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + id + "&order=market_cap_desc&per_page=100&page=1&sparkline=false");
+                    var data = JsonConvert.DeserializeObject<dynamic>(jsonURL);
+                    string imageLink = (string)data[0]["image"];
+                    Image image = DownloadImageFromUrl(imageLink);
+                    tokenListWithFullData.Where(x => x.cryptoId == id).ToList().ForEach(x => x.logo = image);
                 }
             }
 
-            return mcaps;
+            await Task.Delay(1000);
+            Progress(10);
         }
 
-        private void InsertMcaps(List<CoingeckoListInfo> mcaps, System.ComponentModel.DoWorkEventArgs e)
+        private System.Drawing.Image DownloadImageFromUrl(string imageUrl)
         {
-            int counter = 0;
+            System.Drawing.Image image = null;
 
-            foreach (var item in mcaps)
+            try
             {
-                coingeckoList.Where(x => x.cryptoId == item.cryptoId).ToList().ForEach(x => x.marketCap = item.marketCap);
+                System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(imageUrl);
+                webRequest.AllowWriteStreamBuffering = true;
+                webRequest.Timeout = 3000;
 
-                if (counter % (mcaps.Count / 2) == 0)
-                {
-                    CancelOrProgress(e, 3);
-                    if (worker.CancellationPending)
-                    {
-                        break;
-                    }
-                }
+                System.Net.WebResponse webResponse = webRequest.GetResponse();
 
-                counter++;
+                System.IO.Stream stream = webResponse.GetResponseStream();
+
+                image = System.Drawing.Image.FromStream(stream);
+
+                webResponse.Close();
             }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+            return image;
         }
 
-        private void BackgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        private async void TerminateDownloading()
         {
-            if(caform != null && introform == null)
+            worker.CancelAsync();
+            workerCancelButtonPressed = true;
+            worker.Dispose();
+            progressLabel.Text = "Atšaukiama...";
+            progressBar.ForeColor = Control.DefaultBackColor;
+            await Task.Delay(1000);
+            Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.ClientAndNonClientAreasEnabled;
+            caform.Invalidate(true);
+            caform.progressBarPanel.Visible = false;
+            caform.progressLabel.Text = "";
+
+            if (loadForms)
             {
-                progressBar.Increment(e.ProgressPercentage);
-
-                if (progressBar.Value == 0)
-                {
-                    ProgressBarLabels.ReturnLabel(progressLabel, 0);
-                }
-
-                if (progressBar.Value >= 20)
-                {
-                    ProgressBarLabels.ReturnLabel(progressLabel, 1);
-                }
-
-                if (progressBar.Value >= 40)
-                {
-                    ProgressBarLabels.ReturnLabel(progressLabel, 2);
-                }
-
-                if (progressBar.Value >= 70)
-                {
-                    ProgressBarLabels.ReturnLabel(progressLabel, 3);
-                }
-            } 
+                Application.Exit();
+            }
         }
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -466,8 +362,13 @@ namespace cryptoFinance
             caform.Invalidate(true);
             
             if (!workerCancelButtonPressed)
-            { 
-                InsertListToDatabase(coingeckoList);
+            {
+                if (introform != null)
+                {
+                    introform.ChangeProgressLabel("Siuntimas baigtas. Programa paleidžiama iš naujo...");
+                }
+
+                InsertListToDatabase();
                 DateTime time = DateTime.Now;
                 Connection.iwdb.InsertListDate(time);
 
@@ -500,17 +401,17 @@ namespace cryptoFinance
                 }
             }
 
-            worker.Dispose();        
+            worker.Dispose();     
         }
 
-        private void InsertListToDatabase(List<CoingeckoListInfo> coinList)
+        private void InsertListToDatabase()
         {
-            if(coinList.Count > 0)
+            if(tokenListWithFullData.Count > 0)
             {
                 Connection.iwdb.TruncateTable("CoingeckoCryptoList");
             }
 
-            var list = coinList.OrderByDescending(x => x.marketCap).ToList();
+            var list = tokenListWithFullData.OrderByDescending(x => x.marketCap).ToList();
 
             for (int i = 0; i < list.Count; i++)
             {
@@ -518,27 +419,22 @@ namespace cryptoFinance
             }
         }
 
-        private void CancelOrProgress(System.ComponentModel.DoWorkEventArgs e, int progress)
+        private void Progress(int progress)
         {
-            if (!worker.CancellationPending)
+            if (!workerCancelButtonPressed)
             {
                 Thread.Sleep(300);
                 progressBar.Increment(progress);
 
-                if(caform != null)
+                if (caform != null)
                 {
                     caform.progressLabel.Text = progressBar.Value.ToString() + " %";
                 }
-                
-                if(introform != null)
+
+                if (introform != null)
                 {
                     introform.ChangeProgressLabel("Siunčiamas kriptovaliutų sąrašas: " + progressBar.Value.ToString() + " %");
                 }
-            }
-            else
-            {
-                e.Cancel = true;
-                progressBar.Value = 0;
             }
         }
 
