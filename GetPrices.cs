@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System.Net;
-using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,54 +35,20 @@ namespace cryptoFinance
         {
             if (!timeoutcancel.IsCancellationRequested)
             {
-                ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                HttpClient client = new HttpClient();
                 GetCultureInfo gci = new GetCultureInfo(".");
 
                 try
                 {
-                    string url = "https://api.coingecko.com/api/v3/simple/price?ids=" + id + "&vs_currencies=eur";
-                    var response = await client.GetAsync(url);
-                    var message = await response.Content.ReadAsStringAsync();
-                    var tempList = message.Split(':').ToList();
-
-                    var search = tempList[2].Where(x => x == 'e').ToList();
-
-                    if(search.Count == 1)
-                    {
-                        var finalprice = tempList[2].Split('e').ToList();
-                        var powerchars = finalprice[1].Trim('}').ToCharArray();
-
-                        /*string text = "";
-                        foreach(var item in powerchars)
-                        {
-                            text += item + " ";
-                        }*/
-
-                        double secondnumber = 1;
-                        if(powerchars[0] == '-')
-                        {
-                            string number = "-" + powerchars[2];
-                            secondnumber = Math.Pow(10, double.Parse(number));
-                        }
-                        else if(powerchars[0] == '+')
-                        {
-                            secondnumber = Math.Pow(10, double.Parse(powerchars[2].ToString()));
-                        }
-
-                        price = decimal.Parse(finalprice[0]) * (decimal)secondnumber;
-                    }
-                    else
-                    {
-                        price = decimal.Parse(tempList[2].Trim('}'));
-                    }
+                    string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/simple/price?ids=" + id + "&vs_currencies=eur");
+                    var data = (JObject)JsonConvert.DeserializeObject(jsonURL);
+                    string link = $"{id}.eur";
+                    price = data.SelectToken(link).Value<decimal>();
                 }
                 catch
                 {
                     price = -2;
                 }
-            }            
+            }
         }
 
         private static async Task FetchPrice(string id)

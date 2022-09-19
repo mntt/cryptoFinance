@@ -175,11 +175,6 @@ namespace cryptoFinance
 
                 refreshTimer.Stop();
                 refreshPricesButton.BackgroundImage = refreshImages[0];
-
-                if (dgf.cannotUpdatePrices())
-                {
-                    AlertPanelControlInstance(0);
-                }
             }
         }
 
@@ -487,5 +482,6 @@ namespace cryptoFinance
                 return cp;
             }
         }
+
     }
 }

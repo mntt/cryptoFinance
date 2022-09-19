@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
@@ -570,27 +570,18 @@ namespace cryptoFinance
 
         private async Task DownloadLogo(string id)
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            HttpClient client = new HttpClient();
-            string message = "";
-
             try
             {
-                string url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + id + "&order=market_cap_desc&per_page=100&page=1&sparkline=false";
-                var response = await client.GetAsync(url);
-                message = await response.Content.ReadAsStringAsync();
-                var split = message.Split('"');
-                var logoUrl = split[15];
-                Image image = DownloadImageFromUrl(logoUrl);
+                string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + id + "&order=market_cap_desc&per_page=100&page=1&sparkline=false");
+                var data = JsonConvert.DeserializeObject<dynamic>(jsonURL);
+                string imageLink = (string)data[0]["image"];
+                Image image = DownloadImageFromUrl(imageLink);
                 Connection.iwdb.InsertCryptoLogo(id, image);
             }
             catch
             {
                 Connection.iwdb.InsertCryptoLogo(id, null);
             }
-            
-            client.Dispose();
         }
 
         private System.Drawing.Image DownloadImageFromUrl(string imageUrl)

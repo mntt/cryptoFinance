@@ -143,25 +143,6 @@ namespace cryptoFinance
                     e.Handled = true;
                 }
             }
-
-            //kodas sutvarko spalvu persiliejima
-            /*using (Brush gridBrush = new SolidBrush(ca.dataGridCurrentAssets.GridColor))
-            {
-                using (Brush backColorBrush = new SolidBrush(e.CellStyle.BackColor))
-                {
-                    using (Pen gridLinePen = new Pen(gridBrush))
-                    {
-                        // Clear cell 
-                        e.Graphics.FillRectangle(backColorBrush, e.CellBounds);
-                        //Bottom line drawing
-                        e.Graphics.DrawLine(gridLinePen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
-
-                        // here you force paint of content
-                        e.PaintContent(e.ClipBounds);
-                        e.Handled = true;
-                    }
-                }
-            }*/
         }
 
         private void DataGridCurrentAssets_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
@@ -226,6 +207,7 @@ namespace cryptoFinance
 
         public bool cannotUpdatePrices()
         {
+            //don't need it anymore, but will keep this just in case
             if(cannotUpdatePriceList.Count > 0)
             {
                 return true;
@@ -333,51 +315,6 @@ namespace cryptoFinance
                     );
 
             return info;
-        }
- 
-        private DataTable ReturnDataTable(List<ConstructingLists> coinList)
-        {
-            var data = coinList.Where(x => x.quantity > 0).OrderByDescending(x => x.totalSum).ToList();
-
-            DataTable table = new DataTable();
-            table.Columns.Add(" ", typeof(Image));
-            
-            table.Columns.Add("Kriptovaliuta", typeof(string));
-            table.Columns.Add("Kiekis", typeof(string));
-            table.Columns.Add("Kaina", typeof(string));
-            table.Columns.Add("Grynoji vertė", typeof(decimal));
-
-            foreach (var item in data)
-            {
-                DataRow row = table.NewRow();
-
-                var namesplit = item.name.Split('(');
-                var image = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
-                row[" "] = ResizeImage(image, 20, 20);
-
-                row["Kriptovaliuta"] = item.name;
-
-                string quantityValue = item.quantity.ToString("N8").TrimEnd('0');
-                char[] qchars = quantityValue.ToCharArray();
-                if (qchars.Last() == ',')
-                {
-                    quantityValue = quantityValue.Trim(',');
-                }
-                row["Kiekis"] = quantityValue;
-
-                string priceValue = item.price.ToString("N8").TrimEnd('0');
-                char[] pchars = priceValue.ToCharArray();
-                if (pchars.Last() == ',')
-                {
-                    priceValue = priceValue.Trim(',');
-                }
-
-                row["Kaina"] = priceValue + " €";
-                row["Grynoji vertė"] = item.totalSum;
-                table.Rows.Add(row);
-            }
-
-            return table;
         }
 
         private Bitmap ResizeImage(Image image, int width, int height)
