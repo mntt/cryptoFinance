@@ -212,7 +212,7 @@ namespace cryptoFinance
             if (listView.Name == "investmentsListView" || listView.Name == "coinListView")
             {
                 //listView.Size = new System.Drawing.Size(209, 219);
-                listView.Columns[0].Width = 184;
+                listView.Columns[0].Width = 180;
             }
             else if (listView.Name == "exportList")
             {
@@ -222,7 +222,7 @@ namespace cryptoFinance
             else if (listView.Name == "top100listview" || listView.Name == "suggestionsListView")
             {
                 listView.Size = new System.Drawing.Size(208, 190);
-                listView.Columns[0].Width = 188;
+                listView.Columns[0].Width = 182;
             }
             else if (listView.Name == "walletListView")
             {
@@ -239,7 +239,7 @@ namespace cryptoFinance
             else if(listView.Name == "filterListView")
             {
                 listView.Size = new System.Drawing.Size(193, 96);
-                listView.Columns[0].Width = 176;
+                listView.Columns[0].Width = 170;
             }
         }
 

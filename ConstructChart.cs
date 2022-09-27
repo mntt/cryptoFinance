@@ -21,7 +21,6 @@ namespace cryptoFinance
         {
             ClearChart(chartView);
             uniqueDates = ReturnUniqueDates(start, finish);
-
             selectedItems = _selectedItems;
 
             if (chart == "investments")
@@ -126,7 +125,7 @@ namespace cryptoFinance
             {
                 for (int i = 0; i < selectedItems.Count; i++)
                 {
-                    if(selectedItems[i] == "Investicijos")
+                    if (selectedItems[i] == "Investicijos")
                     {
                         series.Add(new LineSeries()
                         {
@@ -135,7 +134,7 @@ namespace cryptoFinance
                         });
                     }
 
-                    if(selectedItems[i] == "Dabartinė vertė")
+                    if (selectedItems[i] == "Dabartinė vertė")
                     {
                         series.Add(new LineSeries()
                         {
@@ -144,7 +143,7 @@ namespace cryptoFinance
                         });
                     }
 
-                    if(selectedItems[i] == "Grynasis pelnas")
+                    if (selectedItems[i] == "Grynasis pelnas")
                     {
                         series.Add(new LineSeries()
                         {
@@ -171,7 +170,7 @@ namespace cryptoFinance
                 }
             }
 
-            if(series.Count > 0)
+            if (series.Count > 0)
             {
                 chartView.Series = series;
             }
@@ -294,8 +293,6 @@ namespace cryptoFinance
 
         private static void SetChartLabelsAndFormat(LiveCharts.WinForms.CartesianChart chartView, string chart)
         {
-            chartView.LegendLocation = LegendLocation.Top;
-
             chartView.AxisX.Add(new LiveCharts.Wpf.Axis
             {
                 Labels = ReturnLabels(uniqueDates),
@@ -306,6 +303,7 @@ namespace cryptoFinance
 
             chartView.AxisY.Add(ReturnYAxis(chart, selectedItems));
 
+            chartView.LegendLocation = LegendLocation.Top;
             chartView.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
             chartView.DefaultLegend.FontFamily = Design.mediaFont;
             chartView.DefaultLegend.FontSize = 9;
@@ -331,7 +329,7 @@ namespace cryptoFinance
                 FontSize = 9
             };
 
-            if(chart == "crypto_quantities" || chart == "crypto_currentvalues")
+            if (chart == "crypto_quantities" || chart == "crypto_currentvalues")
             {
                 yAxis.MinValue = 0;
             }
@@ -351,8 +349,8 @@ namespace cryptoFinance
             if (chart == "crypto_quantities")
             {
                 var list = ReturnChartData(uniqueDates, _selectedItems, true);
-                
-                if(list.Count > 0)
+
+                if (list.Count > 0)
                 {
                     formatFunc = (x) => x.ToString();
                 }

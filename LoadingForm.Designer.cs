@@ -38,25 +38,27 @@ namespace cryptoFinance
             this.loadingBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.loadingBox.Image = global::cryptoFinance.Properties.Resources.ring_loading_gif;
             this.loadingBox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.loadingBox.Location = new System.Drawing.Point(424, 194);
+            this.loadingBox.Location = new System.Drawing.Point(514, 190);
+            this.loadingBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.loadingBox.Name = "loadingBox";
-            this.loadingBox.Size = new System.Drawing.Size(96, 82);
+            this.loadingBox.Size = new System.Drawing.Size(128, 101);
             this.loadingBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.loadingBox.TabIndex = 19;
             this.loadingBox.TabStop = false;
             // 
             // LoadingForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(930, 450);
+            this.ClientSize = new System.Drawing.Size(1200, 500);
             this.ControlBox = false;
             this.Controls.Add(this.loadingBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "LoadingForm";
-            this.Opacity = 0.8D;
+            this.Opacity = 0.7D;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -67,6 +69,6 @@ namespace cryptoFinance
 
         #endregion
 
-        private System.Windows.Forms.PictureBox loadingBox;
+        public System.Windows.Forms.PictureBox loadingBox;
     }
 }

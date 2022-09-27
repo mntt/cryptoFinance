@@ -8,6 +8,10 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using Control = System.Windows.Forms.Control;
+using Image = System.Drawing.Image;
+using ListViewItem = System.Windows.Forms.ListViewItem;
+using TextBox = System.Windows.Forms.TextBox;
 
 namespace cryptoFinance
 {
@@ -582,6 +586,8 @@ namespace cryptoFinance
             {
                 Connection.iwdb.InsertCryptoLogo(id, null);
             }
+
+            await Task.Delay(100);
         }
 
         private System.Drawing.Image DownloadImageFromUrl(string imageUrl)
@@ -1647,7 +1653,6 @@ namespace cryptoFinance
             {
                 ca.cryptoComboBox.Text = ca.cryptoComboBox.Items[ca.cryptoComboBox.SelectedIndex].ToString();
                 ca.walletComboBox.Select();
-                AddWallets();
             }
         }
 

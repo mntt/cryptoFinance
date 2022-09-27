@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 namespace cryptoFinance
 {
     public class StatisticsForm
@@ -45,7 +44,6 @@ namespace cryptoFinance
             ListViewSettings.SetListViewSizes(ca.exportList);
             SetStartDate(ca);
 
-            //RefreshCoinQuantitiesList(ca.coinListView);
             ca.investmentsListView.Items.Add("Investicijos");
             ca.investmentsListView.Items.Add("Dabartinė vertė");
             ca.investmentsListView.Items.Add("Grynasis pelnas");
@@ -304,12 +302,16 @@ namespace cryptoFinance
         {
             if (!form.statisticsPanel.Visible)
             {
+                form.datePickerStart.Format = DateTimePickerFormat.Short;
+                form.datePickerFinish.Format = DateTimePickerFormat.Short;
                 form.datePickerStart.Value = form.startDate;
                 form.datePickerFinish.Value = DateTime.Now;
                 form.statisticsPanel.Location = new Point(117, 102);
 
                 form.chartView.Visible = false;
                 form.backToStats.Visible = false;
+                form.nodataLabel.Visible = false;
+                form.noChartData.Visible = false;
                 form.dropdownInvestments.Visible = false;
                 form.exportdataPanel.Visible = false;
                 form.variablesPanel.Visible = false;
@@ -354,12 +356,15 @@ namespace cryptoFinance
 
             if (form.investmentsListView.CheckedItems.Count > 0)
             {
-                await LoadStatsChart(form, chart);
+                form.ShowLoading();
+                LoadStatsChart(form, chart);
+                await Task.Delay(1000);
+                form.HideLoading();
             }
             else
             {
                 form.nodataLabel.Visible = true;
-                form.nodataLabel.Location = new Point(250, 150);
+                form.nodataLabel.Location = new Point(210, 140);
             }
 
             ca.datePickerStart.ValueChanged += new System.EventHandler(this.datePickerStart_ValueChanged_1);
@@ -370,6 +375,8 @@ namespace cryptoFinance
 
         private async void LoadCryptoQuantities(CurrentAssets form, string chart)
         {
+            form.ShowLoading();
+            await Task.Run(() => RefreshCoinQuantitiesList(form.coinListView));
             ca.datePickerStart.ValueChanged -= new System.EventHandler(this.datePickerStart_ValueChanged_1);
             ca.datePickerFinish.ValueChanged -= new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked -= new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
@@ -391,17 +398,18 @@ namespace cryptoFinance
 
             if (form.coinListView.CheckedItems.Count > 0)
             {
-                await LoadStatsChart(form, chart);
+                await Task.Run(() => LoadStatsChart(form, chart));
             }
             else
             {
                 form.nodataLabel.Visible = true;
-                form.nodataLabel.Location = new Point(250, 150);
+                form.nodataLabel.Location = new Point(210, 140);
             }
             ca.datePickerStart.ValueChanged += new System.EventHandler(this.datePickerStart_ValueChanged_1);
             ca.datePickerFinish.ValueChanged += new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
             ca.investmentsListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.investmentsListView_ItemChecked);
+            form.HideLoading();
         }
 
         public void OpenCryptoQuantities(CurrentAssets form, string chart, Action showLoading)
@@ -409,12 +417,13 @@ namespace cryptoFinance
             clicked = false;
             ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbutton;
             listname = "coins";
-            RefreshCoinQuantitiesList(form.coinListView);
             LoadCryptoQuantities(form, chart);
         }
 
         private async void LoadNetValues(CurrentAssets form, string chart)
         {
+            form.ShowLoading();
+            await Task.Run(() => RefreshCoinQuantitiesList(form.coinListView));
             ca.datePickerStart.ValueChanged -= new System.EventHandler(this.datePickerStart_ValueChanged_1);
             ca.datePickerFinish.ValueChanged -= new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked -= new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
@@ -430,18 +439,19 @@ namespace cryptoFinance
 
             if (form.coinListView.CheckedItems.Count > 0)
             {
-                await LoadStatsChart(form, chart);
+                await Task.Run(() => LoadStatsChart(form, chart));
             }
             else
             {
                 form.nodataLabel.Visible = true;
-                form.nodataLabel.Location = new Point(250, 150);
+                form.nodataLabel.Location = new Point(210, 140);
             }
 
             ca.datePickerStart.ValueChanged += new System.EventHandler(this.datePickerStart_ValueChanged_1);
             ca.datePickerFinish.ValueChanged += new System.EventHandler(this.datePickerFinish_ValueChanged_1);
             ca.coinListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.coinListView_ItemChecked);
             ca.investmentsListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.investmentsListView_ItemChecked);
+            form.HideLoading();
         }
 
         public void OpenNetValues(CurrentAssets form, string chart, Action showLoading)
@@ -449,7 +459,6 @@ namespace cryptoFinance
             clicked = false;
             ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbutton;
             listname = "coins";
-            RefreshCoinQuantitiesList(form.coinListView);
             LoadNetValues(form, chart);
         }
 
@@ -502,13 +511,13 @@ namespace cryptoFinance
             return selectedCoins;
         }
 
-        private async Task LoadStatsChart(CurrentAssets form, string chart)
+        private void LoadStatsChart(CurrentAssets form, string chart)
         {
-            form.ShowLoading();
             try
             {
                 form.chartView.Visible = false;
                 form.nodataLabel.Visible = false;
+                form.noChartData.Visible = false;
 
                 if (chart == "investments")
                 {
@@ -526,16 +535,21 @@ namespace cryptoFinance
                     ConstructChart.Build(chart, form.chartView, form.datePickerStart, form.datePickerFinish, GetSelectedCoins(form.coinListView));
                 }
 
-                await Task.Delay(100);
-                form.chartView.Visible = true;
+                if (form.chartView.AxisX[0].Labels.Count == 0)
+                {
+                    form.chartView.Visible = false;
+                    form.noChartData.Visible = true;
+                    form.noChartData.Location = new Point(250, 140);
+                }
+                else
+                {
+                    form.chartView.Visible = true;
+                }
             }
             catch
             {
                 MessageBox.Show("Įvyko nenumatyta klaida. Nepavyko užkrauti grafiko.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            await Task.Delay(100);
-            form.HideLoading();
         }
 
         private void RefreshCoinQuantitiesList(ListView coinListView)
@@ -721,11 +735,11 @@ namespace cryptoFinance
                     workbook.SaveAs(form.sfd.FileName);
                 }
 
-                errorExporting = 0;             
+                errorExporting = 0;
             }
             catch
             {
-                errorExporting = 1;               
+                errorExporting = 1;
             }
         }
 
@@ -747,9 +761,12 @@ namespace cryptoFinance
 
         private async void DatePickerStartValueChange(CurrentAssets form, string chart)
         {
-            if (form.datePickerStart.Value <= form.datePickerFinish.Value && chart != "" && form.chartView.Visible)
+            if (form.datePickerStart.Value <= form.datePickerFinish.Value && chart != "")
             {
-                await LoadStatsChart(form, chart);
+                form.ShowLoading();
+                LoadStatsChart(form, chart);
+                await Task.Delay(1000);
+                form.HideLoading();
             }
         }
 
@@ -770,9 +787,12 @@ namespace cryptoFinance
 
         private async void DatePickerFinishValueChange(CurrentAssets form, string chart)
         {
-            if (form.datePickerFinish.Value >= form.datePickerStart.Value && chart != "" && form.chartView.Visible)
+            if (form.datePickerFinish.Value >= form.datePickerStart.Value && chart != "")
             {
-                await LoadStatsChart(form, chart);
+                form.ShowLoading();
+                LoadStatsChart(form, chart);
+                await Task.Delay(1000);
+                form.HideLoading();
             }
         }
 
@@ -780,13 +800,16 @@ namespace cryptoFinance
         {
             if (form.coinListView.CheckedItems.Count > 0)
             {
-                await LoadStatsChart(form, form.chart);
+                form.ShowLoading();
+                LoadStatsChart(form, form.chart);
+                await Task.Delay(1000);
+                form.HideLoading();
             }
             else
             {
                 form.chartView.Visible = false;
                 form.nodataLabel.Visible = true;
-                form.nodataLabel.Location = new Point(250, 150);
+                form.nodataLabel.Location = new Point(210, 140);
             }
         }
 
@@ -794,19 +817,23 @@ namespace cryptoFinance
         {
             if (form.investmentsListView.CheckedItems.Count > 0)
             {
-                await LoadStatsChart(form, form.chart);
+                form.ShowLoading();
+                LoadStatsChart(form, form.chart);
+                await Task.Delay(1000);
+                form.HideLoading();
             }
             else
             {
                 form.chartView.Visible = false;
                 form.nodataLabel.Visible = true;
-                form.nodataLabel.Location = new Point(250, 150);
+                form.nodataLabel.Location = new Point(210, 140);
             }
         }
 
         private void BackToStats(CurrentAssets form)
         {
             form.nodataLabel.Visible = false;
+            form.noChartData.Visible = false;
             form.chartView.Visible = false;
             form.backToStats.Visible = false;
             form.dropdownInvestments.Visible = false;

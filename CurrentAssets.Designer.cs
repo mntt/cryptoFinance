@@ -85,9 +85,9 @@
             this.feesLabel = new System.Windows.Forms.Label();
             this.quantityTransferBox = new System.Windows.Forms.TextBox();
             this.quantityLabel = new System.Windows.Forms.Label();
-            this.walletOutComboBox = new cryptoFinance.AdvancedComboBox();
+            this.walletOutComboBox = new System.Windows.Forms.ComboBox();
             this.walletLabel = new System.Windows.Forms.Label();
-            this.nameComboBox = new cryptoFinance.AdvancedComboBox();
+            this.nameComboBox = new System.Windows.Forms.ComboBox();
             this.cryptoLabel = new System.Windows.Forms.Label();
             this.transferButton = new System.Windows.Forms.Button();
             this.walletDataGrid = new System.Windows.Forms.DataGridView();
@@ -105,6 +105,7 @@
             this.cryptoQuantities = new System.Windows.Forms.Button();
             this.cryptoNetValues = new System.Windows.Forms.Button();
             this.exportData = new System.Windows.Forms.Button();
+            this.noChartData = new System.Windows.Forms.Label();
             this.exportdataPanel = new System.Windows.Forms.Panel();
             this.exportList = new System.Windows.Forms.ListView();
             this.exportBorder = new System.Windows.Forms.PictureBox();
@@ -135,8 +136,8 @@
             this.refreshPrice = new System.Windows.Forms.Button();
             this.cryptoBox = new System.Windows.Forms.TextBox();
             this.searchPicture = new System.Windows.Forms.PictureBox();
-            this.cryptoComboBox = new cryptoFinance.AdvancedComboBox();
-            this.walletComboBox = new cryptoFinance.AdvancedComboBox();
+            this.cryptoComboBox = new System.Windows.Forms.ComboBox();
+            this.walletComboBox = new System.Windows.Forms.ComboBox();
             this.chooseCryptoLabel = new System.Windows.Forms.Label();
             this.confirmButton = new System.Windows.Forms.Button();
             this.sumBox = new System.Windows.Forms.TextBox();
@@ -638,7 +639,7 @@
             this.walletsPanel.Controls.Add(this.transferPanel);
             this.walletsPanel.Controls.Add(this.transferButton);
             this.walletsPanel.Controls.Add(this.walletDataGrid);
-            this.walletsPanel.Location = new System.Drawing.Point(115, 358);
+            this.walletsPanel.Location = new System.Drawing.Point(115, 359);
             this.walletsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.walletsPanel.Name = "walletsPanel";
             this.walletsPanel.Size = new System.Drawing.Size(77, 69);
@@ -723,7 +724,7 @@
             // qLabel
             // 
             this.qLabel.AutoSize = true;
-            this.qLabel.Location = new System.Drawing.Point(53, 4);
+            this.qLabel.Location = new System.Drawing.Point(60, 4);
             this.qLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.qLabel.Name = "qLabel";
             this.qLabel.Size = new System.Drawing.Size(15, 16);
@@ -801,13 +802,12 @@
             this.walletOutComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
             this.walletOutComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.walletOutComboBox.FormattingEnabled = true;
-            this.walletOutComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
-            this.walletOutComboBox.ItemHeight = 15;
+            this.walletOutComboBox.ItemHeight = 16;
             this.walletOutComboBox.Location = new System.Drawing.Point(235, 44);
             this.walletOutComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.walletOutComboBox.MaxDropDownItems = 5;
             this.walletOutComboBox.Name = "walletOutComboBox";
-            this.walletOutComboBox.Size = new System.Drawing.Size(220, 21);
+            this.walletOutComboBox.Size = new System.Drawing.Size(220, 24);
             this.walletOutComboBox.TabIndex = 70;
             // 
             // walletLabel
@@ -826,13 +826,12 @@
             this.nameComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.nameComboBox.DropDownWidth = 150;
             this.nameComboBox.FormattingEnabled = true;
-            this.nameComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
-            this.nameComboBox.ItemHeight = 15;
+            this.nameComboBox.ItemHeight = 16;
             this.nameComboBox.Location = new System.Drawing.Point(235, 11);
             this.nameComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.nameComboBox.MaxDropDownItems = 5;
             this.nameComboBox.Name = "nameComboBox";
-            this.nameComboBox.Size = new System.Drawing.Size(220, 21);
+            this.nameComboBox.Size = new System.Drawing.Size(220, 24);
             this.nameComboBox.TabIndex = 69;
             // 
             // cryptoLabel
@@ -911,6 +910,7 @@
             // 
             this.statisticsPanel.Controls.Add(this.variablesPanel);
             this.statisticsPanel.Controls.Add(this.statsmenuPanel);
+            this.statisticsPanel.Controls.Add(this.noChartData);
             this.statisticsPanel.Controls.Add(this.exportdataPanel);
             this.statisticsPanel.Controls.Add(this.chartView);
             this.statisticsPanel.Controls.Add(this.dropdownInvestments);
@@ -919,10 +919,10 @@
             this.statisticsPanel.Controls.Add(this.backToStats);
             this.statisticsPanel.Controls.Add(this.dashLabel);
             this.statisticsPanel.Controls.Add(this.nodataLabel);
-            this.statisticsPanel.Location = new System.Drawing.Point(284, 191);
+            this.statisticsPanel.Location = new System.Drawing.Point(817, 106);
             this.statisticsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.statisticsPanel.Name = "statisticsPanel";
-            this.statisticsPanel.Size = new System.Drawing.Size(173, 137);
+            this.statisticsPanel.Size = new System.Drawing.Size(147, 113);
             this.statisticsPanel.TabIndex = 49;
             this.statisticsPanel.Tag = "main";
             this.statisticsPanel.Visible = false;
@@ -1041,6 +1041,17 @@
             this.exportData.Text = "Iškelti duomenis";
             this.exportData.UseVisualStyleBackColor = true;
             // 
+            // noChartData
+            // 
+            this.noChartData.AutoSize = true;
+            this.noChartData.Location = new System.Drawing.Point(100, 366);
+            this.noChartData.Name = "noChartData";
+            this.noChartData.Size = new System.Drawing.Size(96, 16);
+            this.noChartData.TabIndex = 56;
+            this.noChartData.Tag = "nodata";
+            this.noChartData.Text = "Nėra duomenų";
+            this.noChartData.Visible = false;
+            // 
             // exportdataPanel
             // 
             this.exportdataPanel.Controls.Add(this.exportList);
@@ -1128,10 +1139,10 @@
             // 
             this.datePickerFinish.BorderColor = System.Drawing.Color.Empty;
             this.datePickerFinish.CustomFormat = "yyyy-MM-dd HH:mm";
-            this.datePickerFinish.Location = new System.Drawing.Point(799, 9);
+            this.datePickerFinish.Location = new System.Drawing.Point(884, 10);
             this.datePickerFinish.Margin = new System.Windows.Forms.Padding(4);
             this.datePickerFinish.Name = "datePickerFinish";
-            this.datePickerFinish.Size = new System.Drawing.Size(233, 22);
+            this.datePickerFinish.Size = new System.Drawing.Size(150, 22);
             this.datePickerFinish.TabIndex = 53;
             this.datePickerFinish.Visible = false;
             // 
@@ -1139,10 +1150,10 @@
             // 
             this.datePickerStart.BorderColor = System.Drawing.Color.Empty;
             this.datePickerStart.CustomFormat = "yyyy-MM-dd HH:mm";
-            this.datePickerStart.Location = new System.Drawing.Point(524, 9);
+            this.datePickerStart.Location = new System.Drawing.Point(694, 10);
             this.datePickerStart.Margin = new System.Windows.Forms.Padding(4);
             this.datePickerStart.Name = "datePickerStart";
-            this.datePickerStart.Size = new System.Drawing.Size(233, 22);
+            this.datePickerStart.Size = new System.Drawing.Size(150, 22);
             this.datePickerStart.TabIndex = 52;
             this.datePickerStart.Visible = false;
             // 
@@ -1162,7 +1173,7 @@
             // dashLabel
             // 
             this.dashLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(186)));
-            this.dashLabel.Location = new System.Drawing.Point(769, 4);
+            this.dashLabel.Location = new System.Drawing.Point(852, 6);
             this.dashLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.dashLabel.Name = "dashLabel";
             this.dashLabel.Size = new System.Drawing.Size(24, 25);
@@ -1233,10 +1244,10 @@
             this.addOperationPanel.Controls.Add(this.contentPanel);
             this.addOperationPanel.Controls.Add(this.buyButton);
             this.addOperationPanel.Controls.Add(this.sellButton);
-            this.addOperationPanel.Location = new System.Drawing.Point(856, 111);
+            this.addOperationPanel.Location = new System.Drawing.Point(817, 227);
             this.addOperationPanel.Margin = new System.Windows.Forms.Padding(4);
             this.addOperationPanel.Name = "addOperationPanel";
-            this.addOperationPanel.Size = new System.Drawing.Size(104, 86);
+            this.addOperationPanel.Size = new System.Drawing.Size(147, 108);
             this.addOperationPanel.TabIndex = 24;
             this.addOperationPanel.Tag = "main";
             this.addOperationPanel.Visible = false;
@@ -1390,7 +1401,7 @@
             // maxqLabel
             // 
             this.maxqLabel.AutoSize = true;
-            this.maxqLabel.Location = new System.Drawing.Point(53, 4);
+            this.maxqLabel.Location = new System.Drawing.Point(60, 4);
             this.maxqLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.maxqLabel.Name = "maxqLabel";
             this.maxqLabel.Size = new System.Drawing.Size(15, 16);
@@ -1416,7 +1427,7 @@
             // 
             this.cryptoBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(186)));
             this.cryptoBox.ForeColor = System.Drawing.Color.Silver;
-            this.cryptoBox.Location = new System.Drawing.Point(283, 4);
+            this.cryptoBox.Location = new System.Drawing.Point(226, 1);
             this.cryptoBox.Margin = new System.Windows.Forms.Padding(4);
             this.cryptoBox.MaxLength = 30;
             this.cryptoBox.Name = "cryptoBox";
@@ -1443,12 +1454,11 @@
             this.cryptoComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
             this.cryptoComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cryptoComboBox.FormattingEnabled = true;
-            this.cryptoComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
             this.cryptoComboBox.Location = new System.Drawing.Point(283, 4);
             this.cryptoComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.cryptoComboBox.MaxDropDownItems = 10;
             this.cryptoComboBox.Name = "cryptoComboBox";
-            this.cryptoComboBox.Size = new System.Drawing.Size(255, 23);
+            this.cryptoComboBox.Size = new System.Drawing.Size(255, 24);
             this.cryptoComboBox.TabIndex = 29;
             this.cryptoComboBox.Tag = "sell";
             // 
@@ -1457,11 +1467,10 @@
             this.walletComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
             this.walletComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.walletComboBox.FormattingEnabled = true;
-            this.walletComboBox.HighlightColor = System.Drawing.Color.Aquamarine;
             this.walletComboBox.Location = new System.Drawing.Point(283, 71);
             this.walletComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.walletComboBox.Name = "walletComboBox";
-            this.walletComboBox.Size = new System.Drawing.Size(255, 23);
+            this.walletComboBox.Size = new System.Drawing.Size(255, 24);
             this.walletComboBox.TabIndex = 31;
             this.walletComboBox.Tag = "sell";
             // 
@@ -1866,7 +1875,7 @@
         public System.Windows.Forms.Label chooseCryptoLabel;
         public System.Windows.Forms.TextBox cryptoBox;
         public System.Windows.Forms.PictureBox searchPicture;
-        public AdvancedComboBox cryptoComboBox;
+        public System.Windows.Forms.ComboBox cryptoComboBox;
         public System.Windows.Forms.ListView suggestionsListView;
         public System.Windows.Forms.ListView top100listview;
         private System.Windows.Forms.Label dateLabel;
@@ -1885,15 +1894,15 @@
         public System.Windows.Forms.TextBox sumBox;
         public System.Windows.Forms.Button confirmButton;
         public System.Windows.Forms.Button updateCryptoList;
-        public AdvancedComboBox walletComboBox;
+        public System.Windows.Forms.ComboBox walletComboBox;
         public System.ComponentModel.BackgroundWorker priceWorker;
         public System.Windows.Forms.Label lastTimeUpdated;
         public System.Windows.Forms.Panel contentPanel;
         public System.Windows.Forms.Panel transferPanel;
         public System.Windows.Forms.Label cryptoLabel;
-        public AdvancedComboBox nameComboBox;
+        public System.Windows.Forms.ComboBox nameComboBox;
         private System.Windows.Forms.Label walletLabel;
-        public AdvancedComboBox walletOutComboBox;
+        public System.Windows.Forms.ComboBox walletOutComboBox;
         private System.Windows.Forms.Label quantityLabel;
         public System.Windows.Forms.TextBox quantityTransferBox;
         public System.Windows.Forms.Label qLabel;
@@ -1942,5 +1951,6 @@
         public System.Windows.Forms.Panel variablesPanel;
         public System.Windows.Forms.Panel statsmenuPanel;
         public System.Windows.Forms.Panel exportdataPanel;
+        public System.Windows.Forms.Label noChartData;
     }
 }

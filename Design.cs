@@ -149,7 +149,7 @@ namespace cryptoFinance
                 button.ForeColor = Colours.buttonFore;
                 button.FlatAppearance.BorderColor = Colours.buttonBack;
                 button.FlatAppearance.MouseOverBackColor = Colours.formBackground;
-                button.Font = font7;
+                button.Font = font6;
             }
 
             if(button.Tag == "stats")
@@ -494,11 +494,10 @@ namespace cryptoFinance
         {
             foreach (var item in allcontrols)
             {
-                if (item.GetType() == typeof(AdvancedComboBox))
+                if (item.GetType() == typeof(ComboBox))
                 {
-                    AdvancedComboBox combobox = (AdvancedComboBox)item;
+                    ComboBox combobox = (ComboBox)item;
                     combobox.Font = font8;
-                    combobox.HighlightColor = Colours.selectedItem;
                 }
             }
         }

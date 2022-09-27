@@ -35,26 +35,25 @@ namespace cryptoFinance
             else
             {
                 if (form.pieChart.Visible == false)
-                {
+                { 
                     form.ShowLoading();
                     ConstructPieChart(form, dgf);
+                    await Task.Delay(1000);
                     form.HideLoading();
-                    await Task.Delay(100);
-                    form.pieChart.Visible = true;
                 }
                 else
                 {
                     form.pieChart.Visible = false;
                 }
-            } 
+            }
         }
 
         public async Task ConstructPieChartAsync(CurrentAssets form, DataGridForm dgf)
         {
             form.ShowLoading();
             ConstructPieChart(form, dgf);
+            await Task.Delay(1000);
             form.HideLoading();
-            await Task.Delay(100);
         }
 
         private void ConstructPieChart(CurrentAssets form, DataGridForm dgf)
@@ -63,11 +62,9 @@ namespace cryptoFinance
 
             form.pieChart.Series.Clear();
             var coinList = dgf.ReturnCoinList();
-
             var coins = coinList.Where(x => x.quantity > 0).OrderByDescending(x => x.totalSum).ToList();
-            Func<ChartPoint, string> labelPoint = chartPoint => string.Format("{0:C2}", chartPoint.Y);
-
             var total = coins.Select(x => x.totalSum).ToList().Sum();
+            Func<ChartPoint, string> labelPoint = chartPoint => string.Format("{0:C2}", chartPoint.Y);
 
             var tooltip = new DefaultTooltip
             {
@@ -80,6 +77,7 @@ namespace cryptoFinance
             form.pieChart.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
             form.pieChart.Font = Design.font6;
             form.pieChart.DataTooltip = tooltip;
+            form.pieChart.Visible = true;
         }
 
         private SeriesCollection CreateSeries(List<ConstructingLists> coins, decimal total, Func<ChartPoint, string> labelPoint)

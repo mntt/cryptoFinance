@@ -49,8 +49,6 @@ namespace cryptoFinance
         private void CurrentAssets_Load(object sender, EventArgs e)
         {
             lf = new LoadingForm();
-            lf.Size = new Size(this.Size.Width, this.Size.Height);
-
             refreshPricesButton.BackgroundImage = refreshImages[0];
             CountCurrentValue();  
             AddFormsToContainer();
@@ -139,7 +137,10 @@ namespace cryptoFinance
 
         private void CenterLoadingBox()
         {
-            lf.Location = new Point(this.Location.X, this.Location.Y);
+            lf.Location = new Point(this.Location.X+8, this.Location.Y);
+            lf.Size = new Size(this.Width-17, this.Height-9);
+            lf.loadingBox.Location = new Point((this.Width / 2) - (lf.loadingBox.Width / 2), (this.Height / 2) - (lf.loadingBox.Height / 2));
+            this.Enabled = false;
         }
 
         public void ShowLoading()
@@ -150,6 +151,8 @@ namespace cryptoFinance
 
         public void HideLoading()
         {
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.Enabled = true;
             lf.Hide();
         }
 
