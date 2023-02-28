@@ -1,24 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace cryptoFinance
 {
     public static class FormValidation
     {
-        public static bool ReturnValidation(Control.ControlCollection controls)
-        {
-            List<Control> controlList = new List<Control>();
-
-            foreach(var item in controls)
-            {
-                controlList.Add((Control)item);
-            }
-
-            bool validation = CheckForEmptyBoxes(controlList);
-            return validation; 
-        }
-
         public static bool ReturnValidation(List<Control> controlList)
         {
             bool validation = CheckForEmptyBoxes(controlList);
@@ -112,6 +98,4 @@ namespace cryptoFinance
         }
 
     }
-
-
 }

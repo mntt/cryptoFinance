@@ -205,19 +205,6 @@ namespace cryptoFinance
             ClearSelection();
         }
 
-        public bool cannotUpdatePrices()
-        {
-            //don't need it anymore, but will keep this just in case
-            if(cannotUpdatePriceList.Count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public List<ConstructingLists> ReturnCoinList()
         {
             return coinList;
@@ -368,9 +355,7 @@ namespace cryptoFinance
             {
                 form.dataGridCurrentAssets.Rows.Add();
 
-                var namesplit = coinList[i].name.Split('(');
-                var image = Connection.iwdb.GetLogo(namesplit[0].Trim(' '), namesplit[1].Trim(')'));
-
+                var image = Connection.iwdb.GetLogo(new ConstructingLists(coinList[i].name, coinList[i].customCoin));
                 form.dataGridCurrentAssets.Rows[i].Cells[0].Value = ResizeImage(image, 20, 20);
                 form.dataGridCurrentAssets.Rows[i].Cells[1].Value = coinList[i].name;
 
@@ -402,51 +387,44 @@ namespace cryptoFinance
         private async Task FetchPrices()
         {
             cannotUpdatePriceList.Clear();
-            foreach (var item in coinList)
-            {                
-                decimal currentValue = 0;
-                decimal price = 0;
-                DateTime today = DateTime.Now;
+            decimal currentValue = 0;
+            decimal price = 0;
+            DateTime today = DateTime.Now;
 
-                if (!item.customCoin)
-                {
-                    errorUpdatingPrices = 0;
-                    var result = GetPrices.ById(item.id);
+            errorUpdatingPrices = 0;
+            var updatedList = GetPrices.ById(coinList);
 
-                    switch (result)
-                    {
-                        case -1: //no connection
-                            errorUpdatingPrices = -1; 
-                            break;
-                        case -2: //error decoding data or cannot reach API
-                            errorUpdatingPrices = -2;
-                            break;
-                        case -3: //takes too long to get price
-                            errorUpdatingPrices = -3;
-                            break;
-                        default:
-                            price = result;
-                            break;
-                    }
-                }
-                else
+            for (int i = 0; i < updatedList.Count; i++)
+            {
+                switch (updatedList[i].price)
                 {
-                    price = Connection.db.GetTable<CurrentAssetsDB>()
-                        .Where(x => x.Cryptocurrency == item.name).Select(x => x.Price).ToList().First();
+                    case -1: //no connection
+                        errorUpdatingPrices = -1;
+                        break;
+                    case -2: //error decoding data or cannot reach API
+                        errorUpdatingPrices = -2;
+                        break;
+                    case -3: //takes too long to get price
+                        errorUpdatingPrices = -3;
+                        break;
+                    default:
+                        price = updatedList[i].price;
+                        break;
                 }
+
 
                 if (errorUpdatingPrices == 0)
                 {
-                    currentValue = price * item.quantity;
-                    temporaryList.Add(ReturnObject(today, item.name, item.customCoin, item.id, item.quantity, price, currentValue));
+                    currentValue = price * updatedList[i].quantity;
+                    temporaryList.Add(ReturnObject(today, updatedList[i].name, updatedList[i].customCoin, updatedList[i].id, updatedList[i].quantity, price, currentValue));
                 }
                 else
                 {
-                    cannotUpdatePriceList.Add(item.name);
+                    cannotUpdatePriceList.Add(updatedList[i].name);
                     price = Connection.db.GetTable<CurrentAssetsDB>()
-                        .Where(x => x.Cryptocurrency == item.name).Select(x => x.Price).ToList().First();
-                    currentValue = price * item.quantity;
-                    temporaryList.Add(ReturnObject(today, item.name, item.customCoin, item.id, item.quantity, price, currentValue));
+                        .Where(x => x.Cryptocurrency == updatedList[i].name).Select(x => x.Price).ToList().First();
+                    currentValue = price * updatedList[i].quantity;
+                    temporaryList.Add(ReturnObject(today, updatedList[i].name, updatedList[i].customCoin, updatedList[i].id, updatedList[i].quantity, price, currentValue));
                 }
             }
 

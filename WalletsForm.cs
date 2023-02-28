@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
 
 namespace cryptoFinance
@@ -116,8 +114,7 @@ namespace cryptoFinance
             {
                 ca.walletDataGrid.Rows.Add();
 
-                var namesplit = newDataGridList[i].name.Split('(');
-                var image = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
+                var image = Connection.iwdb.GetLogo(new ConstructingLists(newDataGridList[i].name, newDataGridList[i].customCoin));
 
                 ca.walletDataGrid.Rows[i].Cells[0].Value = ResizeImage(image, 20, 20);
                 ca.walletDataGrid.Rows[i].Cells[1].Value = newDataGridList[i].name;
@@ -408,8 +405,7 @@ namespace cryptoFinance
             {
                 form.walletDataGrid.Rows.Add();
 
-                var namesplit = dataGridList[i].name.Split('(');
-                var image = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
+                var image = Connection.iwdb.GetLogo(new ConstructingLists(dataGridList[i].name, dataGridList[i].customCoin));
 
                 form.walletDataGrid.Rows[i].Cells[0].Value = ResizeImage(image, 20, 20);
                 form.walletDataGrid.Rows[i].Cells[1].Value = dataGridList[i].name;

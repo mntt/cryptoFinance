@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace cryptoFinance
 {
@@ -56,19 +57,31 @@ namespace cryptoFinance
             sql.Close();
         }
 
-        public Bitmap GetLogo(string cryptoName, string cryptoSymbol)
+        public Bitmap GetLogo(ConstructingLists coinObject)
         {
-            sql.Open();
-            MemoryStream stream = new MemoryStream();
-            string querry = "SELECT Logo FROM CoingeckoCryptoList WHERE CryptoName = '"+cryptoName+"' AND CryptoSymbol = '"+cryptoSymbol+"'";
-            SqlCommand command = new SqlCommand(querry, sql);
-            byte[] image = (byte[])command.ExecuteScalar();
+            string name = coinObject.name;
+            bool customCoin = coinObject.customCoin;
 
-            sql.Close();
-
-            try
+            if (customCoin)
             {
-                //if coin logo is found
+                MemoryStream stream = new MemoryStream();
+                byte[] image = ImageToByte(cryptoFinance.Properties.Resources.defaultLogo);
+                stream.Write(image, 0, image.Length);
+                Bitmap bitmap = new Bitmap(stream);
+                return bitmap;
+            }
+            else
+            {
+                var namesplit = name.Split('(');
+                string newName = namesplit[0].TrimEnd(' ');
+                string symbol = namesplit[1].Trim(')');
+
+                sql.Open();
+                MemoryStream stream = new MemoryStream();
+                string querry = "SELECT Logo FROM CoingeckoCryptoList WHERE CryptoName = '" + newName + "' AND CryptoSymbol = '" + symbol + "'";
+                SqlCommand command = new SqlCommand(querry, sql);
+                byte[] image = (byte[])command.ExecuteScalar();
+                sql.Close();
 
                 if (image.Length == 1)
                 {
@@ -80,11 +93,6 @@ namespace cryptoFinance
                     Bitmap bitmap = new Bitmap(stream);
                     return bitmap;
                 }
-            }
-            catch
-            {
-                //logo not found
-                return null;
             }
         }
 

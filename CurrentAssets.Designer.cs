@@ -112,8 +112,6 @@
             this.exportButton = new System.Windows.Forms.Button();
             this.chartView = new LiveCharts.WinForms.CartesianChart();
             this.dropdownInvestments = new System.Windows.Forms.Button();
-            this.datePickerFinish = new cryptoFinance.CustomDateTimePicker();
-            this.datePickerStart = new cryptoFinance.CustomDateTimePicker();
             this.backToStats = new System.Windows.Forms.Button();
             this.dashLabel = new System.Windows.Forms.Label();
             this.nodataLabel = new System.Windows.Forms.Label();
@@ -145,7 +143,6 @@
             this.feeBox = new System.Windows.Forms.TextBox();
             this.feeLabel = new System.Windows.Forms.Label();
             this.dateLabel = new System.Windows.Forms.Label();
-            this.dateBox = new cryptoFinance.CustomDateTimePicker();
             this.priceBox = new System.Windows.Forms.TextBox();
             this.enterWalletNameLabel = new System.Windows.Forms.Label();
             this.priceLabel = new System.Windows.Forms.Label();
@@ -155,7 +152,6 @@
             this.buyButton = new System.Windows.Forms.Button();
             this.sellButton = new System.Windows.Forms.Button();
             this.timePanel = new System.Windows.Forms.Panel();
-            this.timeBox = new cryptoFinance.CustomDateTimePicker();
             this.confirmTime = new System.Windows.Forms.Button();
             this.priceWorker = new System.ComponentModel.BackgroundWorker();
             this.assetAlertLabel = new System.Windows.Forms.Label();
@@ -164,6 +160,10 @@
             this.applyFilterButton = new System.Windows.Forms.Button();
             this.filterListView = new System.Windows.Forms.ListView();
             this.filterBox = new System.Windows.Forms.TextBox();
+            this.dateBox = new cryptoFinance.CustomDateTimePicker();
+            this.datePickerFinish = new cryptoFinance.CustomDateTimePicker();
+            this.datePickerStart = new cryptoFinance.CustomDateTimePicker();
+            this.timeBox = new cryptoFinance.CustomDateTimePicker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridCurrentAssets)).BeginInit();
             this.alertPanel.SuspendLayout();
             this.buttonPanel.SuspendLayout();
@@ -1135,28 +1135,6 @@
             this.dropdownInvestments.UseVisualStyleBackColor = true;
             this.dropdownInvestments.Visible = false;
             // 
-            // datePickerFinish
-            // 
-            this.datePickerFinish.BorderColor = System.Drawing.Color.Empty;
-            this.datePickerFinish.CustomFormat = "yyyy-MM-dd HH:mm";
-            this.datePickerFinish.Location = new System.Drawing.Point(884, 10);
-            this.datePickerFinish.Margin = new System.Windows.Forms.Padding(4);
-            this.datePickerFinish.Name = "datePickerFinish";
-            this.datePickerFinish.Size = new System.Drawing.Size(150, 22);
-            this.datePickerFinish.TabIndex = 53;
-            this.datePickerFinish.Visible = false;
-            // 
-            // datePickerStart
-            // 
-            this.datePickerStart.BorderColor = System.Drawing.Color.Empty;
-            this.datePickerStart.CustomFormat = "yyyy-MM-dd HH:mm";
-            this.datePickerStart.Location = new System.Drawing.Point(694, 10);
-            this.datePickerStart.Margin = new System.Windows.Forms.Padding(4);
-            this.datePickerStart.Name = "datePickerStart";
-            this.datePickerStart.Size = new System.Drawing.Size(150, 22);
-            this.datePickerStart.TabIndex = 52;
-            this.datePickerStart.Visible = false;
-            // 
             // backToStats
             // 
             this.backToStats.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1244,10 +1222,10 @@
             this.addOperationPanel.Controls.Add(this.contentPanel);
             this.addOperationPanel.Controls.Add(this.buyButton);
             this.addOperationPanel.Controls.Add(this.sellButton);
-            this.addOperationPanel.Location = new System.Drawing.Point(817, 227);
+            this.addOperationPanel.Location = new System.Drawing.Point(200, 222);
             this.addOperationPanel.Margin = new System.Windows.Forms.Padding(4);
             this.addOperationPanel.Name = "addOperationPanel";
-            this.addOperationPanel.Size = new System.Drawing.Size(147, 108);
+            this.addOperationPanel.Size = new System.Drawing.Size(744, 207);
             this.addOperationPanel.TabIndex = 24;
             this.addOperationPanel.Tag = "main";
             this.addOperationPanel.Visible = false;
@@ -1427,7 +1405,7 @@
             // 
             this.cryptoBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(186)));
             this.cryptoBox.ForeColor = System.Drawing.Color.Silver;
-            this.cryptoBox.Location = new System.Drawing.Point(226, 1);
+            this.cryptoBox.Location = new System.Drawing.Point(282, 4);
             this.cryptoBox.Margin = new System.Windows.Forms.Padding(4);
             this.cryptoBox.MaxLength = 30;
             this.cryptoBox.Name = "cryptoBox";
@@ -1548,18 +1526,6 @@
             this.dateLabel.TabIndex = 108;
             this.dateLabel.Text = "Data";
             // 
-            // dateBox
-            // 
-            this.dateBox.BorderColor = System.Drawing.Color.Empty;
-            this.dateBox.CustomFormat = "yyyy-MM-dd HH:mm";
-            this.dateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateBox.Location = new System.Drawing.Point(283, 39);
-            this.dateBox.Margin = new System.Windows.Forms.Padding(4);
-            this.dateBox.Name = "dateBox";
-            this.dateBox.Size = new System.Drawing.Size(255, 22);
-            this.dateBox.TabIndex = 30;
-            this.dateBox.Tag = "box";
-            // 
             // priceBox
             // 
             this.priceBox.Location = new System.Drawing.Point(283, 151);
@@ -1659,19 +1625,6 @@
             this.timePanel.Tag = "time";
             this.timePanel.Visible = false;
             // 
-            // timeBox
-            // 
-            this.timeBox.BorderColor = System.Drawing.Color.Empty;
-            this.timeBox.CustomFormat = "HH:mm";
-            this.timeBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.timeBox.Location = new System.Drawing.Point(35, 10);
-            this.timeBox.Margin = new System.Windows.Forms.Padding(4);
-            this.timeBox.Name = "timeBox";
-            this.timeBox.ShowUpDown = true;
-            this.timeBox.Size = new System.Drawing.Size(189, 22);
-            this.timeBox.TabIndex = 111;
-            this.timeBox.Tag = "time";
-            // 
             // confirmTime
             // 
             this.confirmTime.Location = new System.Drawing.Point(77, 47);
@@ -1751,6 +1704,53 @@
             this.filterBox.Name = "filterBox";
             this.filterBox.Size = new System.Drawing.Size(256, 22);
             this.filterBox.TabIndex = 0;
+            // 
+            // dateBox
+            // 
+            this.dateBox.BorderColor = System.Drawing.Color.Empty;
+            this.dateBox.CustomFormat = "yyyy-MM-dd HH:mm";
+            this.dateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateBox.Location = new System.Drawing.Point(283, 39);
+            this.dateBox.Margin = new System.Windows.Forms.Padding(4);
+            this.dateBox.Name = "dateBox";
+            this.dateBox.Size = new System.Drawing.Size(255, 22);
+            this.dateBox.TabIndex = 30;
+            this.dateBox.Tag = "box";
+            // 
+            // datePickerFinish
+            // 
+            this.datePickerFinish.BorderColor = System.Drawing.Color.Empty;
+            this.datePickerFinish.CustomFormat = "yyyy-MM-dd HH:mm";
+            this.datePickerFinish.Location = new System.Drawing.Point(884, 10);
+            this.datePickerFinish.Margin = new System.Windows.Forms.Padding(4);
+            this.datePickerFinish.Name = "datePickerFinish";
+            this.datePickerFinish.Size = new System.Drawing.Size(150, 22);
+            this.datePickerFinish.TabIndex = 53;
+            this.datePickerFinish.Visible = false;
+            // 
+            // datePickerStart
+            // 
+            this.datePickerStart.BorderColor = System.Drawing.Color.Empty;
+            this.datePickerStart.CustomFormat = "yyyy-MM-dd HH:mm";
+            this.datePickerStart.Location = new System.Drawing.Point(694, 10);
+            this.datePickerStart.Margin = new System.Windows.Forms.Padding(4);
+            this.datePickerStart.Name = "datePickerStart";
+            this.datePickerStart.Size = new System.Drawing.Size(150, 22);
+            this.datePickerStart.TabIndex = 52;
+            this.datePickerStart.Visible = false;
+            // 
+            // timeBox
+            // 
+            this.timeBox.BorderColor = System.Drawing.Color.Empty;
+            this.timeBox.CustomFormat = "HH:mm";
+            this.timeBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.timeBox.Location = new System.Drawing.Point(35, 10);
+            this.timeBox.Margin = new System.Windows.Forms.Padding(4);
+            this.timeBox.Name = "timeBox";
+            this.timeBox.ShowUpDown = true;
+            this.timeBox.Size = new System.Drawing.Size(189, 22);
+            this.timeBox.TabIndex = 111;
+            this.timeBox.Tag = "time";
             // 
             // CurrentAssets
             // 

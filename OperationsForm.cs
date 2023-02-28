@@ -426,9 +426,8 @@ namespace cryptoFinance
             form.operationDataGrid.Rows[secondLine].Cells[5].Value = "Suma ir mokesčiai";
             form.operationDataGrid.Rows[secondLine].DefaultCellStyle.ForeColor = Colours.alternateCellBack;
             form.operationDataGrid.Rows.Add();
- 
-            var namesplit = operations[counter].CryptoName.Split('(');
-            var logo = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
+
+            var logo = Connection.iwdb.GetLogo(new ConstructingLists(operations[counter].CryptoName, operations[counter].CustomCoin));
             form.operationDataGrid.Rows[thirdLine].Cells[0].Value = ResizeImage(logo, 18, 18);
 
             form.operationDataGrid.Rows[thirdLine].Cells[1].Value = operations[counter].CryptoName;
@@ -520,8 +519,7 @@ namespace cryptoFinance
             form.operationDataGrid.Rows[secondLine].DefaultCellStyle.ForeColor = Colours.alternateCellBack;
             form.operationDataGrid.Rows.Add();
 
-            var namesplit = list[counter].CryptoName.Split('(');
-            var logo = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
+            var logo = Connection.iwdb.GetLogo(new ConstructingLists(list[counter].CryptoName, list[counter].CustomCoin));
             form.operationDataGrid.Rows[thirdLine].Cells[0].Value = ResizeImage(logo, 18, 18);
 
             form.operationDataGrid.Rows[thirdLine].Cells[1].Value = list[counter].CryptoName;
@@ -756,7 +754,7 @@ namespace cryptoFinance
             string cryptoName = namesplit[0];
             string cryptoSymbol = namesplit[1].Trim(')');
             decimal realPrice = 0;
-            decimal testPrice = GetPrices.ById(cryptoId);
+            var testPrice = GetPrices.ById(name);
 
             if (testPrice > 0)
             {
@@ -859,7 +857,7 @@ namespace cryptoFinance
             string cryptoName = namesplit[0];
             string cryptoSymbol = namesplit[1].Trim(')');
             decimal realPrice = 0;
-            decimal testPrice = GetPrices.ById(cryptoId);
+            var testPrice = GetPrices.ById(name);
 
             if (testPrice > 0)
             {

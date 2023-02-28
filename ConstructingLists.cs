@@ -14,10 +14,10 @@ namespace cryptoFinance
         public decimal price { get; set; }
         public decimal totalSum { get; set; }
 
-        public ConstructingLists(string _name, decimal _quantity)
+        public ConstructingLists(string _name, decimal _price)
         {
             name = _name;
-            quantity = _quantity;
+            price = _price;
         }
 
         public ConstructingLists(DateTime _date, string _name, decimal _quantity)
@@ -54,6 +54,12 @@ namespace cryptoFinance
             quantity = _quantity;
             price = _price;
             totalSum = _totalSum;
+        }
+
+        public ConstructingLists(string _name, bool _customCoin)
+        {
+            name = _name;
+            customCoin = _customCoin;
         }
     }
 }

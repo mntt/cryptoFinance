@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -123,7 +124,6 @@ namespace cryptoFinance
                 caform.progressLabel.Text = "Laukiama kol bus pasiekiamas coingecko API...";
             }
 
-            await Task.Delay(120000); //to avoid "too many requests" error - using a free API plan
             DownloadListData();
             Progress(20);
             await Task.Delay(100);
@@ -170,10 +170,10 @@ namespace cryptoFinance
             {
                 try
                 {
-                    if (ids.Count / 2 == i)
+                    if (i % 8 == 0)
                     {
-                        Progress(25);
-                        await Task.Delay(60000);
+                        Progress(6);
+                        await Task.Delay(60000); //to avoid too many requests in API
                     }
 
                     jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/simple/price?ids=" + ids[i] + "&vs_currencies=eur&include_market_cap=true&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
@@ -284,31 +284,59 @@ namespace cryptoFinance
         {
             if (introform == null)
             {
-                var coins = Connection.db.GetTable<CryptoTable>().Select(x => x.CryptoName).Distinct().ToList();
+                var coins = Connection.db.GetTable<CryptoTable>().Where(x => x.CustomCoin == false).Select(x => x.CryptoName).Distinct().ToList();
                 var oldlist = Connection.db.GetTable<CoingeckoCryptoList>().ToList();
+                List<string> listOfIds = new List<string>();
 
-                await Task.Delay(60000);
+                int arrayNumber = 0;
+                string requestString = "";
+
+                if (coins.Count > 437) //437 cia daugiausiai tiek paima simboliu coingecko API
+                {
+                    arrayNumber = coins.Count / 437;
+                }
+
+                string[] requestStrings = new string[arrayNumber + 1];
+
                 for (int i = 0; i < coins.Count; i++)
                 {
-                    if (i % 12 == 0 && i != 0)
-                    {
-                        await Task.Delay(60000);
-                    }
-
+                    int counter = 0;
                     var split = coins[i].Split('(');
                     var name = split[0].TrimEnd(' ');
                     var symbol = split[1].Trim(')');
-                    var id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
-                    string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + id + "&order=market_cap_desc&per_page=100&page=1&sparkline=false");
-                    var data = JsonConvert.DeserializeObject<dynamic>(jsonURL);
-                    string imageLink = (string)data[0]["image"];
-                    Image image = DownloadImageFromUrl(imageLink);
-                    tokenListWithFullData.Where(x => x.cryptoId == id).ToList().ForEach(x => x.logo = image);
-                }
-            }
+                    string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
+                    listOfIds.Add(id);
+                    requestString += id + "%2C";
 
-            await Task.Delay(1000);
-            Progress(10);
+                    if (i > 0 && i % 437 == 0)
+                    {
+                        requestStrings[counter] = requestString;
+                        counter += 1;
+                        requestString = "";
+                    }
+                    else if (i == coins.Count - 1)
+                    {
+                        requestStrings[arrayNumber] = requestString;
+                    }
+                }
+
+                for (int i = 0; i < requestStrings.Length; i++)
+                {
+                    string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + requestStrings[i] + "&order=id_asc&per_page=100&page=1&sparkline=false");
+                    var data = JsonConvert.DeserializeObject<dynamic>(jsonURL);
+                    listOfIds.OrderBy(x => x);
+
+                    for (int j = 0; j < listOfIds.Count; j++)
+                    {
+                        string imageLink = (string)data[j]["image"]; 
+                        Image image = DownloadImageFromUrl(imageLink);
+                        tokenListWithFullData.Where(x => x.cryptoId == listOfIds[j]).ToList().ForEach(x => x.logo = image);
+                    }
+                }
+
+                await Task.Delay(1000);
+                Progress(10);
+            }
         }
 
         private System.Drawing.Image DownloadImageFromUrl(string imageUrl)

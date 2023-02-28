@@ -318,98 +318,6 @@ namespace cryptoFinance
             sf.OpenNetValues(this, chart, action);
         }
 
-        public async Task CheckLogos()
-        {
-            var uniqueCoins = Connection.db.GetTable<CryptoTable>().Select(x => x.CryptoName).Distinct().ToList();
-
-            foreach (var item in uniqueCoins)
-            {
-                var namesplit = item.Split('(');
-                Image logo = null;
-
-                try
-                {
-                    logo = Connection.iwdb.GetLogo(namesplit[0], namesplit[1].Trim(')'));
-                }
-                catch
-                {
-                    logo = null;
-                }
-
-
-                if (logo == null)
-                {
-                    bool customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == item).Select(x => x.CustomCoin).ToList().Last();
-
-                    if (customCoin)
-                    {
-                        Connection.iwdb.InsertCryptoLogo(namesplit[0], cryptoFinance.Properties.Resources.defaultLogo);
-                    }
-                    else
-                    {
-                        string id = Connection.db.GetTable<CoingeckoCryptoList>()
-                            .Where(x => x.CryptoName == namesplit[0] && x.CryptoSymbol == namesplit[1]).Select(x => x.CryptoId).First();
-                        await DownloadLogo(id);
-                    }
-                }
-                else
-                {
-                    //logo yra, ir bus priskirtas kraunant lenteles
-                }
-            }
-        }
-
-        private async Task DownloadLogo(string id)
-        {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            HttpClient client = new HttpClient();
-            string message = "";
-
-            try
-            {
-                string url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + id + "&order=market_cap_desc&per_page=100&page=1&sparkline=false";
-                var response = await client.GetAsync(url);
-                message = await response.Content.ReadAsStringAsync();
-                var split = message.Split('"');
-                var logoUrl = split[15];
-                Image image = DownloadImageFromUrl(logoUrl);
-                Connection.iwdb.InsertCryptoLogo(id, image);
-            }
-            catch
-            {
-                Connection.iwdb.InsertCryptoLogo(id, null);
-            }
-
-            client.Dispose();
-        }
-
-        private System.Drawing.Image DownloadImageFromUrl(string imageUrl)
-        {
-            System.Drawing.Image image = null;
-
-            try
-            {
-                System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(imageUrl);
-                webRequest.AllowWriteStreamBuffering = true;
-                webRequest.Timeout = 3000;
-
-                System.Net.WebResponse webResponse = webRequest.GetResponse();
-
-                System.IO.Stream stream = webResponse.GetResponseStream();
-
-                image = System.Drawing.Image.FromStream(stream);
-
-                webResponse.Close();
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-
-            return image;
-        }
-
         public async Task LoadForms(IntroForm form)
         {
             await Task.Delay(100);
@@ -418,31 +326,32 @@ namespace cryptoFinance
             form.ChangeProgressLabel("Ruošiama duomenų lentelė...");
             dgf = new DataGridForm(this);
             await Task.Delay(1);
-            form.IncrementPB(17);
+            form.IncrementPB(20);
 
             await Task.Delay(1);
             form.ChangeProgressLabel("Ruošiami duomenys skritulinei diagramai..."); 
             cf = new ChartForm();
             await Task.Delay(1);
-            form.IncrementPB(17);
+            form.IncrementPB(20);
 
             await Task.Delay(1);
             form.ChangeProgressLabel("Ruošiami operacijų duomenys..."); 
             op = new OperationsForm(this, dgf);
             await Task.Delay(1);
-            form.IncrementPB(17);
+            form.IncrementPB(20);
 
             await Task.Delay(1);
             form.ChangeProgressLabel("Ruošiami statistiniai duomenys...");            
             sf = new StatisticsForm(this);
             await Task.Delay(1);
-            form.IncrementPB(17);
+            form.IncrementPB(20);
 
             await Task.Delay(1);
             form.ChangeProgressLabel("Ruošiami piniginių duomenys...");           
             wf = new WalletsForm(this);
             await Task.Delay(1);
-            form.IncrementPB(17); 
+            form.IncrementPB(20);
+            await Task.Delay(100);
         }
 
         private void ClearSelection()
