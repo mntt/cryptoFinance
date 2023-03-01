@@ -18,6 +18,8 @@ namespace cryptoFinance
 
         private static bool jsonSuccess = true;
 
+        private static int maxStringNumber = 437; //437 cia daugiausiai tiek paima simboliu coingecko API
+
         private static bool IsInternetConnected()
         {
             string host = "coingecko.com";
@@ -40,38 +42,37 @@ namespace cryptoFinance
         {
             if (!timeoutcancel.IsCancellationRequested)
             {
+                List<ConstructingLists> listOfIds = new List<ConstructingLists>();
                 var oldlist = Connection.db.GetTable<CoingeckoCryptoList>().ToList();
                 int arrayNumber = 0;
                 string requestString = "";
 
-                if (coins.Count > 437) //437 cia daugiausiai tiek paima simboliu coingecko API
+                if (coins.Count > maxStringNumber) 
                 {
-                    arrayNumber = coins.Count / 437;
+                    arrayNumber = coins.Count / maxStringNumber;
                 }
 
                 string[] requestStrings = new string[arrayNumber + 1];
 
                 for (int i = 0; i < coins.Count; i++)
                 {
-                    if (coins[i].customCoin == false)
-                    {
-                        int counter = 0;
-                        var split = coins[i].name.Split('(');
-                        var name = split[0].TrimEnd(' ');
-                        var symbol = split[1].Trim(')');
-                        string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
-                        requestString += id + "%2C";
+                    int counter = 0;
+                    var split = coins[i].name.Split('(');
+                    var name = split[0].TrimEnd(' ');
+                    var symbol = split[1].Trim(')');
+                    string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
+                    listOfIds.Add(coins[i]);
+                    requestString += id + "%2C";
 
-                        if (i > 0 && i % 437 == 0)
-                        {
-                            requestStrings[counter] = requestString;
-                            counter += 1;
-                            requestString = "";
-                        }
-                        else if (i == coins.Count - 1)
-                        {
-                            requestStrings[arrayNumber] = requestString;
-                        }
+                    if (i > 0 && i % maxStringNumber == 0)
+                    {
+                        requestStrings[counter] = requestString;
+                        counter += 1;
+                        requestString = "";
+                    }
+                    else if (i == coins.Count - 1)
+                    {
+                        requestStrings[arrayNumber] = requestString;
                     }
                 }
 
@@ -90,13 +91,15 @@ namespace cryptoFinance
                         jsonSuccess = false;
                     }
 
-                    for (int j = 0; j < coins.Count; j++)
+                    var orderedIds = listOfIds.Skip(maxStringNumber * i).Take(maxStringNumber).ToList();
+
+                    for (int j = 0; j < orderedIds.Count; j++)
                     {
-                        var split = coins[j].name.Split('(');
+                        var split = orderedIds[j].name.Split('(');
                         var name = split[0].TrimEnd(' ');
                         var symbol = split[1].Trim(')');
                         string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
-
+    
                         try
                         {
                             GetCultureInfo gci = new GetCultureInfo(".");
@@ -105,10 +108,10 @@ namespace cryptoFinance
                         }
                         catch
                         {
-                            if (coins[j].customCoin == true)
+                            if (orderedIds[j].customCoin == true)
                             {
                                 price = Connection.db.GetTable<CurrentAssetsDB>()
-                                    .Where(x => x.Cryptocurrency == coins[j].name).Select(x => x.Price).ToList().First();
+                                    .Where(x => x.Cryptocurrency == orderedIds[j].name).Select(x => x.Price).ToList().First();
                             }
                             else
                             {
@@ -116,7 +119,7 @@ namespace cryptoFinance
                             }
                         }
 
-                        coins.Where(x => x.name == coins[j].name).ToList().ForEach(x => x.price = price);
+                        coins.Where(x => x.name == orderedIds[j].name).ToList().ForEach(x => x.price = price);
                     }
                 }
             }

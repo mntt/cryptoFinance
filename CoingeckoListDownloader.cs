@@ -28,6 +28,8 @@ namespace cryptoFinance
         private AddOperationForm aof { get; set; }
         private bool loadForms { get; set; }
 
+        private int maxStringNumber = 437; //437 - toki max skaiciu id priima coingecko
+
         public CoingeckoListDownloader(CurrentAssets _form, AddOperationForm _aof, ProgressBar _progressBar, Label _progressLabel)
         {
             //add operation form download instance
@@ -238,7 +240,7 @@ namespace cryptoFinance
                     allids += "%2C" + list[i];
                 }
 
-                if ((i % 437 == 0 && i != 0) || i == (list.Count - 1)) //437 - toki max skaiciu id priima coingecko
+                if ((i % maxStringNumber == 0 && i != 0) || i == (list.Count - 1)) 
                 {
                     idList.Add(allids);
                     allids = "";
@@ -291,9 +293,9 @@ namespace cryptoFinance
                 int arrayNumber = 0;
                 string requestString = "";
 
-                if (coins.Count > 437) //437 cia daugiausiai tiek paima simboliu coingecko API
+                if (coins.Count > maxStringNumber)
                 {
-                    arrayNumber = coins.Count / 437;
+                    arrayNumber = coins.Count / maxStringNumber;
                 }
 
                 string[] requestStrings = new string[arrayNumber + 1];
@@ -308,7 +310,7 @@ namespace cryptoFinance
                     listOfIds.Add(id);
                     requestString += id + "%2C";
 
-                    if (i > 0 && i % 437 == 0)
+                    if (i > 0 && i % maxStringNumber == 0)
                     {
                         requestStrings[counter] = requestString;
                         counter += 1;
@@ -324,13 +326,13 @@ namespace cryptoFinance
                 {
                     string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + requestStrings[i] + "&order=id_asc&per_page=100&page=1&sparkline=false");
                     var data = JsonConvert.DeserializeObject<dynamic>(jsonURL);
-                    listOfIds.OrderBy(x => x);
+                    var orderedIds = listOfIds.OrderBy(x => x).Skip(maxStringNumber * i).Take(maxStringNumber).ToList();
 
-                    for (int j = 0; j < listOfIds.Count; j++)
+                    for (int j = 0; j < orderedIds.Count; j++)
                     {
                         string imageLink = (string)data[j]["image"]; 
                         Image image = DownloadImageFromUrl(imageLink);
-                        tokenListWithFullData.Where(x => x.cryptoId == listOfIds[j]).ToList().ForEach(x => x.logo = image);
+                        tokenListWithFullData.Where(x => x.cryptoId == orderedIds[j]).ToList().ForEach(x => x.logo = image);
                     }
                 }
 
