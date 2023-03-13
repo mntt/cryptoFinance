@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Media;
+using SeriesCollection = LiveCharts.SeriesCollection;
 
 namespace cryptoFinance
 {
@@ -73,7 +76,7 @@ namespace cryptoFinance
             };
 
             form.pieChart.Series = CreateSeries(coins, total, labelPoint);
-            form.pieChart.LegendLocation = LegendLocation.Right;
+            //form.pieChart.LegendLocation = LegendLocation.Right;
             form.pieChart.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
             form.pieChart.Font = Design.font6;
             form.pieChart.DataTooltip = tooltip;
