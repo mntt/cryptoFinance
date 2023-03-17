@@ -23,7 +23,7 @@ namespace cryptoFinance
         public static Size datagridSize = new Size(790, 310);
         public static Point secondarydatagridLocation = new Point(0, 40);
         public static Size secondarydatagridSize = new Size(790, 274);
-        public static Point chartLocation = new Point(170, 105);
+        public static Point chartLocation = new Point(150, 105);
         public static Size chartSize = new Size(680, 261);
         public static Size buttonSize = new Size(123, 27);
         public static Size smallButtonSize = new Size(22, 21);

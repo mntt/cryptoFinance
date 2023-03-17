@@ -12,12 +12,9 @@ namespace cryptoFinance
                 e.Handled = true;
             }
 
-            if (quantityBox.Text == "0")
+            if (quantityBox.Text == "0" && ((e.KeyChar != (char)Keys.Back) && e.KeyChar != ','))
             {
-                if ((e.KeyChar != (char)Keys.Back) && e.KeyChar != ',')
-                {
-                    e.Handled = true;
-                }
+                e.Handled = true;
             }
 
             if (e.KeyChar == ',' && quantityBox.Text == "")
@@ -106,12 +103,9 @@ namespace cryptoFinance
                 e.Handled = true;
             }
 
-            if (currencyBox.Text == "0")
+            if (currencyBox.Text == "0" && ((e.KeyChar != (char)Keys.Back) && e.KeyChar != ','))
             {
-                if ((e.KeyChar != (char)Keys.Back) && e.KeyChar != ',')
-                {
-                    e.Handled = true;
-                }
+                e.Handled = true;
             }
 
             if (e.KeyChar == ',' && currencyBox.Text == "")

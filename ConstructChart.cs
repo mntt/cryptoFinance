@@ -71,7 +71,9 @@ namespace cryptoFinance
             }
             else
             {
-                var latestPrice = Connection.db.GetTable<CryptoTable>().Where(x => x.Date == date && x.CryptoName == coin && x.Operation == "UpdatePrice").Select(x => decimal.Parse(x.LastPrice.ToString())).ToList();
+                var latestPrice = Connection.db.GetTable<CryptoTable>()
+                    .Where(x => x.Date == date && x.CryptoName == coin && x.Operation == "UpdatePrice")
+                    .Select(x => decimal.Parse(x.LastPrice.ToString())).ToList();
 
                 if (latestPrice.Count > 0)
                 {

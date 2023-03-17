@@ -1,11 +1,12 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace cryptoFinance
 {
@@ -158,13 +159,10 @@ namespace cryptoFinance
                 decimal mcap;
                 bool isNumeric = decimal.TryParse(marketCap, out mcap);
 
-                if (isNumeric)
+                if (isNumeric && mcap >= 0)
                 {
-                    if (mcap >= 0)
-                    {
-                        ConstructingLists coin = new ConstructingLists(finalName, mcap);
-                        coins.Add(coin);
-                    }
+                    ConstructingLists coin = new ConstructingLists(finalName, mcap);
+                    coins.Add(coin);
                 }
             }
             sql.Close();
@@ -192,13 +190,14 @@ namespace cryptoFinance
             sql.Close();
         }
 
-        public void InsertCryptoTable(int operationid, DateTime date, string name, bool customCoin, decimal quantity, string operation, string wallet, decimal sum, decimal price, decimal fee, decimal currentValue)
+        public void InsertCryptoTable(int operationid, DateTime date, string cryptoId, string name, bool customCoin, decimal quantity, string operation, string wallet, decimal sum, decimal price, decimal fee, decimal currentValue)
         {
             sql.Open();
-            string querry = "INSERT INTO CryptoTable(OperationID, Date, CryptoName, CustomCoin, CryptoQuantity, Operation, Wallet, Sum, Fee, LastPrice, LastCurrentValue) VALUES (@OperationID, @Date, @CryptoName, @CustomCoin, @CryptoQuantity, @Operation, @Wallet, @Sum, @Fee, @LastPrice, @LastCurrentValue)";
+            string querry = "INSERT INTO CryptoTable(OperationID, Date, CryptoId, CryptoName, CustomCoin, CryptoQuantity, Operation, Wallet, Sum, Fee, LastPrice, LastCurrentValue) VALUES (@OperationID, @Date, @CryptoId, @CryptoName, @CustomCoin, @CryptoQuantity, @Operation, @Wallet, @Sum, @Fee, @LastPrice, @LastCurrentValue)";
             SqlCommand command = new SqlCommand(querry, sql);
             command.Parameters.AddWithValue("@OperationID", operationid);
             command.Parameters.AddWithValue("@Date", date);
+            command.Parameters.AddWithValue("@CryptoId", cryptoId);
             command.Parameters.AddWithValue("@CryptoName", name);
             command.Parameters.AddWithValue("@CustomCoin", customCoin);
             command.Parameters.AddWithValue("@CryptoQuantity", decimal.Parse(quantity.ToString()));
@@ -212,17 +211,18 @@ namespace cryptoFinance
             sql.Close();
         }
 
-        public void UpdateCryptoTable(int id, int operationid, string operation, string name, DateTime date, decimal quantity, string wallet, decimal price, decimal fee, decimal sum)
+        public void UpdateCryptoTable(int id, int operationid, string operation, string cryptoId, string name, DateTime date, decimal quantity, string wallet, decimal price, decimal fee, decimal sum)
         {
             GetCultureInfo gci = new GetCultureInfo(".");
 
             sql.Open();
-            string querry = "UPDATE CryptoTable SET OperationID = @operationid, Operation = @operation, Date = @date, CryptoName = @name, " +
+            string querry = "UPDATE CryptoTable SET OperationID = @operationid, Operation = @operation, Date = @date, CryptoId = @cryptoId, CryptoName = @name, " +
                 "CryptoQuantity = @quantity, Wallet = @wallet, LastPrice = @price, Sum = @sum, Fee = @fee WHERE Id = @id";
             SqlCommand command = new SqlCommand(querry, sql);
             command.Parameters.AddWithValue("@operationid", operationid);
             command.Parameters.AddWithValue("@operation", operation);
             command.Parameters.AddWithValue("@date", date);
+            command.Parameters.AddWithValue("@cryptoId", cryptoId);
             command.Parameters.AddWithValue("@name", name);
             command.Parameters.AddWithValue("@quantity", quantity);
             command.Parameters.AddWithValue("@wallet", wallet);
@@ -244,11 +244,12 @@ namespace cryptoFinance
             sql.Close();
         }
 
-        public void InsertCurrentAssets(string name, bool customCoin, decimal quantity, DateTime date, decimal price, decimal currentValue)
+        public void InsertCurrentAssets(string cryptoId, string name, bool customCoin, decimal quantity, DateTime date, decimal price, decimal currentValue)
         {
             sql.Open();
-            string querry = "INSERT INTO CurrentAssets(Cryptocurrency, CustomCoin, Quantity, PriceUpdateTime, Price, CurrentValue) VALUES (@Cryptocurrency, @CustomCoin, @Quantity, @PriceUpdateTime, @Price, @CurrentValue)";
+            string querry = "INSERT INTO CurrentAssets(CryptoId, Cryptocurrency, CustomCoin, Quantity, PriceUpdateTime, Price, CurrentValue) VALUES (@CryptoId, @Cryptocurrency, @CustomCoin, @Quantity, @PriceUpdateTime, @Price, @CurrentValue)";
             SqlCommand command = new SqlCommand(querry, sql);
+            command.Parameters.AddWithValue("@CryptoId", cryptoId);
             command.Parameters.AddWithValue("@Cryptocurrency", name);
             command.Parameters.AddWithValue("@CustomCoin", customCoin);
             command.Parameters.AddWithValue("@Quantity", quantity);
@@ -259,7 +260,7 @@ namespace cryptoFinance
             sql.Close();
         }
 
-        public void UpdateCurrentAssets(bool updateQuantity, string name, decimal quantity, DateTime date, decimal price, decimal currentValue)
+        public void UpdateCurrentAssets(bool updateQuantity, string cryptoId, decimal quantity, DateTime date, decimal price, decimal currentValue)
         {
             GetCultureInfo gci = new GetCultureInfo(".");
 
@@ -268,16 +269,16 @@ namespace cryptoFinance
             {
                 if (quantity == 0)
                 {
-                    string querryDelete = "DELETE FROM CurrentAssets WHERE Cryptocurrency = '" + name + "'";
+                    string querryDelete = "DELETE FROM CurrentAssets WHERE CryptoId = '" + cryptoId + "'";
                     SqlCommand commandDelete = new SqlCommand(querryDelete, sql);
-                    commandDelete.Parameters.AddWithValue("@Cryptocurrency", name);
+                    commandDelete.Parameters.AddWithValue("@CryptoId", cryptoId);
                     commandDelete.ExecuteNonQuery();
                 }
                 else
                 {
-                    string querryUpdateAll = "UPDATE CurrentAssets SET PriceUpdateTime = @PriceUpdateTime, Quantity = @Quantity, Price = @Price, CurrentValue = @CurrentValue WHERE Cryptocurrency = @Cryptocurrency";
+                    string querryUpdateAll = "UPDATE CurrentAssets SET PriceUpdateTime = @PriceUpdateTime, Quantity = @Quantity, Price = @Price, CurrentValue = @CurrentValue WHERE CryptoId = @CryptoId";
                     SqlCommand commandUpdateAll = new SqlCommand(querryUpdateAll, sql);
-                    commandUpdateAll.Parameters.AddWithValue("@Cryptocurrency", name);
+                    commandUpdateAll.Parameters.AddWithValue("@CryptoId", cryptoId);
                     commandUpdateAll.Parameters.AddWithValue("@PriceUpdateTime", date);
                     commandUpdateAll.Parameters.AddWithValue("@Quantity", quantity);
                     commandUpdateAll.Parameters.AddWithValue("@Price", price);
@@ -287,9 +288,9 @@ namespace cryptoFinance
             }
             else
             {
-                string querryUpdateOther = "UPDATE CurrentAssets SET PriceUpdateTime = @PriceUpdateTime, Price = @Price, CurrentValue = @CurrentValue WHERE Cryptocurrency = @Cryptocurrency";
+                string querryUpdateOther = "UPDATE CurrentAssets SET PriceUpdateTime = @PriceUpdateTime, Price = @Price, CurrentValue = @CurrentValue WHERE CryptoId = @CryptoId";
                 SqlCommand commandUpdateOther = new SqlCommand(querryUpdateOther, sql);
-                commandUpdateOther.Parameters.AddWithValue("@Cryptocurrency", name);
+                commandUpdateOther.Parameters.AddWithValue("@CryptoId", cryptoId);
                 commandUpdateOther.Parameters.AddWithValue("@PriceUpdateTime", date);
                 commandUpdateOther.Parameters.AddWithValue("@Price", price);
                 commandUpdateOther.Parameters.AddWithValue("@CurrentValue", currentValue);
@@ -298,23 +299,24 @@ namespace cryptoFinance
             sql.Close();
         }
 
-        public void UpdatePrice(DateTime date, string name, bool customCoin, decimal quantity, string operation, decimal sum, decimal price, decimal currentValue)
+        public void UpdatePrice(DateTime date, string cryptoId, string name, bool customCoin, decimal quantity, string operation, decimal sum, decimal price, decimal currentValue)
         {
-            var findDate = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == name && x.Date == date).ToList();
+            var findDate = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoId == cryptoId && x.Date == date).ToList();
 
             sql.Open();
             if(findDate.Count > 0)
             {
-                string querry = "UPDATE CryptoTable SET LastPrice = " + decimal.Parse(price.ToString()) + " WHERE CryptoName = '" + name + "' AND Date = '"+ date +"'";
+                string querry = "UPDATE CryptoTable SET LastPrice = " + decimal.Parse(price.ToString()) + " WHERE CryptoId = '" + cryptoId + "' AND Date = '"+ date +"'";
                 SqlCommand command = new SqlCommand(querry, sql);
                 command.ExecuteNonQuery();
             }
             else
             {
-                string querry = "INSERT INTO CryptoTable(OperationID, Date, CryptoName, CustomCoin, CryptoQuantity, Operation, Sum, Fee, LastPrice, LastCurrentValue) VALUES (@OperationID, @Date, @CryptoName, @CustomCoin, @CryptoQuantity, @Operation, @Sum, @Fee, @LastPrice, @LastCurrentValue)";
+                string querry = "INSERT INTO CryptoTable(OperationID, Date, CryptoId, CryptoName, CustomCoin, CryptoQuantity, Operation, Sum, Fee, LastPrice, LastCurrentValue) VALUES (@OperationID, @Date, @CryptoId, @CryptoName, @CustomCoin, @CryptoQuantity, @Operation, @Sum, @Fee, @LastPrice, @LastCurrentValue)";
                 SqlCommand command = new SqlCommand(querry, sql);
                 command.Parameters.AddWithValue("@OperationID", 0);
                 command.Parameters.AddWithValue("@Date", date);
+                command.Parameters.AddWithValue("@CryptoId", cryptoId);
                 command.Parameters.AddWithValue("@CryptoName", name);
                 command.Parameters.AddWithValue("@CustomCoin", customCoin);
                 command.Parameters.AddWithValue("@CryptoQuantity", decimal.Parse(quantity.ToString()));
@@ -325,6 +327,26 @@ namespace cryptoFinance
                 command.Parameters.AddWithValue("@LastCurrentValue", currentValue);
                 command.ExecuteNonQuery();
             }
+            sql.Close();
+        }
+
+        public void ChangeName(string cryptoId, string name)
+        {
+            sql.Open();
+
+            string querry = "UPDATE CryptoTable SET CryptoName = '" + name + "' WHERE CryptoId = '" + cryptoId + "'";
+            SqlCommand command = new SqlCommand(querry, sql);
+            command.ExecuteNonQuery();
+
+            var findId = Connection.db.GetTable<CurrentAssetsDB>().Where(x => x.CryptoId == cryptoId).ToList();
+
+            if(findId.Count > 0)
+            {
+                string querry2 = "UPDATE CurrentAssets SET Cryptocurrency = '" + name + "' WHERE CryptoId = '" + cryptoId + "'";
+                SqlCommand command2 = new SqlCommand(querry2, sql);
+                command2.ExecuteNonQuery();
+            }
+
             sql.Close();
         }
 

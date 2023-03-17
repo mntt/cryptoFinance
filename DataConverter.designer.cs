@@ -200,6 +200,8 @@ namespace cryptoFinance
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private int _Id;
+
+		private string _CryptoId;
 		
 		private string _Cryptocurrency;
 		
@@ -257,8 +259,28 @@ namespace cryptoFinance
 				}
 			}
 		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cryptocurrency", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
+
+        [global::System.Data.Linq.Mapping.ColumnAttribute(Storage = "_CryptoId", DbType = "NVarChar(MAX) NOT NULL", CanBeNull = false)]
+        public string CryptoId
+        {
+            get
+            {
+                return this._CryptoId;
+            }
+            set
+            {
+                if ((this._CryptoId != value))
+                {
+                    this.OnCryptocurrencyChanging(value);
+                    this.SendPropertyChanging();
+                    this._CryptoId = value;
+                    this.SendPropertyChanged("CryptoId");
+                    this.OnCryptocurrencyChanged();
+                }
+            }
+        }
+
+        [global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cryptocurrency", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
 		public string Cryptocurrency
 		{
 			get
@@ -592,6 +614,8 @@ namespace cryptoFinance
 		private int _OperationID;
 		
 		private System.DateTime _Date;
+
+		private string _CryptoId;
 		
 		private string _CryptoName;
 		
@@ -705,8 +729,28 @@ namespace cryptoFinance
 				}
 			}
 		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CryptoName", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
+
+        [global::System.Data.Linq.Mapping.ColumnAttribute(Storage = "_CryptoId", DbType = "NVarChar(MAX) NOT NULL", CanBeNull = false)]
+        public string CryptoId
+        {
+            get
+            {
+                return this._CryptoId;
+            }
+            set
+            {
+                if ((this._CryptoId != value))
+                {
+                    this.OnCryptoNameChanging(value);
+                    this.SendPropertyChanging();
+                    this._CryptoId = value;
+                    this.SendPropertyChanged("CryptoId");
+                    this.OnCryptoNameChanged();
+                }
+            }
+        }
+
+        [global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CryptoName", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
 		public string CryptoName
 		{
 			get

@@ -3,10 +3,10 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
-
+using System;
+using System.Windows;
 
 namespace cryptoFinance
 {
@@ -44,25 +44,15 @@ namespace cryptoFinance
             {
                 List<ConstructingLists> listOfIds = new List<ConstructingLists>();
                 var oldlist = Connection.db.GetTable<CoingeckoCryptoList>().ToList();
-                int arrayNumber = 0;
+                int arrayNumber = coins.Count > maxStringNumber ? coins.Count / maxStringNumber : 0;
                 string requestString = "";
-
-                if (coins.Count > maxStringNumber) 
-                {
-                    arrayNumber = coins.Count / maxStringNumber;
-                }
-
                 string[] requestStrings = new string[arrayNumber + 1];
 
                 for (int i = 0; i < coins.Count; i++)
                 {
                     int counter = 0;
-                    var split = coins[i].name.Split('(');
-                    var name = split[0].TrimEnd(' ');
-                    var symbol = split[1].Trim(')');
-                    string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
                     listOfIds.Add(coins[i]);
-                    requestString += id + "%2C";
+                    requestString += coins[i].cryptoId + "%2C";
 
                     if (i > 0 && i % maxStringNumber == 0)
                     {
@@ -95,34 +85,27 @@ namespace cryptoFinance
 
                     for (int j = 0; j < orderedIds.Count; j++)
                     {
-                        var split = orderedIds[j].name.Split('(');
-                        var name = split[0].TrimEnd(' ');
-                        var symbol = split[1].Trim(')');
-                        string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
-    
                         try
                         {
                             GetCultureInfo gci = new GetCultureInfo(".");
-                            string link = $"{id}.eur";
+                            string link = $"{orderedIds[j].cryptoId}.eur";
                             price = (decimal)data.SelectToken(link);
                         }
                         catch
                         {
-                            if (orderedIds[j].customCoin == true)
-                            {
-                                price = Connection.db.GetTable<CurrentAssetsDB>()
-                                    .Where(x => x.Cryptocurrency == orderedIds[j].name).Select(x => x.Price).ToList().First();
-                            }
-                            else
-                            {
-                                price = -2;
-                            }
+                            price = orderedIds[j].customCoin == true ? Connection.db.GetTable<CurrentAssetsDB>()
+                                    .Where(x => x.CryptoId == orderedIds[j].cryptoId)
+                                    .Select(x => x.Price)
+                                    .ToList()
+                                    .First() : -2;
                         }
 
-                        coins.Where(x => x.name == orderedIds[j].name).ToList().ForEach(x => x.price = price);
+                        coins.Where(x => x.cryptoId == orderedIds[j].cryptoId).ToList().ForEach(x => x.price = price);
                     }
                 }
             }
+
+            await Task.Delay(100);
         }
 
         private static async Task FetchPrice(List<ConstructingLists> coins)
@@ -162,12 +145,15 @@ namespace cryptoFinance
             return coins;
         }
 
-        public static decimal ById(string name)
+        public static decimal ById(string cryptoId)
         {
             jsonSuccess = true;
-            ConstructingLists coin = new ConstructingLists(name, 0);
-            coins = new List<ConstructingLists>();
-            coins.Add(coin);
+            ConstructingLists coin = new ConstructingLists(DateTime.Now, "not defined", false, cryptoId, 0, 0, 0);
+            
+            coins = new List<ConstructingLists>
+            {
+                coin
+            };
 
             var task = Task.Run(() => FetchPrice(coins));
             task.Wait();

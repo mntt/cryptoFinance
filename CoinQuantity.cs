@@ -102,6 +102,38 @@ namespace cryptoFinance
             return q;
         }
 
+        public decimal GetCoinQuantityByCryptoId(string cryptoId)
+        {
+            decimal q = 0;
+
+            try
+            {
+                var bought = Connection.db.GetTable<CryptoTable>()
+                .Where(x => x.Operation == "BUY" && x.CryptoId == cryptoId)
+                .Select(x => x.CryptoQuantity).ToList();
+                var sold = Connection.db.GetTable<CryptoTable>()
+                    .Where(x => x.Operation == "SELL" && x.CryptoId == cryptoId)
+                    .Select(x => x.CryptoQuantity).ToList();
+                var transferedIn = Connection.db.GetTable<CryptoTable>()
+                    .Where(x => x.Operation == "TRANSFER_IN" && x.CryptoId == cryptoId)
+                    .Select(x => x.CryptoQuantity).ToList();
+                var transferedOut = Connection.db.GetTable<CryptoTable>()
+                    .Where(x => x.Operation == "TRANSFER_OUT" && x.CryptoId == cryptoId)
+                    .Select(x => x.CryptoQuantity).ToList();
+                var fees = Connection.db.GetTable<CryptoTable>()
+                    .Where(x => x.Operation == "FEES" && x.CryptoId == cryptoId)
+                    .Select(x => x.CryptoQuantity).ToList();
+
+                q = bought.Sum() - sold.Sum() + transferedIn.Sum() - transferedOut.Sum() - fees.Sum();
+            }
+            catch
+            {
+                MessageBox.Show("Nenumatyta klaida. Nepavyko užkrauti kiekio.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return q;
+        }
+
         public decimal GetCoinQuantityByNameAndDate(string coinName, DateTime maxDate)
         {
             decimal q = 0;

@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -140,17 +139,9 @@ namespace cryptoFinance
             }
             catch
             {
-                if (introform != null)
-                {
-                    MessageBox.Show("Klaida apdorojant duomenis.\nNepavyksta atsiųsti kriptovaliutų sąrašo.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Application.Exit();
-                }
-
-                if (caform != null)
-                {
-                    MessageBox.Show("Klaida apdorojant duomenis.\nNepavyksta atsiųsti kriptovaliutų sąrašo.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    TerminateDownloading();
-                }
+                MessageBox.Show("Klaida apdorojant duomenis.\nNepavyksta atsiųsti kriptovaliutų sąrašo.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (introform != null) Application.Exit();
+                if (caform != null) TerminateDownloading();
             }
         }
 
@@ -163,6 +154,7 @@ namespace cryptoFinance
 
         private async Task DownloadMarketCaps(System.ComponentModel.DoWorkEventArgs e)
         {
+            await Task.Delay(65000);
             var ids = ReturnFixedIdList(coingeckoList.Select(x => x.id).ToList(), e);
             marketCaps = new List<CoingeckoListInfo>();
             JObject data = null;
@@ -172,18 +164,18 @@ namespace cryptoFinance
             {
                 try
                 {
-                    if (i % 8 == 0)
+                    if (i % 4 == 0)
                     {
-                        Progress(6);
-                        await Task.Delay(60000); //to avoid too many requests in API
+                        Progress(4);
+                        await Task.Delay(65000); //to avoid too many requests in API
                     }
 
                     jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/simple/price?ids=" + ids[i] + "&vs_currencies=eur&include_market_cap=true&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
                     data = (JObject)JsonConvert.DeserializeObject(jsonURL);
 
-                    for (int j = 0; j < coingeckoList.Count; j++)
+                    foreach (var item in coingeckoList)
                     {
-                        string id = coingeckoList[j].id;
+                        string id = item.id;
                         string mcaplink = $"{id}.eur_market_cap";
                         double mcap = 0;
 
@@ -201,19 +193,9 @@ namespace cryptoFinance
                 }
                 catch
                 {
-
-                    if (introform != null)
-                    {
-                        MessageBox.Show($"{i}/{ids.Count - 1} Per daug užklausų. Kriptovaliutų sąrašo nepavyko atsiųsti.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Application.Exit();
-                    }
-
-                    if (caform != null)
-                    {
-                        MessageBox.Show($"{i}/{ids.Count - 1} Per daug užklausų.\nKriptovaliutų sąrašo nepavyko atnaujinti.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        TerminateDownloading();
-                    }
-
+                    MessageBox.Show($"{i}/{ids.Count - 1} Per daug užklausų. Kriptovaliutų sąrašo nepavyko atsiųsti.", "Klaida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (introform != null) Application.Exit();
+                    if (caform != null) TerminateDownloading();
                     break;
                 }
             }
@@ -289,24 +271,14 @@ namespace cryptoFinance
                 var coins = Connection.db.GetTable<CryptoTable>().Where(x => x.CustomCoin == false).Select(x => x.CryptoName).Distinct().ToList();
                 var oldlist = Connection.db.GetTable<CoingeckoCryptoList>().ToList();
                 List<string> listOfIds = new List<string>();
-
-                int arrayNumber = 0;
+                int arrayNumber = coins.Count > maxStringNumber ? (coins.Count / maxStringNumber) : 0;
                 string requestString = "";
-
-                if (coins.Count > maxStringNumber)
-                {
-                    arrayNumber = coins.Count / maxStringNumber;
-                }
-
                 string[] requestStrings = new string[arrayNumber + 1];
 
                 for (int i = 0; i < coins.Count; i++)
                 {
                     int counter = 0;
-                    var split = coins[i].Split('(');
-                    var name = split[0].TrimEnd(' ');
-                    var symbol = split[1].Trim(')');
-                    string id = oldlist.Where(x => x.CryptoName == name && x.CryptoSymbol == symbol).Select(x => x.CryptoId).First();
+                    string id = ConvertName.ToUpperId(coins[i]);
                     listOfIds.Add(id);
                     requestString += id + "%2C";
 
@@ -386,36 +358,31 @@ namespace cryptoFinance
             }
         }
 
-        private void BackgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private async void BackgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.ClientAndNonClientAreasEnabled;
             caform.Invalidate(true);
             
             if (!workerCancelButtonPressed)
             {
+                InsertListToDatabase();
+                DateTime time = DateTime.Now;
+                Connection.iwdb.InsertListDate(time);
+
                 if (introform != null)
                 {
                     introform.ChangeProgressLabel("Siuntimas baigtas. Programa paleidžiama iš naujo...");
                 }
 
-                InsertListToDatabase();
-                DateTime time = DateTime.Now;
-                Connection.iwdb.InsertListDate(time);
-
                 if(caform != null && introform == null)
                 {
                     caform.AlertPanelControlInstance(21);
-                    caform.progressBarPanel.Visible = false;
+                    caform.progressBarPanel.Visible = false;                   
                 }
                 
                 if(aof != null)
                 {
                     aof.UpdateDate();
-                }
-
-                if (loadForms)
-                {
-                    Application.Restart();   
                 }
             }
             else
@@ -431,7 +398,9 @@ namespace cryptoFinance
                 }
             }
 
-            worker.Dispose();     
+            worker.Dispose();
+            await Task.Delay(2500);
+            Application.Restart();
         }
 
         private void InsertListToDatabase()
@@ -446,6 +415,29 @@ namespace cryptoFinance
             for (int i = 0; i < list.Count; i++)
             {
                 Connection.iwdb.InsertCoinGeckoCryptoList(list[i].logo, list[i].cryptoId, list[i].cryptoSymbol.ToUpper(), list[i].cryptoName, list[i].marketCap);
+            }
+
+            FixNameChanges();
+        }
+
+        private void FixNameChanges()
+        {
+            var listOfNames = Connection.db.GetTable<CryptoTable>().Where(x => x.CustomCoin == false).Select(x => x.CryptoName).Distinct().ToList();
+
+            for (int i = 0; i < listOfNames.Count; i++)
+            {
+                //no custom coins here
+                string cryptoName = ConvertName.ToJustName(listOfNames[i]);
+                string cryptoSymbol = ConvertName.ToJustSymbol(listOfNames[i]);
+                var item = tokenListWithFullData.Where(x => x.cryptoName == cryptoName && x.cryptoSymbol == cryptoSymbol).ToList();
+
+                if (item.Count == 0)
+                {
+                    string cryptoId = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == listOfNames[i]).Select(x => x.CryptoId).First();
+                    var coinObject = tokenListWithFullData.Where(x => x.cryptoId == cryptoId).First();
+                    string newName = coinObject.cryptoName + " (" + coinObject.cryptoSymbol + ")";
+                    Connection.iwdb.ChangeName(cryptoId, newName);
+                }
             }
         }
 

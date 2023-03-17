@@ -348,18 +348,18 @@ namespace cryptoFinance
                         var operationID = Connection.db.GetTable<CryptoTable>()
                             .Where(x => x.CryptoName == name && x.Wallet == wallet)
                             .Select(x => x.OperationID).Distinct().ToList();
-
+                        var cryptoId = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == name).Select(x => x.CryptoId).ToList().Last();
                         var customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == name).Select(x => x.CustomCoin).ToList().Last();
 
-                        AddDataToDataGridList(operationID[0], name, customCoin, q, wallet);
+                        AddDataToDataGridList(operationID[0], cryptoId, name, customCoin, q, wallet);
                     }
                 }
             }
         }
 
-        private void AddDataToDataGridList(int operationID, string name, bool customCoin, decimal q, string wallet)
+        private void AddDataToDataGridList(int operationID, string cryptoId, string name, bool customCoin, decimal q, string wallet)
         {
-            ConstructingLists info = new ConstructingLists(operationID, name, customCoin, q, wallet);
+            ConstructingLists info = new ConstructingLists(operationID, cryptoId, name, customCoin, q, wallet);
             dataGridList.Add(info);
         }
 
@@ -722,14 +722,14 @@ namespace cryptoFinance
             ca.quantityTransferBox.Text = ca.qLabel.Text;
         }
 
-        private void InsertWalletOutInfo(int operationID, string coinName, bool customCoin, decimal quantity, string operation, string walletOut, decimal fee)
+        private void InsertWalletOutInfo(int operationID, string cryptoId, string coinName, bool customCoin, decimal quantity, string operation, string walletOut, decimal fee)
         {
-            Connection.iwdb.InsertCryptoTable(operationID, DateTime.Now, coinName, customCoin, quantity, operation, walletOut, 0, 0, fee, 0);
+            Connection.iwdb.InsertCryptoTable(operationID, DateTime.Now, cryptoId, coinName, customCoin, quantity, operation, walletOut, 0, 0, fee, 0);
         }
 
-        private void InsertWalletInInfo(int operationID, string coinName, bool customCoin, decimal quantity, string operation, string walletIn)
+        private void InsertWalletInInfo(int operationID, string cryptoId, string coinName, bool customCoin, decimal quantity, string operation, string walletIn)
         {
-            Connection.iwdb.InsertCryptoTable(operationID, DateTime.Now, coinName, customCoin, quantity, operation, walletIn, 0, 0, 0, 0);
+            Connection.iwdb.InsertCryptoTable(operationID, DateTime.Now, cryptoId, coinName, customCoin, quantity, operation, walletIn, 0, 0, 0, 0);
         }
 
         private void AlertPanelControlInstance(int chooseLabelText)
@@ -815,11 +815,11 @@ namespace cryptoFinance
 
         private void UpdateDatabase()
         {
+            var cryptoId = dataGridList.Where(x => x.name == ca.nameComboBox.Text).Select(x => x.cryptoId).First();
             int operationID = dataGridList.Where(x => x.name == ca.nameComboBox.Text && x.wallet == ca.walletOutComboBox.Text).Select(x => x.operationID).First();
-
             var customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == ca.nameComboBox.Text).Select(x => x.CustomCoin).ToList().Last();
-            InsertWalletOutInfo(operationID, ca.nameComboBox.Text, customCoin, decimal.Parse(ca.quantityTransferBox.Text), "TRANSFER_OUT", ca.walletOutComboBox.Text, ReformatText.ReturnNumeric(ca.feeTransferBox.Text));
-            InsertWalletInInfo(operationID, ca.nameComboBox.Text, customCoin, decimal.Parse(ca.quantityTransferBox.Text), "TRANSFER_IN", ca.walletInBox.Text);
+            InsertWalletOutInfo(operationID, cryptoId, ca.nameComboBox.Text, customCoin, decimal.Parse(ca.quantityTransferBox.Text), "TRANSFER_OUT", ca.walletOutComboBox.Text, ReformatText.ReturnNumeric(ca.feeTransferBox.Text));
+            InsertWalletInInfo(operationID, cryptoId, ca.nameComboBox.Text, customCoin, decimal.Parse(ca.quantityTransferBox.Text), "TRANSFER_IN", ca.walletInBox.Text);
         }
 
         private void ToggleWalletAlert()

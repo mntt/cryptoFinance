@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace cryptoFinance
@@ -17,21 +16,6 @@ namespace cryptoFinance
 
             Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.NonClientAreaEnabled;
             Design.ProgressBarStyling(progressBar);     
-        }
-
-        private void Worker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            var task2 = Task.Run(() => ca.LoadForms(this));
-            task2.Wait();
-        }
-
-        private void Worker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
-        {
-            Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.ClientAndNonClientAreasEnabled;
-
-            this.Hide();
-            ca.Show();
-            ca.Focus();
         }
 
         public void ChangeProgressLabel(string text)

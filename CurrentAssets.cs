@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -320,8 +318,6 @@ namespace cryptoFinance
 
         public async Task LoadForms(IntroForm form)
         {
-            await Task.Delay(100);
-
             await Task.Delay(1);
             form.ChangeProgressLabel("Ruošiama duomenų lentelė...");
             dgf = new DataGridForm(this);

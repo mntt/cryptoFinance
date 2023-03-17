@@ -29,11 +29,9 @@ namespace cryptoFinance
             ca.exportButton.Click += new System.EventHandler(this.exportButton_Click);
             ca.exportBorder.Paint += new System.Windows.Forms.PaintEventHandler(this.exportBorder_Paint);
             ca.searchListBox.TextChanged += new System.EventHandler(SearchListBox_TextChanged);
-
             ca.dropdownInvestments.MouseEnter += new System.EventHandler(DropdownInvestments_MouseEnter);
             ca.dropdownInvestments.MouseLeave += new System.EventHandler(DropdownInvestments_MouseLeave);
             ca.dropdownInvestments.Click += new System.EventHandler(DropdownInvestments_Click);
-
             ca.investmentsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.investmentsListView_ItemSelectionChanged);
 
             ListViewSettings.Format(ca.investmentsListView);
@@ -120,14 +118,7 @@ namespace cryptoFinance
 
         private void DropdownInvestments_Click(object sender, EventArgs e)
         {
-            if (!clicked)
-            {
-                clicked = true;
-            }
-            else
-            {
-                clicked = false;
-            }
+            clicked = !clicked ? true : false;
 
             ca.datePickerStart.ValueChanged -= new System.EventHandler(this.datePickerStart_ValueChanged_1);
             ca.datePickerFinish.ValueChanged -= new System.EventHandler(this.datePickerFinish_ValueChanged_1);
@@ -170,14 +161,8 @@ namespace cryptoFinance
 
         private void DropdownInvestments_MouseLeave(object sender, EventArgs e)
         {
-            if (clicked)
-            {
-                ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbuttonSelected;
-            }
-            else
-            {
+            ca.dropdownInvestments.BackgroundImage = clicked ? cryptoFinance.Properties.Resources.dropdownbuttonSelected :
                 ca.dropdownInvestments.BackgroundImage = cryptoFinance.Properties.Resources.dropdownbutton;
-            }
         }
 
         private void coinListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
@@ -239,7 +224,6 @@ namespace cryptoFinance
 
             if (ca.exportList.CheckedItems.Count > 0)
             {
-
                 ca.sfd = new SaveFileDialog() { Filter = "Excel Workbook|*.xlsx" };
 
                 if (ca.sfd.ShowDialog() == DialogResult.OK)
@@ -307,7 +291,6 @@ namespace cryptoFinance
                 form.datePickerStart.Value = form.startDate;
                 form.datePickerFinish.Value = DateTime.Now;
                 form.statisticsPanel.Location = new Point(117, 102);
-
                 form.chartView.Visible = false;
                 form.backToStats.Visible = false;
                 form.nodataLabel.Visible = false;
@@ -321,7 +304,6 @@ namespace cryptoFinance
                 form.investmentsListView.Visible = false;
                 form.dashLabel.Select();
                 SwitchButtonVisibility(form, true);
-
                 form.statisticsPanel.Visible = true;
             }
             else
@@ -484,14 +466,7 @@ namespace cryptoFinance
 
             if (uniqueDates.Count > 0)
             {
-                if (uniqueDates[0] > startDate2)
-                {
-                    form.startDate = uniqueDates[0];
-                }
-                else
-                {
-                    form.startDate = startDate2;
-                }
+                form.startDate = uniqueDates[0] > startDate2 ? uniqueDates[0] : startDate2;
             }
             else
             {

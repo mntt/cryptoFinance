@@ -13,13 +13,7 @@ namespace cryptoFinance
 
         private static bool CheckZeroQuantity(string quantity)
         {
-            bool validation = true;
-
-            if(decimal.Parse(quantity) <= 0)
-            {
-                validation = false;
-            }
-
+            bool validation = decimal.Parse(quantity) <= 0 ? false : true;
             return validation;
         }
 

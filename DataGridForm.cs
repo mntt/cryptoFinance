@@ -63,11 +63,11 @@ namespace cryptoFinance
 
         private void ClearSelection()
         {
-            for (int i = 0; i < ca.dataGridCurrentAssets.Rows.Count; i++)
+            foreach (DataGridViewRow row in ca.dataGridCurrentAssets.Rows)
             {
-                for (int j = 0; j < ca.dataGridCurrentAssets.Columns.Count; j++)
+                foreach (DataGridViewCell cell in row.Cells)
                 {
-                    ca.dataGridCurrentAssets.Rows[i].Cells[j].Style.BackColor = Colours.formBackground;
+                    cell.Style.BackColor = Colours.formBackground;
                 }
             }
         }
@@ -149,15 +149,7 @@ namespace cryptoFinance
         {
             if (e.RowIndex < 0 && (e.ColumnIndex == 1 || e.ColumnIndex == 4))
             {
-                if (ascendingSorting)
-                {
-                    ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.ToolTipText = "Rūšiuoti A-Z";
-                }
-                else
-                {
-                    ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.ToolTipText = "Rūšiuoti Z-A";
-                }
-
+                ca.dataGridCurrentAssets.Columns[e.ColumnIndex].HeaderCell.ToolTipText = ascendingSorting ? "Rūšiuoti A-Z" : "Rūšiuoti Z-A";
                 finishRepainting = false;
                 repaintCells = e.ColumnIndex;
                 ca.dataGridCurrentAssets.Refresh();
@@ -219,13 +211,13 @@ namespace cryptoFinance
         {
             if(coinObject.quantity == 0)
             {
-                coinList.RemoveAll(x => x.name == coinObject.name);
+                coinList.RemoveAll(x => x.cryptoId == coinObject.cryptoId);
             }
             else
             {
-                coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.quantity = coinObject.quantity);
-                coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.price = coinObject.price);
-                coinList.Where(x => x.name == coinObject.name).ToList().ForEach(x => x.totalSum = coinObject.totalSum);
+                coinList.Where(x => x.cryptoId == coinObject.cryptoId).ToList().ForEach(x => x.quantity = coinObject.quantity);
+                coinList.Where(x => x.cryptoId == coinObject.cryptoId).ToList().ForEach(x => x.price = coinObject.price);
+                coinList.Where(x => x.cryptoId == coinObject.cryptoId).ToList().ForEach(x => x.totalSum = coinObject.totalSum);
             }
         }
 
@@ -256,15 +248,6 @@ namespace cryptoFinance
             ClearSelection();
         }
 
-        private string ReturnCustomName(CurrentAssetsDB item)
-        {
-            var nameSplit = item.Cryptocurrency.Split('(');
-            string id = Connection.db.GetTable<CoingeckoCryptoList>()
-                                .Where(x => x.CryptoName == nameSplit[0] && x.CryptoSymbol == nameSplit[1].Trim(')'))
-                                .Select(x => x.CryptoId).ToList().First();
-            return id;
-        }
-
         private List<ConstructingLists> CreateCoinList()
         {
             List<ConstructingLists> coinList = new List<ConstructingLists>();
@@ -273,13 +256,7 @@ namespace cryptoFinance
 
             foreach (var item in coins)
             {
-                string id = "custom";
-                if (!item.CustomCoin)
-                {
-                    id = ReturnCustomName(item);
-                }
-
-                var obj = ReturnObject(DateTime.Now, item.Cryptocurrency, item.CustomCoin, id, item.Quantity, 
+                var obj = ReturnObject(DateTime.Now, item.Cryptocurrency, item.CustomCoin, item.CryptoId, item.Quantity, 
                     item.Price, item.CurrentValue);
                 coinList.Add(obj);
             }
@@ -287,7 +264,7 @@ namespace cryptoFinance
             return coinList;
         }
 
-        private ConstructingLists ReturnObject(DateTime date, string name, bool customCoin, string id, 
+        private ConstructingLists ReturnObject(DateTime date, string name, bool customCoin, string cryptoId, 
             decimal quantity, decimal price, decimal currentValue)
         {
             ConstructingLists info = new ConstructingLists
@@ -295,7 +272,7 @@ namespace cryptoFinance
                     date,
                     name,
                     customCoin,
-                    id,
+                    cryptoId,
                     quantity,
                     price,
                     currentValue
@@ -338,15 +315,10 @@ namespace cryptoFinance
 
         public void UpdateDataGrid(CurrentAssets form)
         {
-            bool tableVisible = false;
-            if (form.dataGridCurrentAssets.Visible)
-            {
-                tableVisible = true;
-            }
 
+            bool tableVisible = form.dataGridCurrentAssets.Visible ? true : false;
             form.dataGridCurrentAssets.Visible = false;
             GetCultureInfo gci = new GetCultureInfo(",");
-
             form.dataGridCurrentAssets.Rows.Clear();
 
             coinList = coinList.OrderByDescending(x => x.totalSum).ToList();
@@ -416,7 +388,7 @@ namespace cryptoFinance
                 if (errorUpdatingPrices == 0)
                 {
                     currentValue = price * updatedList[i].quantity;
-                    temporaryList.Add(ReturnObject(today, updatedList[i].name, updatedList[i].customCoin, updatedList[i].id, updatedList[i].quantity, price, currentValue));
+                    temporaryList.Add(ReturnObject(today, updatedList[i].name, updatedList[i].customCoin, updatedList[i].cryptoId, updatedList[i].quantity, price, currentValue));
                 }
                 else
                 {
@@ -424,7 +396,7 @@ namespace cryptoFinance
                     price = Connection.db.GetTable<CurrentAssetsDB>()
                         .Where(x => x.Cryptocurrency == updatedList[i].name).Select(x => x.Price).ToList().First();
                     currentValue = price * updatedList[i].quantity;
-                    temporaryList.Add(ReturnObject(today, updatedList[i].name, updatedList[i].customCoin, updatedList[i].id, updatedList[i].quantity, price, currentValue));
+                    temporaryList.Add(ReturnObject(today, updatedList[i].name, updatedList[i].customCoin, updatedList[i].cryptoId, updatedList[i].quantity, price, currentValue));
                 }
             }
 
@@ -448,9 +420,9 @@ namespace cryptoFinance
 
                 foreach (var item in temporaryList)
                 {
-                    bool customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == item.name).Select(x => x.CustomCoin).ToList().Last();
-                    Connection.iwdb.UpdateCurrentAssets(false, item.name, item.quantity, DateTime.Now, item.price, item.totalSum);
-                    Connection.iwdb.UpdatePrice(DateTime.Today, item.name, customCoin, 0, "UpdatePrice", 0, item.price, 0);
+                    bool customCoin = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoId == item.cryptoId).Select(x => x.CustomCoin).ToList().Last();
+                    Connection.iwdb.UpdateCurrentAssets(false, item.cryptoId, item.quantity, DateTime.Now, item.price, item.totalSum);
+                    Connection.iwdb.UpdatePrice(DateTime.Today, item.cryptoId, item.name, customCoin, 0, "UpdatePrice", 0, item.price, 0);
                 }
             }
             else

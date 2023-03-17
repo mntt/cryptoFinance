@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace cryptoFinance
+﻿namespace cryptoFinance
 {
     public static class ReformatText
     {

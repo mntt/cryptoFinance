@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Media;
 using SeriesCollection = LiveCharts.SeriesCollection;
 
@@ -13,8 +11,6 @@ namespace cryptoFinance
 {
     public class ChartForm
     {
-        private bool emptyAssetList { get; set; }
-
         public ChartForm()
         {
             
@@ -23,15 +19,6 @@ namespace cryptoFinance
         public async void Open(CurrentAssets form, DataGridForm dgf)
         {
             if (form.dataGridCurrentAssets.Rows.Count == 0)
-            {
-                emptyAssetList = true;
-            }
-            else
-            {
-                emptyAssetList = false;
-            }
-
-            if (emptyAssetList)
             {
                 form.ShowAssetAlertLabel("Jūs neturite įsigiję kriptovaliutų. Atlikite savo pirmą investiciją.");
             }
@@ -76,7 +63,9 @@ namespace cryptoFinance
             };
 
             form.pieChart.Series = CreateSeries(coins, total, labelPoint);
-            //form.pieChart.LegendLocation = LegendLocation.Right;
+            form.pieChart.LegendLocation = LegendLocation.Right;
+            form.pieChart.DefaultLegend.Width = 200;
+            form.pieChart.DefaultLegend.Height = 60;
             form.pieChart.DefaultLegend.Foreground = new SolidColorBrush(Colours.chartLabels);
             form.pieChart.Font = Design.font6;
             form.pieChart.DataTooltip = tooltip;
@@ -89,12 +78,7 @@ namespace cryptoFinance
 
             for (int i = 0; i < coins.Count; i++)
             {
-                bool showLabel = true;
-
-                if (double.Parse((coins[i].totalSum / total).ToString()) <= double.Parse("0.15"))
-                {
-                    showLabel = false;
-                }
+                bool showLabel = double.Parse((coins[i].totalSum / total).ToString()) <= double.Parse("0.15") ? false : true;
 
                 series.Add(new PieSeries()
                 {
