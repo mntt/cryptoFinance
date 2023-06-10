@@ -426,9 +426,9 @@ namespace cryptoFinance
 
             for (int i = 0; i < listOfNames.Count; i++)
             {
-                //no custom coins here
-                string cryptoName = ConvertName.ToJustName(listOfNames[i]);
-                string cryptoSymbol = ConvertName.ToJustSymbol(listOfNames[i]);
+                //no custom coins here               
+                var cryptoName = ConvertName.GetName(listOfNames[i]);
+                string cryptoSymbol = ConvertName.GetSymbol(listOfNames[i]);
                 var item = tokenListWithFullData.Where(x => x.cryptoName == cryptoName && x.cryptoSymbol == cryptoSymbol).ToList();
 
                 if (item.Count == 0)

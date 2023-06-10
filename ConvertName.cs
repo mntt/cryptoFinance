@@ -2,9 +2,9 @@
 
 namespace cryptoFinance
 {
-    static public class ConvertName
+    public static class ConvertName
     {
-        static public string ToUpperId(string name)
+        public static string ToUpperId(string name)
         {
             var split = name.Split('(');
             var cryptoName = split[0].TrimEnd(' ');
@@ -14,7 +14,7 @@ namespace cryptoFinance
             return id;
         }
 
-        static public string ToLowerId(string name)
+        public static string ToLowerId(string name)
         {
             var split = name.Split('(');
             var cryptoName = split[0].TrimEnd(' ');
@@ -24,15 +24,15 @@ namespace cryptoFinance
             return id;
         }
 
-        static public string ToJustName(string name)
+        public static string GetName(string name)
         {
             var split = name.Split('(');
-            var cryptoName = split[0].TrimEnd(' ');
+            var fixedName = split[0].TrimEnd(' ');
 
-            return cryptoName;
+            return fixedName;
         }
 
-        static public string ToJustSymbol(string name)
+        public static string GetSymbol(string name)
         {
             var split = name.Split('(');
             var cryptoSymbol = split[1].Trim(')');

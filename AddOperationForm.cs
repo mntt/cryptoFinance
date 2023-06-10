@@ -435,8 +435,9 @@ namespace cryptoFinance
 
         private async Task ExecuteConfirmNormalMode()
         {
-            var name = ca.cryptoBox.Text;
-            var cryptoId = "";           
+            string setOperation = operation;
+            string name = setOperation == "BUY" ? ca.cryptoBox.Text : ca.cryptoComboBox.Text;
+            var cryptoId = "";
             bool customCoin = IsCustomCoin();
             var wallet = "";
             int operationID = 0;
@@ -447,12 +448,12 @@ namespace cryptoFinance
             }
             else
             {
-                string cryptoName = ConvertName.ToJustName(name);
-                string cryptoSymbol = ConvertName.ToJustSymbol(name);
+                string cryptoName = ConvertName.GetName(name);
+                string cryptoSymbol = ConvertName.GetSymbol(name);
                 cryptoId = Connection.db.GetTable<CoingeckoCryptoList>().Where(x => x.CryptoName == cryptoName && x.CryptoSymbol == cryptoSymbol).Select(x => x.CryptoId).First();
             }
 
-            if (operation == "BUY")
+            if (setOperation == "BUY")
             {
                 wallet = ca.walletTextBox.Text;
 
@@ -478,9 +479,8 @@ namespace cryptoFinance
                     operationID = searchList[0].OperationID;
                 }
             }
-            else if (operation == "SELL")
+            else if (setOperation == "SELL")
             {
-                name = ca.cryptoComboBox.Text;
                 wallet = ca.walletComboBox.Text;
             }
 
@@ -490,7 +490,7 @@ namespace cryptoFinance
             var fee = ReformatText.ReturnNumeric(ca.feeBox.Text);
             var sum = ReformatText.ReturnNumeric(ca.sumBox.Text);
 
-            await Task.Run(() => ExecuteConfirm(ca, operationID, date, cryptoId, name, customCoin, quantity, operation, wallet, sum, price, fee));
+            await Task.Run(() => ExecuteConfirm(ca, operationID, date, cryptoId, name, customCoin, quantity, setOperation, wallet, sum, price, fee));
         }
         
         private async Task ExecuteConfirm(CurrentAssets form, int operationID, DateTime date, string cryptoId, string name, bool customCoin, decimal quantity, string operation, string wallet, decimal sum, decimal price, decimal fee)
@@ -499,10 +499,9 @@ namespace cryptoFinance
             {
                 await DownloadLogo(cryptoId);
             }
-
             of.InsertCurrentAssets(date, cryptoId, name, customCoin, quantity, /*realPrice*/ price, operation); //toks koks price addop lange, toki ir imti
             form.CountCurrentValue();
-            of.InsertCryptoTable(operationID, date, cryptoId, name, customCoin, quantity, operation, wallet, sum, price, fee, form.currentValue);
+             of.InsertCryptoTable(operationID, date, cryptoId, name, customCoin, quantity, operation, wallet, sum, price, fee, form.currentValue);
             of.LoadOperationsForm();
             wf.RefreshDataGrid();
             dgf.UpdateDataGrid(form);
@@ -845,8 +844,8 @@ namespace cryptoFinance
 
             try
             {
-                string cryptoName = ConvertName.ToJustName(name);
-                string cryptoSymbol = ConvertName.ToJustSymbol(name);
+                string cryptoName = ConvertName.GetName(name);
+                string cryptoSymbol = ConvertName.GetSymbol(name);
                 var id = Connection.db.GetTable<CoingeckoCryptoList>()
                     .Where(x => x.CryptoName == cryptoName && x.CryptoSymbol == cryptoSymbol).Select(x => x.CryptoId).Distinct().First();
                 showAlert = 0;
