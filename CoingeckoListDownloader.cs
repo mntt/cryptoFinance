@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -253,7 +254,7 @@ namespace cryptoFinance
                     (
                         null,
                         coingeckoList[i].id,
-                        coingeckoList[i].symbol,
+                        coingeckoList[i].symbol.ToUpper(),
                         coingeckoList[i].name,
                         marketcap
                     );
@@ -296,6 +297,7 @@ namespace cryptoFinance
 
                 for (int i = 0; i < requestStrings.Length; i++)
                 {
+                    //this URL returns 403 error (forbidden), problem with Coingecko
                     string jsonURL = new WebClient().DownloadString("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=" + requestStrings[i] + "&order=id_asc&per_page=100&page=1&sparkline=false");
                     var data = JsonConvert.DeserializeObject<dynamic>(jsonURL);
                     var orderedIds = listOfIds.OrderBy(x => x).Skip(maxStringNumber * i).Take(maxStringNumber).ToList();
@@ -431,12 +433,21 @@ namespace cryptoFinance
                 string cryptoSymbol = ConvertName.GetSymbol(listOfNames[i]);
                 var item = tokenListWithFullData.Where(x => x.cryptoName == cryptoName && x.cryptoSymbol == cryptoSymbol).ToList();
 
-                if (item.Count == 0)
+                if (item.Count == 0 && cryptoName != "removed")
                 {
                     string cryptoId = Connection.db.GetTable<CryptoTable>().Where(x => x.CryptoName == listOfNames[i]).Select(x => x.CryptoId).First();
-                    var coinObject = tokenListWithFullData.Where(x => x.cryptoId == cryptoId).First();
-                    string newName = coinObject.cryptoName + " (" + coinObject.cryptoSymbol + ")";
-                    Connection.iwdb.ChangeName(cryptoId, newName);
+
+                    try
+                    {
+                        var coinObject = tokenListWithFullData.Where(x => x.cryptoId == cryptoId).First(); //if the coin is gone from coingecko, returns empty sequence
+                        string newName = coinObject.cryptoName + " (" + coinObject.cryptoSymbol + ")";
+                        Connection.iwdb.ChangeName(cryptoId, newName);
+                    }
+                    catch
+                    {
+                        string newName = "(REMOVED) " + cryptoName + " (" + cryptoSymbol + ")";
+                        Connection.iwdb.ChangeName(cryptoId, newName);
+                    }
                 }
             }
         }

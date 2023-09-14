@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Windows.Documents;
 
 namespace cryptoFinance
 {
@@ -29,7 +30,14 @@ namespace cryptoFinance
             var split = name.Split('(');
             var fixedName = split[0].TrimEnd(' ');
 
-            return fixedName;
+            if(split.Length > 2)                    //if we send (REMOVED) coin here, length will be more than 2
+            {
+                return "removed";
+            }
+            else
+            {
+                return fixedName;
+            }
         }
 
         public static string GetSymbol(string name)
@@ -37,7 +45,14 @@ namespace cryptoFinance
             var split = name.Split('(');
             var cryptoSymbol = split[1].Trim(')');
 
-            return cryptoSymbol;
+            if (split.Length > 2)                    //if we send (REMOVED) coin here, length will be more than 2
+            {
+                return "removed";
+            }
+            else
+            {
+                return cryptoSymbol;
+            }
         }
 
     }

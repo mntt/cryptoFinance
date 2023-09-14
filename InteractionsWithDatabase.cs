@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -77,22 +75,31 @@ namespace cryptoFinance
                 string newName = namesplit[0].TrimEnd(' ');
                 string symbol = namesplit[1].Trim(')');
 
-                sql.Open();
-                MemoryStream stream = new MemoryStream();
-                string querry = "SELECT Logo FROM CoingeckoCryptoList WHERE CryptoName = '" + newName + "' AND CryptoSymbol = '" + symbol + "'";
-                SqlCommand command = new SqlCommand(querry, sql);
-                byte[] image = (byte[])command.ExecuteScalar();
-                sql.Close();
+                try
+                {
+                    //sometimes there could be a case, where you have some coin in your portfolio, but it is removed from coingecko
+                    //so try/catch is needed
+                    sql.Open();
+                    MemoryStream stream = new MemoryStream();
+                    string querry = "SELECT Logo FROM CoingeckoCryptoList WHERE CryptoName = '" + newName + "' AND CryptoSymbol = '" + symbol + "'";
+                    SqlCommand command = new SqlCommand(querry, sql);
+                    byte[] image = (byte[])command.ExecuteScalar();
+                    sql.Close();
 
-                if (image.Length == 1)
+                    if (image.Length == 1)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        stream.Write(image, 0, image.Length);
+                        Bitmap bitmap = new Bitmap(stream);
+                        return bitmap;
+                    }
+                }
+                catch
                 {
                     return null;
-                }
-                else
-                {
-                    stream.Write(image, 0, image.Length);
-                    Bitmap bitmap = new Bitmap(stream);
-                    return bitmap;
                 }
             }
         }
@@ -153,7 +160,7 @@ namespace cryptoFinance
             {
                 string symbol = reader["CryptoSymbol".ToString()].ToString();
                 string name = reader["CryptoName".ToString()].ToString();
-                string finalName = name + " " + "(" + symbol + ")";
+                string finalName = name + " " + "(" + symbol.ToUpper() + ")";
                 string marketCap = reader["MarketCap".ToString()].ToString();
 
                 decimal mcap;

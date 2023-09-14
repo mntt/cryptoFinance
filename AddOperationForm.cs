@@ -862,7 +862,7 @@ namespace cryptoFinance
         {
             ca.top100listview.Items.Clear();
             var list = Connection.db.GetTable<CoingeckoCryptoList>().Take(100)
-                .Select(x => x.Id + ". " + x.CryptoName + " (" + x.CryptoSymbol + ")").ToList();
+                .Select(x => x.Id + ". " + x.CryptoName + " (" + x.CryptoSymbol.ToUpper() + ")").ToList();
             foreach (var item in list)
             {
                 ca.top100listview.Items.Add(item);
